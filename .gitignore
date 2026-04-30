@@ -1,0 +1,36 @@
+# 원본 PPT (대용량, 내부 자료 — 저장소에 포함 안 함)
+*.pptx
+*.ppt
+
+# PPT 추출 임시 폴더 (build_photo_manifest.py로 재생성 가능)
+ppt_extract/
+
+# 빌드 임시 스크립트 산출물
+*.pyc
+__pycache__/
+
+# OS / 에디터 산출물
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*~
+
+# OneDrive 충돌 파일
+*.~lock*
+*conflict*
+
+# IDE
+.vscode/
+.idea/
+
+# 환경 변수
+.env
+.env.local
+
+# 노드(향후 사용 가능성)
+node_modules/
+
+# 임시 파일
+*.tmp
+*.bak
