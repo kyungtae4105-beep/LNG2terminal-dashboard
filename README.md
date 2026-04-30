@@ -28,7 +28,7 @@ POSCO INTERNATIONAL 에너지건설 TF의 주요 지표(공정/안전/인력/현
 
 ```
 .
-├── dashboard.html        # 메인 대시보드 페이지
+├── index.html            # 메인 대시보드 페이지 (Cloudflare Pages 진입점)
 ├── data.js               # 프로젝트 지표 데이터 (편집 가능)
 ├── photos.js             # 사진 매니페스트 (PPT 추출 결과)
 ├── photos/               # 작업 사진 112장 (월별)
