@@ -657,6 +657,43 @@
   }
   .toast.show { opacity: 1; }
 
+  /* ====== Tab edit mode (inline editor on chart tabs) ====== */
+  .tab-toolbar {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    background: #2d2d2d;
+    border: 1px solid #3c3c3c;
+    border-radius: 4px;
+    padding: 8px 12px;
+    margin-bottom: 12px;
+  }
+  .tab-toolbar .label {
+    font-size: 12px;
+    color: #cccccc;
+    margin-right: 8px;
+  }
+  .tab-toolbar button {
+    background: #1e4d3f;
+    border: 1px solid #2d6a4f;
+    color: #6ee7b7;
+    padding: 5px 12px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 12px;
+    font-family: inherit;
+  }
+  .tab-toolbar button:hover { background: #2d6a4f; color: #fff; }
+  .tab-toolbar button.on { background: #007acc; border-color: #007acc; color: #fff; }
+  .tab-toolbar button.primary { background: #007acc; border-color: #007acc; color: #fff; }
+  .tab-toolbar button.primary:hover { background: #1a8ad9; }
+  .tab-toolbar button.secondary { background: #3c3c3c; border-color: #5a5a5a; color: #cccccc; }
+  .tab-toolbar button.secondary:hover { background: #4a4a4a; color: #fff; }
+  .tab-toolbar .info { color: #888; font-size: 11px; margin-left: auto; }
+  .inline-edit-area { display: none; }
+  .inline-edit-area.active { display: block; }
+  .inline-edit-area .editor-section { margin-top: 0; }
+
   @media (max-width: 1200px) {
     .col-3, .col-4, .col-5, .col-6, .col-7, .col-8, .col-9 { grid-column: span 12; }
     .sidebar { width: 200px; }
@@ -844,6 +881,207 @@ function destroyChart(id) { if (charts[id]) { charts[id].destroy(); delete chart
 const D = () => window.DASHBOARD_DATA;
 const PANELS = {};
 const PANEL_INIT = {};
+
+//============================================================
+// DASHBOARD_DATA persistence (localStorage)
+//============================================================
+const DASHBOARD_STORAGE_KEY = 'gwangyang_lng_dashboard_v1';
+
+// data.js로부터 막 로드된 원본을 별도로 백업 (resetData에서 사용)
+const _ORIGINAL_DATA = JSON.parse(JSON.stringify(window.DASHBOARD_DATA));
+
+function persistDashboardData() {
+  try {
+    localStorage.setItem(DASHBOARD_STORAGE_KEY, JSON.stringify(window.DASHBOARD_DATA));
+  } catch (err) {
+    console.warn('대시보드 데이터 저장 실패:', err);
+    showToast('⚠️ 데이터 저장 실패 (localStorage 용량 초과 가능)');
+  }
+}
+
+function loadDashboardFromStorage() {
+  try {
+    const raw = localStorage.getItem(DASHBOARD_STORAGE_KEY);
+    if (!raw) return false;
+    const stored = JSON.parse(raw);
+    if (stored && typeof stored === 'object') {
+      window.DASHBOARD_DATA = stored;
+      return true;
+    }
+  } catch (err) {
+    console.warn('대시보드 데이터 복원 실패:', err);
+  }
+  return false;
+}
+
+loadDashboardFromStorage();
+
+//============================================================
+// Inline edit toolbar (per-tab edit mode)
+//============================================================
+const tabEditState = {}; // { progress: false, resource: false, safety: false }
+
+function tabToolbar(tabKey) {
+  return `
+    <div class="tab-toolbar" data-tab-toolbar="${tabKey}">
+      <span class="label">데이터 편집:</span>
+      <button class="edit-toggle" data-tab="${tabKey}">✏️ 편집모드 OFF</button>
+      <button class="primary save-btn" data-tab="${tabKey}" style="display:none;">💾 저장 & 차트 갱신</button>
+      <button class="secondary" onclick="exportData()">⬇️ JSON 내보내기</button>
+      <button class="secondary" onclick="document.getElementById('json-import-${tabKey}').click()">⬆️ JSON 불러오기</button>
+      <input type="file" id="json-import-${tabKey}" accept=".json" style="display:none;" onchange="importData(event)">
+      <span class="info">변경사항은 자동으로 브라우저에 저장됩니다 (localStorage)</span>
+    </div>
+  `;
+}
+
+function bindTabToolbar(tabKey) {
+  const root = document.querySelector(`.panel[data-tab="${tabKey}"]`);
+  if (!root) return;
+  const editBtn = root.querySelector(`.edit-toggle[data-tab="${tabKey}"]`);
+  const saveBtn = root.querySelector(`.save-btn[data-tab="${tabKey}"]`);
+  const editArea = root.querySelector(`.inline-edit-area[data-edit="${tabKey}"]`);
+  if (!editBtn || !editArea) return;
+
+  const sync = () => {
+    const on = !!tabEditState[tabKey];
+    editBtn.classList.toggle('on', on);
+    editBtn.textContent = on ? '✏️ 편집모드 ON' : '✏️ 편집모드 OFF';
+    editArea.classList.toggle('active', on);
+    if (saveBtn) saveBtn.style.display = on ? '' : 'none';
+    if (on) renderInlineEditTables(tabKey);
+  };
+  editBtn.onclick = () => {
+    tabEditState[tabKey] = !tabEditState[tabKey];
+    sync();
+  };
+  if (saveBtn) saveBtn.onclick = () => saveTabEdits(tabKey);
+  // Bind collapsible section headers inside the inline area
+  editArea.querySelectorAll('.editor-section .section-header').forEach(h => {
+    h.onclick = () => h.parentElement.classList.toggle('collapsed');
+  });
+  sync();
+}
+
+function renderInlineEditTables(tabKey) {
+  const d = D();
+  if (tabKey === 'progress') {
+    const tgt = document.getElementById('ed-progress-inline');
+    if (!tgt) return;
+    let h = '<thead><tr><th>구분</th>' + d.progress.months.map(m => `<th colspan="2">${m}</th>`).join('') +
+            '</tr><tr><th></th>' + d.progress.months.map(() => '<th>계획</th><th>실적</th>').join('') + '</tr></thead><tbody>';
+    ['종합','육상부','해상부','154kV'].forEach(s => {
+      h += `<tr><td><b>${s}</b></td>`;
+      d.progress.months.forEach((m,i) => {
+        h += `<td class="num"><input type="number" step="0.01" value="${d.progress[s].plan[i]}" data-path="progress.${s}.plan.${i}"></td>`;
+        h += `<td class="num"><input type="number" step="0.01" value="${d.progress[s].actual[i]}" data-path="progress.${s}.actual.${i}"></td>`;
+      });
+      h += '</tr>';
+    });
+    h += '</tbody>';
+    tgt.innerHTML = h;
+  } else if (tabKey === 'resource') {
+    const tgt = document.getElementById('ed-manpower-inline');
+    if (!tgt) return;
+    let h = '<thead><tr><th>구분</th>' + d.manpower.months.map(m => `<th colspan="2">${m}</th>`).join('') +
+            '</tr><tr><th></th>' + d.manpower.months.map(() => '<th>관리자</th><th>협력사</th>').join('') + '</tr></thead><tbody>';
+    ['종합','육상부','해상부','154kV'].forEach(s => {
+      h += `<tr><td><b>${s}</b></td>`;
+      d.manpower.months.forEach((m,i) => {
+        h += `<td class="num"><input type="number" value="${d.manpower[s].manager[i]}" data-path="manpower.${s}.manager.${i}"></td>`;
+        h += `<td class="num"><input type="number" value="${d.manpower[s].partner[i]}" data-path="manpower.${s}.partner.${i}"></td>`;
+      });
+      h += '</tr>';
+    });
+    h += '</tbody>';
+    tgt.innerHTML = h;
+  } else if (tabKey === 'safety') {
+    // 무재해
+    const tgtA = document.getElementById('ed-noacc-inline');
+    if (tgtA) {
+      let h = '<thead><tr><th>구분</th>' + d.no_accident_days.months.map(m => `<th>${m}</th>`).join('') + '</tr></thead><tbody>';
+      ['육상부','해상부','154kV'].forEach(s => {
+        h += `<tr><td><b>${s}</b></td>`;
+        d.no_accident_days.months.forEach((m,i) => {
+          const v = d.no_accident_days[s][i];
+          h += `<td class="num"><input type="number" value="${v ?? ''}" placeholder="(없음)" data-path="no_accident_days.${s}.${i}"></td>`;
+        });
+        h += '</tr>';
+      });
+      h += '</tbody>';
+      tgtA.innerHTML = h;
+    }
+    // 안전점검 분류
+    const tgtB = document.getElementById('ed-audit-inline');
+    if (tgtB) {
+      const cats = ['추락','전도','낙하/비래','감전','충돌/협착','붕괴/도괴','화재/폭발','질식','기타'];
+      let h = '<thead><tr><th>분류</th>' + d.safety_audit_land.months.map(m => `<th>${m}</th>`).join('') + '</tr></thead><tbody>';
+      cats.forEach(c => {
+        h += `<tr><td><b>${c}</b></td>`;
+        d.safety_audit_land.months.forEach((m,i) => {
+          h += `<td class="num"><input type="number" value="${d.safety_audit_land[c][i]}" data-path="safety_audit_land.${c}.${i}"></td>`;
+        });
+        h += '</tr>';
+      });
+      h += '</tbody>';
+      tgtB.innerHTML = h;
+    }
+    // 안전교육
+    const tgtC = document.getElementById('ed-edu-inline');
+    if (tgtC) {
+      const eduCats = ['채용/작업변경','특별교육','관리감독자','정기교육'];
+      let h = '<thead><tr><th>교육</th>' + d.safety_edu_land.months.map(m => `<th>${m}</th>`).join('') + '</tr></thead><tbody>';
+      eduCats.forEach(c => {
+        h += `<tr><td><b>${c}</b></td>`;
+        d.safety_edu_land.months.forEach((m,i) => {
+          h += `<td class="num"><input type="number" value="${d.safety_edu_land[c][i]}" data-path="safety_edu_land.${c}.${i}"></td>`;
+        });
+        h += '</tr>';
+      });
+      h += '</tbody>';
+      tgtC.innerHTML = h;
+    }
+    // 재해 / Near Miss
+    const tgtD = document.getElementById('ed-incident-inline');
+    if (tgtD) {
+      let h = '<thead><tr><th>공구</th><th>공상</th><th>일반재해</th><th>중대재해</th><th>일반NM</th><th>중대NM</th></tr></thead><tbody>';
+      d.incident_summary.forEach((r, i) => {
+        h += `<tr><td><b>${r.sub}</b></td>`;
+        ['공상','일반재해','중대재해','일반NearMiss','중대NearMiss'].forEach(k => {
+          h += `<td class="num"><input type="number" value="${r[k]}" data-path="incident_summary.${i}.${k}"></td>`;
+        });
+        h += '</tr>';
+      });
+      h += '</tbody>';
+      tgtD.innerHTML = h;
+    }
+  }
+}
+
+function saveTabEdits(tabKey) {
+  const root = document.querySelector(`.panel[data-tab="${tabKey}"]`);
+  if (!root) return;
+  const area = root.querySelector(`.inline-edit-area[data-edit="${tabKey}"]`);
+  if (!area) return;
+  area.querySelectorAll('input[data-path], select[data-path]').forEach(el => {
+    let v = el.value;
+    if (el.type === 'number') v = (v === '' ? null : parseFloat(v));
+    setByPath(D(), el.dataset.path, v);
+  });
+  persistDashboardData();
+  // Re-render all open tabs (이 탭은 물론 종합 대시보드도 즉시 반영)
+  for (const k of openTabs) {
+    const panel = document.querySelector(`.panel[data-tab="${k}"]`);
+    if (!panel) continue;
+    const wasEditOn = !!tabEditState[k];
+    panel.innerHTML = PANELS[k]();
+    setTimeout(() => {
+      if (PANEL_INIT[k]) PANEL_INIT[k]();
+      if (wasEditOn) tabEditState[k] = true;
+    }, 30);
+  }
+  showToast('✅ 변경사항이 저장되어 모든 차트에 반영되었습니다');
+}
 
 //------------------------------------------------------------
 // Overview
@@ -1046,6 +1284,13 @@ PANEL_INIT.overview = () => {
 // Progress
 //------------------------------------------------------------
 PANELS.progress = () => `
+  ${tabToolbar('progress')}
+  <div class="inline-edit-area" data-edit="progress">
+    <div class="editor-section">
+      <div class="section-header"><span class="arrow">▼</span><h3>📈 공정률 (월별) — 인라인 편집</h3></div>
+      <div class="section-body"><table class="editable" id="ed-progress-inline"></table></div>
+    </div>
+  </div>
   <div class="grid">
     <div class="card col-12">
       <h3>공구별 월별 공정률 (Plan vs Actual)</h3>
@@ -1062,6 +1307,7 @@ PANELS.progress = () => `
   </div>
 `;
 PANEL_INIT.progress = () => {
+  bindTabToolbar('progress');
   const d = D();
   destroyChart('pg-sub');
   charts['pg-sub'] = new Chart(document.getElementById('pg-sub'), {
@@ -1121,6 +1367,13 @@ PANEL_INIT.progress = () => {
 // Resource (Manpower)
 //------------------------------------------------------------
 PANELS.resource = () => `
+  ${tabToolbar('resource')}
+  <div class="inline-edit-area" data-edit="resource">
+    <div class="editor-section">
+      <div class="section-header"><span class="arrow">▼</span><h3>👷 인력 투입 (관리자 / 협력사) — 인라인 편집</h3></div>
+      <div class="section-body"><table class="editable" id="ed-manpower-inline"></table></div>
+    </div>
+  </div>
   <div class="grid">
     <div class="card col-8">
       <h3>월별 총 인력 투입 현황 (공구별)</h3>
@@ -1137,6 +1390,7 @@ PANELS.resource = () => `
   </div>
 `;
 PANEL_INIT.resource = () => {
+  bindTabToolbar('resource');
   const d = D();
   destroyChart('rs-stack');
   charts['rs-stack'] = new Chart(document.getElementById('rs-stack'), {
@@ -1191,6 +1445,25 @@ PANELS.safety = () => {
   const d = D();
   const last = 2;
   return `
+    ${tabToolbar('safety')}
+    <div class="inline-edit-area" data-edit="safety">
+      <div class="editor-section">
+        <div class="section-header"><span class="arrow">▼</span><h3>🛡️ 무재해 일수 — 인라인 편집</h3></div>
+        <div class="section-body"><table class="editable" id="ed-noacc-inline"></table></div>
+      </div>
+      <div class="editor-section">
+        <div class="section-header"><span class="arrow">▼</span><h3>📋 안전점검 지적 분류 (육상부)</h3></div>
+        <div class="section-body"><table class="editable" id="ed-audit-inline"></table></div>
+      </div>
+      <div class="editor-section">
+        <div class="section-header"><span class="arrow">▼</span><h3>🎓 안전교육 누적 인원</h3></div>
+        <div class="section-body"><table class="editable" id="ed-edu-inline"></table></div>
+      </div>
+      <div class="editor-section">
+        <div class="section-header"><span class="arrow">▼</span><h3>⚠️ 재해 / Near Miss 현황</h3></div>
+        <div class="section-body"><table class="editable" id="ed-incident-inline"></table></div>
+      </div>
+    </div>
     <div class="grid">
       <div class="card col-3">
         <h3>육상부 무재해 일수</h3>
@@ -1242,6 +1515,7 @@ PANELS.safety = () => {
   `;
 };
 PANEL_INIT.safety = () => {
+  bindTabToolbar('safety');
   const d = D();
   destroyChart('sf-audit');
   const cats = ['추락','전도','낙하/비래','감전','충돌/협착','붕괴/도괴','화재/폭발','기타'];
@@ -2061,6 +2335,7 @@ function applyEdits() {
     if (el.type === 'number') v = (v === '' ? null : parseFloat(v));
     setByPath(D(), el.dataset.path, v);
   });
+  persistDashboardData();
   // Re-render any open chart panels
   for (const k of openTabs) {
     if (PANEL_INIT[k] && k !== 'editor') {
@@ -2094,21 +2369,37 @@ function importData(ev) {
     try {
       const data = JSON.parse(e.target.result);
       window.DASHBOARD_DATA = data;
-      renderEditorTables();
-      showToast('📥 JSON 파일이 로드되었습니다. "변경사항 적용"으로 차트에 반영하세요.');
+      persistDashboardData();
+      // 모든 열린 탭 새로고침 (편집 탭이 열려 있으면 표도 갱신)
+      for (const k of openTabs) {
+        const panel = document.querySelector(`.panel[data-tab="${k}"]`);
+        if (!panel) continue;
+        panel.innerHTML = PANELS[k]();
+        setTimeout(() => PANEL_INIT[k] && PANEL_INIT[k](), 30);
+      }
+      showToast('📥 JSON 데이터가 로드되어 적용되었습니다');
     } catch (err) {
       alert('JSON 파일 읽기 실패: ' + err.message);
     }
   };
   reader.readAsText(file);
+  ev.target.value = '';
 }
 
-const _ORIGINAL_DATA = JSON.parse(JSON.stringify(window.DASHBOARD_DATA));
 function resetData() {
   if (!confirm('초기 데이터로 복원하시겠습니까? 현재 변경사항이 모두 사라집니다.')) return;
   window.DASHBOARD_DATA = JSON.parse(JSON.stringify(_ORIGINAL_DATA));
-  renderEditorTables();
-  applyEdits();
+  localStorage.removeItem(DASHBOARD_STORAGE_KEY);
+  // 편집 테이블이 열려 있으면 갱신
+  const editPanel = document.querySelector('.panel[data-tab="editor"]');
+  if (editPanel) renderEditorTables();
+  // 모든 열린 탭 갱신
+  for (const k of openTabs) {
+    const panel = document.querySelector(`.panel[data-tab="${k}"]`);
+    if (!panel || k === 'editor') continue;
+    panel.innerHTML = PANELS[k]();
+    setTimeout(() => PANEL_INIT[k] && PANEL_INIT[k](), 30);
+  }
   showToast('↻ 초기값으로 복원되었습니다');
 }
 
