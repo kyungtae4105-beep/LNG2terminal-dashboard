@@ -23,6 +23,7 @@ desktop.ini
 # IDE
 .vscode/
 .idea/
+.claude/
 
 # 환경 변수
 .env

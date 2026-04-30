@@ -336,7 +336,190 @@
     color: #d4d4d4;
     line-height: 1.4;
     min-height: 50px;
+    position: relative;
   }
+  .photo-card .caption-text { display: block; padding-right: 24px; word-break: break-word; }
+  .photo-card .caption-edit-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: #3c3c3c;
+    border: 1px solid #5a5a5a;
+    color: #cccccc;
+    width: 22px;
+    height: 22px;
+    border-radius: 3px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    padding: 0;
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+  .photo-card:hover .caption-edit-btn { opacity: 1; }
+  .photo-card .caption-edit-btn:hover { background: #007acc; border-color: #007acc; color: #fff; }
+  .photo-card .caption-input {
+    width: 100%;
+    background: #1e1e1e;
+    border: 1px solid #007acc;
+    color: #d4d4d4;
+    padding: 6px 8px;
+    font-size: 12px;
+    font-family: inherit;
+    border-radius: 3px;
+    resize: vertical;
+    min-height: 50px;
+  }
+  .photo-card .caption-actions { margin-top: 6px; display: flex; gap: 6px; }
+  .photo-card .caption-actions button {
+    background: #007acc;
+    border: none;
+    color: white;
+    padding: 4px 10px;
+    border-radius: 2px;
+    cursor: pointer;
+    font-size: 11px;
+    font-family: inherit;
+  }
+  .photo-card .caption-actions button.cancel { background: #3c3c3c; border: 1px solid #5a5a5a; }
+  .photo-card .delete-btn {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background: rgba(160, 40, 40, 0.85);
+    color: #fff;
+    border: none;
+    width: 24px;
+    height: 24px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.15s;
+    z-index: 2;
+  }
+  .photo-card:hover .delete-btn { opacity: 1; }
+  .photo-card .delete-btn:hover { background: #c83232; }
+  .photo-card .thumb { position: relative; }
+
+  /* ====== Upload Panel ====== */
+  .upload-form {
+    background: #252526;
+    border: 1px solid #3c3c3c;
+    border-radius: 4px;
+    padding: 18px;
+    margin-bottom: 18px;
+  }
+  .upload-form h3 {
+    font-size: 14px;
+    color: #4fc3f7;
+    margin-bottom: 14px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #3c3c3c;
+  }
+  .upload-row { display: flex; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .upload-field { display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 160px; }
+  .upload-field label { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; }
+  .upload-field select, .upload-field input[type="text"] {
+    background: #1e1e1e;
+    border: 1px solid #3c3c3c;
+    color: #d4d4d4;
+    padding: 7px 10px;
+    border-radius: 3px;
+    font-size: 13px;
+    font-family: inherit;
+  }
+  .upload-field select:focus, .upload-field input:focus {
+    outline: none;
+    border-color: #007acc;
+  }
+  .drop-zone {
+    border: 2px dashed #3c3c3c;
+    border-radius: 4px;
+    padding: 32px 16px;
+    text-align: center;
+    color: #888;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+    margin-bottom: 12px;
+  }
+  .drop-zone:hover, .drop-zone.dragover {
+    border-color: #007acc;
+    background: #1e2d3a;
+    color: #cccccc;
+  }
+  .drop-zone .dz-icon { font-size: 36px; margin-bottom: 8px; }
+  .drop-zone .dz-hint { font-size: 11px; color: #666; margin-top: 4px; }
+  .upload-queue { display: flex; flex-direction: column; gap: 6px; max-height: 320px; overflow-y: auto; }
+  .upload-queue-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px;
+    background: #1e1e1e;
+    border: 1px solid #3c3c3c;
+    border-radius: 3px;
+  }
+  .upload-queue-item img { width: 56px; height: 56px; object-fit: cover; border-radius: 3px; flex-shrink: 0; }
+  .upload-queue-item .meta { flex: 1; min-width: 0; }
+  .upload-queue-item .fname { font-size: 12px; color: #cccccc; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .upload-queue-item input[type="text"] {
+    width: 100%;
+    background: #2a2a2a;
+    border: 1px solid #3c3c3c;
+    color: #d4d4d4;
+    padding: 5px 8px;
+    border-radius: 2px;
+    font-size: 12px;
+    font-family: inherit;
+    margin-top: 4px;
+  }
+  .upload-queue-item .remove-q {
+    background: #5e1f1f;
+    color: #fca5a5;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 11px;
+  }
+  .upload-queue-item .remove-q:hover { background: #842029; color: #fff; }
+  .upload-actions { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+  .upload-actions button {
+    background: #1e4d3f;
+    border: 1px solid #2d6a4f;
+    color: #6ee7b7;
+    padding: 8px 16px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 12px;
+    font-family: inherit;
+  }
+  .upload-actions button:hover { background: #2d6a4f; color: #fff; }
+  .upload-actions button.secondary { background: #3c3c3c; border-color: #5a5a5a; color: #cccccc; }
+  .upload-actions button.secondary:hover { background: #4a4a4a; color: #fff; }
+  .upload-actions button.danger { background: #5e1f1f; border-color: #842029; color: #fca5a5; }
+  .upload-actions button.danger:hover { background: #842029; color: #fff; }
+  .upload-actions button:disabled { opacity: 0.5; cursor: not-allowed; }
+  .upload-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .upload-stat {
+    background: #1e3a5f;
+    border: 1px solid #2c5282;
+    padding: 10px 12px;
+    border-radius: 4px;
+  }
+  .upload-stat .v { font-size: 20px; font-weight: 700; color: #ffd54f; }
+  .upload-stat .l { font-size: 11px; color: #cccccc; margin-top: 2px; }
 
   /* Lightbox */
   .lightbox {
@@ -515,6 +698,7 @@
 
       <div class="menu-group">📷 현장 기록</div>
       <div class="menu-item" data-tab="photos"><span class="ic">📷</span>월별 작업사진</div>
+      <div class="menu-item" data-tab="upload"><span class="ic">📤</span>사진 업로드/관리</div>
       <div class="menu-item" data-tab="milestones"><span class="ic">🎯</span>마일스톤</div>
 
       <div class="menu-group">⚙️ 관리</div>
@@ -564,6 +748,7 @@ const TAB_DEFS = {
   resource:   { title: '시공/자원관리',     icon: '👷' },
   safety:     { title: '안전 관리',         icon: '🛡️' },
   photos:     { title: '월별 작업사진',     icon: '📷' },
+  upload:     { title: '사진 업로드/관리',  icon: '📤' },
   milestones: { title: '마일스톤',          icon: '🎯' },
   editor:     { title: '데이터 편집',       icon: '✏️' },
   info:       { title: '프로젝트 정보',     icon: 'ℹ️' }
@@ -1147,15 +1332,18 @@ PANELS.photos = () => {
       <button data-filter="type" data-val="공사사진">공사/공정</button>
       <button data-filter="type" data-val="공정사진">공정사진</button>
       <button data-filter="type" data-val="안전점검">안전점검</button>
+      <span style="width: 16px;"></span>
+      <button id="photo-edit-toggle" style="background:#1e4d3f; border-color:#2d6a4f; color:#6ee7b7;">✏️ 편집모드 OFF</button>
       <span style="margin-left:auto; color:#888; font-size:11px;" id="photo-count"></span>
     </div>
     <div id="photo-content"></div>
   `;
 };
+let photoEditMode = false;
 
 PANEL_INIT.photos = () => {
   const root = document.querySelector('.panel[data-tab="photos"]');
-  root.querySelectorAll('.photo-toolbar button').forEach(b => {
+  root.querySelectorAll('.photo-toolbar button[data-filter]').forEach(b => {
     b.onclick = () => {
       const f = b.dataset.filter, v = b.dataset.val;
       currentPhotoFilter[f] = v;
@@ -1163,6 +1351,17 @@ PANEL_INIT.photos = () => {
       renderPhotoGallery();
     };
   });
+  const editBtn = root.querySelector('#photo-edit-toggle');
+  if (editBtn) {
+    editBtn.onclick = () => {
+      photoEditMode = !photoEditMode;
+      editBtn.textContent = photoEditMode ? '✏️ 편집모드 ON' : '✏️ 편집모드 OFF';
+      editBtn.style.background = photoEditMode ? '#007acc' : '#1e4d3f';
+      editBtn.style.borderColor = photoEditMode ? '#007acc' : '#2d6a4f';
+      editBtn.style.color = photoEditMode ? '#fff' : '#6ee7b7';
+      renderPhotoGallery();
+    };
+  }
   if (!currentPhotoFilter.type) currentPhotoFilter.type = 'all';
   renderPhotoGallery();
 };
@@ -1176,19 +1375,26 @@ function renderPhotoGallery() {
   let count = 0;
   Object.keys(data).forEach(month => {
     if (currentPhotoFilter.month !== 'all' && currentPhotoFilter.month !== month) return;
-    data[month].forEach(section => {
+    data[month].forEach((section, secIdx) => {
       if (currentPhotoFilter.category !== 'all' && currentPhotoFilter.category !== section.category) return;
       if (currentPhotoFilter.type && currentPhotoFilter.type !== 'all' && currentPhotoFilter.type !== section.type) return;
       html += `<div class="photo-section">
         <h2>${section.title} <span style="color:#888; font-weight:normal; font-size:12px;">(${section.items.length}장)</span></h2>
         <div class="photo-grid">`;
-      section.items.forEach(item => {
+      section.items.forEach((item, itemIdx) => {
         const idx = allItems.length;
-        allItems.push({ file: item.file, caption: item.caption, section: section.title });
+        allItems.push({ file: item.file, caption: item.caption, section: section.title, month, secIdx, itemIdx });
+        const safeCap = (item.caption || '').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+        const cardClick = photoEditMode ? '' : `onclick="openLightbox(${idx})"`;
+        const delBtn = photoEditMode ? `<button class="delete-btn" title="사진 삭제" onclick="event.stopPropagation(); deletePhoto('${month}', ${secIdx}, ${itemIdx})">🗑</button>` : '';
+        const imgSrc = item.file.startsWith('data:') ? item.file : encodeURI(item.file);
         html += `
-          <div class="photo-card" onclick="openLightbox(${idx})">
-            <div class="thumb"><img loading="lazy" src="${encodeURI(item.file)}" alt=""></div>
-            <div class="caption">${item.caption}</div>
+          <div class="photo-card" ${cardClick}>
+            <div class="thumb">${delBtn}<img loading="lazy" src="${imgSrc}" alt="" onerror="this.style.opacity=0.3; this.alt='이미지 없음';"></div>
+            <div class="caption" data-month="${month}" data-sec="${secIdx}" data-item="${itemIdx}">
+              <span class="caption-text">${safeCap}</span>
+              <button class="caption-edit-btn" title="캡션 수정" onclick="event.stopPropagation(); editCaption(this)">✏️</button>
+            </div>
           </div>`;
         count++;
       });
@@ -1197,13 +1403,52 @@ function renderPhotoGallery() {
   });
   wrap.innerHTML = html || '<div style="padding:40px; text-align:center; color:#888;">조건에 맞는 사진이 없습니다.</div>';
   currentPhotoSet = allItems;
-  document.getElementById('photo-count').textContent = `총 ${count}장`;
+  const cnt = document.getElementById('photo-count');
+  if (cnt) cnt.textContent = `총 ${count}장`;
+}
+
+function editCaption(btn) {
+  const cap = btn.parentElement;
+  const month = cap.dataset.month;
+  const secIdx = +cap.dataset.sec;
+  const itemIdx = +cap.dataset.item;
+  const item = window.PHOTOS_DATA[month][secIdx].items[itemIdx];
+  cap.innerHTML = `
+    <textarea class="caption-input" rows="3">${(item.caption || '').replace(/</g, '&lt;')}</textarea>
+    <div class="caption-actions">
+      <button onclick="event.stopPropagation(); saveCaption(this, '${month}', ${secIdx}, ${itemIdx})">💾 저장</button>
+      <button class="cancel" onclick="event.stopPropagation(); renderPhotoGallery()">취소</button>
+    </div>
+  `;
+  const ta = cap.querySelector('textarea');
+  ta.focus();
+  ta.onclick = e => e.stopPropagation();
+}
+
+function saveCaption(btn, month, secIdx, itemIdx) {
+  const ta = btn.parentElement.parentElement.querySelector('textarea');
+  const newCap = ta.value.trim();
+  window.PHOTOS_DATA[month][secIdx].items[itemIdx].caption = newCap;
+  persistPhotosData();
+  renderPhotoGallery();
+  showToast('✅ 캡션이 수정되었습니다');
+}
+
+function deletePhoto(month, secIdx, itemIdx) {
+  const item = window.PHOTOS_DATA[month][secIdx].items[itemIdx];
+  if (!confirm(`이 사진을 삭제하시겠습니까?\n\n캡션: ${item.caption}`)) return;
+  window.PHOTOS_DATA[month][secIdx].items.splice(itemIdx, 1);
+  persistPhotosData();
+  renderPhotoGallery();
+  if (typeof renderUploadStats === 'function') renderUploadStats();
+  showToast('🗑 사진이 삭제되었습니다');
 }
 
 function openLightbox(i) {
   currentPhotoIdx = i;
   const it = currentPhotoSet[i];
-  document.getElementById('lb-img').src = encodeURI(it.file);
+  const src = it.file.startsWith('data:') ? it.file : encodeURI(it.file);
+  document.getElementById('lb-img').src = src;
   document.getElementById('lb-caption').textContent = `${it.section}  |  ${it.caption}`;
   document.getElementById('lightbox').classList.add('show');
 }
@@ -1219,6 +1464,314 @@ document.addEventListener('keydown', e => {
   if (e.key === 'ArrowLeft') navLightbox(-1);
   if (e.key === 'ArrowRight') navLightbox(1);
 });
+
+//------------------------------------------------------------
+// Photos persistence (localStorage)
+//------------------------------------------------------------
+const PHOTOS_STORAGE_KEY = 'gwangyang_lng_photos_v1';
+
+function persistPhotosData() {
+  try {
+    const json = JSON.stringify(window.PHOTOS_DATA);
+    localStorage.setItem(PHOTOS_STORAGE_KEY, json);
+  } catch (err) {
+    console.warn('localStorage 저장 실패 (용량 초과 가능):', err);
+    showToast('⚠️ localStorage 저장 실패 — 용량이 초과되었을 수 있습니다');
+  }
+}
+
+function loadPhotosFromStorage() {
+  try {
+    const raw = localStorage.getItem(PHOTOS_STORAGE_KEY);
+    if (!raw) return false;
+    const stored = JSON.parse(raw);
+    if (stored && typeof stored === 'object') {
+      window.PHOTOS_DATA = stored;
+      return true;
+    }
+  } catch (err) {
+    console.warn('localStorage 복원 실패:', err);
+  }
+  return false;
+}
+
+const _ORIGINAL_PHOTOS_DATA = JSON.parse(JSON.stringify(window.PHOTOS_DATA));
+loadPhotosFromStorage();
+
+//------------------------------------------------------------
+// Photo Upload / Manage
+//------------------------------------------------------------
+let uploadQueue = []; // { name, dataUrl, caption }
+
+PANELS.upload = () => {
+  const months = Object.keys(window.PHOTOS_DATA);
+  const monthOpts = months.map(m => `<option value="${m}">${m}</option>`).join('');
+  return `
+    <div class="upload-stats" id="upload-stats"></div>
+
+    <div class="upload-form">
+      <h3>📤 새 사진 업로드</h3>
+      <div class="upload-row">
+        <div class="upload-field">
+          <label>월 <span style="color:#fca5a5">*</span></label>
+          <select id="up-month">
+            ${monthOpts}
+            <option value="__new__">＋ 새 월 추가...</option>
+          </select>
+        </div>
+        <div class="upload-field" id="up-newmonth-wrap" style="display:none;">
+          <label>새 월 이름 (예: 04월)</label>
+          <input type="text" id="up-newmonth" placeholder="04월">
+        </div>
+        <div class="upload-field">
+          <label>분류 <span style="color:#fca5a5">*</span></label>
+          <select id="up-category">
+            <option value="육상부">육상부</option>
+            <option value="해상부">해상부</option>
+            <option value="154kV">154kV</option>
+          </select>
+        </div>
+        <div class="upload-field">
+          <label>유형 <span style="color:#fca5a5">*</span></label>
+          <select id="up-type">
+            <option value="공사사진">공사사진</option>
+            <option value="공정사진">공정사진</option>
+            <option value="안전점검">안전점검</option>
+          </select>
+        </div>
+        <div class="upload-field" style="flex:2;">
+          <label>섹션 제목 (자동 생성됨, 수정 가능)</label>
+          <input type="text" id="up-title" placeholder="자동 생성">
+        </div>
+      </div>
+
+      <div class="drop-zone" id="drop-zone">
+        <div class="dz-icon">📁</div>
+        <div>여기에 사진 파일을 끌어 놓거나 클릭해서 선택하세요</div>
+        <div class="dz-hint">JPG, PNG, JPEG (다중 선택 가능)</div>
+      </div>
+      <input type="file" id="file-input" accept="image/*" multiple style="display:none;">
+
+      <div class="upload-queue" id="upload-queue"></div>
+
+      <div class="upload-actions">
+        <button id="btn-upload-add">✅ 선택한 사진을 갤러리에 추가</button>
+        <button class="secondary" id="btn-clear-queue">🗑 대기열 비우기</button>
+      </div>
+    </div>
+
+    <div class="upload-form">
+      <h3>💾 데이터 백업/복원</h3>
+      <div style="font-size:12px; color:#888; margin-bottom:10px;">
+        업로드된 사진과 수정된 캡션은 브라우저 저장소(localStorage)에 자동 저장됩니다.<br>
+        영구 보관이나 다른 PC로 이동하려면 JSON으로 내보내세요.
+      </div>
+      <div class="upload-actions">
+        <button class="secondary" onclick="exportPhotosData()">⬇️ 사진 데이터 JSON 내보내기</button>
+        <button class="secondary" onclick="document.getElementById('photos-import').click()">⬆️ 사진 데이터 JSON 불러오기</button>
+        <button class="danger" onclick="resetPhotosData()">↻ 원본 사진 데이터로 복원</button>
+        <input type="file" id="photos-import" accept=".json" style="display:none;" onchange="importPhotosData(event)">
+      </div>
+    </div>
+  `;
+};
+
+PANEL_INIT.upload = () => {
+  const root = document.querySelector('.panel[data-tab="upload"]');
+  const monthSel = root.querySelector('#up-month');
+  const newWrap = root.querySelector('#up-newmonth-wrap');
+  const titleInput = root.querySelector('#up-title');
+  const categorySel = root.querySelector('#up-category');
+  const typeSel = root.querySelector('#up-type');
+
+  const updateAutoTitle = () => {
+    const m = monthSel.value === '__new__' ? (root.querySelector('#up-newmonth').value || '신규') : monthSel.value;
+    const c = categorySel.value;
+    const typeLabel = typeSel.value === '안전점검' ? '안전점검 사진' : (typeSel.value === '공사사진' ? '공사 사진' : '공정사진');
+    const subLabel = c === '154kV' ? '154kV 수전공사' : (c === '해상부' ? '항만공사' : c);
+    titleInput.value = `${typeLabel} (${subLabel}) - ${m}`;
+  };
+  monthSel.onchange = () => {
+    newWrap.style.display = monthSel.value === '__new__' ? 'flex' : 'none';
+    updateAutoTitle();
+  };
+  root.querySelector('#up-newmonth').oninput = updateAutoTitle;
+  categorySel.onchange = updateAutoTitle;
+  typeSel.onchange = updateAutoTitle;
+  updateAutoTitle();
+
+  const dz = root.querySelector('#drop-zone');
+  const fi = root.querySelector('#file-input');
+  dz.onclick = () => fi.click();
+  dz.ondragover = e => { e.preventDefault(); dz.classList.add('dragover'); };
+  dz.ondragleave = () => dz.classList.remove('dragover');
+  dz.ondrop = e => {
+    e.preventDefault();
+    dz.classList.remove('dragover');
+    handleFiles(e.dataTransfer.files);
+  };
+  fi.onchange = () => handleFiles(fi.files);
+
+  root.querySelector('#btn-upload-add').onclick = commitUploadQueue;
+  root.querySelector('#btn-clear-queue').onclick = () => {
+    if (uploadQueue.length === 0) return;
+    if (!confirm('대기열을 비우시겠습니까?')) return;
+    uploadQueue = [];
+    renderUploadQueue();
+  };
+
+  renderUploadQueue();
+  renderUploadStats();
+};
+
+function handleFiles(fileList) {
+  const files = Array.from(fileList).filter(f => f.type.startsWith('image/'));
+  if (files.length === 0) {
+    showToast('⚠️ 이미지 파일만 업로드 가능합니다');
+    return;
+  }
+  let pending = files.length;
+  files.forEach(file => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      uploadQueue.push({
+        name: file.name,
+        dataUrl: e.target.result,
+        caption: file.name.replace(/\.[^.]+$/, '')
+      });
+      pending--;
+      if (pending === 0) renderUploadQueue();
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function renderUploadQueue() {
+  const wrap = document.getElementById('upload-queue');
+  if (!wrap) return;
+  if (uploadQueue.length === 0) {
+    wrap.innerHTML = '<div style="padding:14px; text-align:center; color:#666; font-size:12px;">선택된 사진이 없습니다</div>';
+    return;
+  }
+  wrap.innerHTML = uploadQueue.map((q, i) => `
+    <div class="upload-queue-item">
+      <img src="${q.dataUrl}" alt="">
+      <div class="meta">
+        <div class="fname">${q.name}</div>
+        <input type="text" placeholder="캡션 입력 (예: 작업 내용 ('26.04.01))" value="${(q.caption || '').replace(/"/g, '&quot;')}" onchange="uploadQueue[${i}].caption=this.value">
+      </div>
+      <button class="remove-q" onclick="uploadQueue.splice(${i},1); renderUploadQueue();">제거</button>
+    </div>
+  `).join('');
+}
+
+function commitUploadQueue() {
+  if (uploadQueue.length === 0) {
+    showToast('⚠️ 추가할 사진이 없습니다');
+    return;
+  }
+  const root = document.querySelector('.panel[data-tab="upload"]');
+  let month = root.querySelector('#up-month').value;
+  if (month === '__new__') {
+    month = (root.querySelector('#up-newmonth').value || '').trim();
+    if (!month) { alert('새 월 이름을 입력하세요'); return; }
+    if (!window.PHOTOS_DATA[month]) window.PHOTOS_DATA[month] = [];
+  }
+  const category = root.querySelector('#up-category').value;
+  const type = root.querySelector('#up-type').value;
+  const title = root.querySelector('#up-title').value || `${type} (${category}) - ${month}`;
+
+  let section = window.PHOTOS_DATA[month].find(s => s.category === category && s.type === type);
+  if (!section) {
+    section = { title, category, type, items: [] };
+    window.PHOTOS_DATA[month].push(section);
+  } else {
+    section.title = title;
+  }
+
+  uploadQueue.forEach(q => {
+    section.items.push({ file: q.dataUrl, caption: q.caption || '' });
+  });
+
+  const added = uploadQueue.length;
+  uploadQueue = [];
+  renderUploadQueue();
+  persistPhotosData();
+  renderUploadStats();
+  reloadPhotosTabIfOpen();
+  showToast(`✅ ${added}장의 사진이 추가되었습니다`);
+}
+
+function renderUploadStats() {
+  const wrap = document.getElementById('upload-stats');
+  if (!wrap) return;
+  let total = 0, sections = 0;
+  const byMonth = {};
+  Object.keys(window.PHOTOS_DATA).forEach(m => {
+    let mc = 0;
+    window.PHOTOS_DATA[m].forEach(s => {
+      sections++;
+      mc += s.items.length;
+    });
+    byMonth[m] = mc;
+    total += mc;
+  });
+  wrap.innerHTML = `
+    <div class="upload-stat"><div class="v">${total}</div><div class="l">전체 사진</div></div>
+    <div class="upload-stat"><div class="v">${Object.keys(window.PHOTOS_DATA).length}</div><div class="l">월</div></div>
+    <div class="upload-stat"><div class="v">${sections}</div><div class="l">섹션</div></div>
+    ${Object.entries(byMonth).map(([m,c]) => `<div class="upload-stat"><div class="v">${c}</div><div class="l">${m}</div></div>`).join('')}
+  `;
+}
+
+function reloadPhotosTabIfOpen() {
+  if (!openTabs.has('photos')) return;
+  const panel = document.querySelector('.panel[data-tab="photos"]');
+  if (!panel) return;
+  panel.innerHTML = PANELS.photos();
+  setTimeout(() => PANEL_INIT.photos(), 30);
+}
+
+function exportPhotosData() {
+  const blob = new Blob([JSON.stringify(window.PHOTOS_DATA, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `photos_data_${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('💾 사진 데이터 JSON이 다운로드되었습니다');
+}
+
+function importPhotosData(ev) {
+  const file = ev.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (typeof data !== 'object' || Array.isArray(data)) throw new Error('형식이 올바르지 않습니다');
+      window.PHOTOS_DATA = data;
+      persistPhotosData();
+      renderUploadStats();
+      reloadPhotosTabIfOpen();
+      showToast('📥 사진 데이터를 불러왔습니다');
+    } catch (err) {
+      alert('JSON 파일 읽기 실패: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+  ev.target.value = '';
+}
+
+function resetPhotosData() {
+  if (!confirm('원본 사진 데이터로 복원하시겠습니까?\n업로드된 사진과 수정된 캡션이 모두 사라집니다.')) return;
+  window.PHOTOS_DATA = JSON.parse(JSON.stringify(_ORIGINAL_PHOTOS_DATA));
+  localStorage.removeItem(PHOTOS_STORAGE_KEY);
+  renderUploadStats();
+  reloadPhotosTabIfOpen();
+  showToast('↻ 원본 사진 데이터로 복원되었습니다');
+}
 
 //------------------------------------------------------------
 // Milestones
