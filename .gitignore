@@ -4,6 +4,10 @@
 
 # PPT 추출 임시 폴더 (build_photo_manifest.py로 재생성 가능)
 ppt_extract/
+ppt_extract_legacy/
+
+# 슬라이드 텍스트 dump (재생성 가능)
+legacy_slide_dump.txt
 
 # 빌드 임시 스크립트 산출물
 *.pyc

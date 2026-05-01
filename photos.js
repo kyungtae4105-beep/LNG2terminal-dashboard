@@ -1,32 +1,1834 @@
 window.PHOTOS_DATA = {
-  "06월": [
+  "2023-02": [
+    {
+      "title": "공정 사진 - 2023.02월",
+      "category": "육상부",
+      "type": "공정사진",
+      "items": [
+        {
+          "file": "photos/2023-02/s3_1_image4.gif",
+          "caption": "#6탱크 외부 전경 (’23.02.28)"
+        },
+        {
+          "file": "photos/2023-02/s3_2_image5.jpeg",
+          "caption": "Inner Shell Plate 1단 (’23.02.28)"
+        },
+        {
+          "file": "photos/2023-02/s3_3_image6.gif",
+          "caption": "수평 강연선 Step-3 그라우팅 (’23.02.15)"
+        },
+        {
+          "file": "photos/2023-02/s3_4_image7.gif",
+          "caption": "지반개량공사 외부 전경 (’23.02.28)"
+        },
+        {
+          "file": "photos/2023-02/s3_5_image8.gif",
+          "caption": "#8탱크 강관파일 항타 (’23.02.28)"
+        },
+        {
+          "file": "photos/2023-02/s3_6_image9.gif",
+          "caption": "#7탱크 전기방식 Boring/Casing (’23.02.27)"
+        }
+      ],
+      "slide": 3
+    },
+    {
+      "title": "안전점검 사진 (#6탱크) - 2023.02월",
+      "category": "육상부",
+      "type": "안전점검",
+      "items": [
+        {
+          "file": "photos/2023-02/s4_1_image19.png",
+          "caption": "주간 특별안전점검 [협착, 낙하] (2/16)"
+        },
+        {
+          "file": "photos/2023-02/s4_2_image14.jpeg",
+          "caption": "유소견자 건강관리 및 건강상담 (수시) 안전점검 사진 (#7,8탱크)"
+        },
+        {
+          "file": "photos/2023-02/s4_3_image12.png",
+          "caption": "주간 특별안전점검 [추락, 개구부] (2/24)"
+        },
+        {
+          "file": "photos/2023-02/s4_4_image18.gif",
+          "caption": "혈관측정사진 또는근로자 상담 사진기타 외 유소견자 건강관리 및 건강상담 (수시)"
+        },
+        {
+          "file": "photos/2023-02/s4_5_image16.jpeg",
+          "caption": "CPR 더미를 이용한 심폐소생훈련 (2/06)"
+        },
+        {
+          "file": "photos/2023-02/s4_6_image15.jpeg",
+          "caption": "해빙기 특별안전점검 (2/10)"
+        },
+        {
+          "file": "photos/2023-02/s4_7_image10.png",
+          "caption": "주간 특별안전점검 [협착, 충돌, 낙하] (2/16)"
+        }
+      ],
+      "slide": 4
+    }
+  ],
+  "2023-03": [
+    {
+      "title": "공정 사진 - 2023.03월",
+      "category": "육상부",
+      "type": "공정사진",
+      "items": [
+        {
+          "file": "photos/2023-03/s3_1_image6.jpeg",
+          "caption": "Inner Shell 1+2단 수평용접 (’23.03.31)"
+        },
+        {
+          "file": "photos/2023-03/s3_2_image4.gif",
+          "caption": "#6탱크 외부 전경 (’23.03.29)"
+        },
+        {
+          "file": "photos/2023-03/s3_3_image5.jpeg",
+          "caption": "Riser 배관 보냉 및 Wall Support 설치 (’23.03.31)"
+        },
+        {
+          "file": "photos/2023-03/s3_4_image7.jpeg",
+          "caption": "지반개량공사 외부 전경 (’23.03.29)"
+        },
+        {
+          "file": "photos/2023-03/s3_5_image8.jpeg",
+          "caption": "#8탱크 강관파일 항타 (’23.03.29)"
+        },
+        {
+          "file": "photos/2023-03/s3_6_image9.jpeg",
+          "caption": "#7탱크 전기방식 Coke Breeze 투입 (’23.03.15)"
+        }
+      ],
+      "slide": 3
+    },
+    {
+      "title": "안전점검 사진 - 2023.03월",
+      "category": "육상부",
+      "type": "안전점검",
+      "items": [
+        {
+          "file": "photos/2023-03/s4_1_image15.png",
+          "caption": "근로자 VR 안전체험교육 (’23.03.24)"
+        },
+        {
+          "file": "photos/2023-03/s4_2_image13.png",
+          "caption": "주간 특별안전점검 [고압가스] (’23.03.23)"
+        },
+        {
+          "file": "photos/2023-03/s4_3_image14.png",
+          "caption": "주간 특별안전점검 [건설기계] (’23.03.30)"
+        },
+        {
+          "file": "photos/2023-03/s4_4_image12.jpeg",
+          "caption": "근로자 정기안전보건교육 (’23.03.23)"
+        },
+        {
+          "file": "photos/2023-03/s4_5_image10.png",
+          "caption": "주간 특별안전점검 [전기 및 기계기구] (’23.03.10)"
+        },
+        {
+          "file": "photos/2023-03/s4_6_image11.png",
+          "caption": "주간 특별안전점검 [보호구] (’23.03.17)"
+        }
+      ],
+      "slide": 4
+    }
+  ],
+  "2023-04": [
+    {
+      "title": "공정 사진 - 2023.04월",
+      "category": "육상부",
+      "type": "공정사진",
+      "items": [
+        {
+          "file": "photos/2023-04/s3_1_image8.gif",
+          "caption": "Secondary Bottom Plate 설치 (’23.04.19)"
+        },
+        {
+          "file": "photos/2023-04/s3_2_image7.gif",
+          "caption": "#6탱크 외부 전경 (’23.04.26)"
+        },
+        {
+          "file": "photos/2023-04/s3_3_image9.gif",
+          "caption": "배관 Spool 제작 및 설치 (’23.04.25)"
+        },
+        {
+          "file": "photos/2023-04/s3_4_image5.gif",
+          "caption": "지반개량공사 외부 전경 (’23.04.26)"
+        },
+        {
+          "file": "photos/2023-04/s3_5_image4.png",
+          "caption": "#8탱크 강관파일 항타 (’23.04.26)"
+        },
+        {
+          "file": "photos/2023-04/s3_6_image6.jpeg",
+          "caption": "탱크 변대 Cable 내전압 시험 (’23.04.12)"
+        }
+      ],
+      "slide": 3
+    },
+    {
+      "title": "안전점검 사진 - 2023.04월",
+      "category": "육상부",
+      "type": "안전점검",
+      "items": [
+        {
+          "file": "photos/2023-04/s4_1_image10.jpeg",
+          "caption": "보건소 정신건강교육 (‘23.04.17)"
+        },
+        {
+          "file": "photos/2023-04/s4_2_image13.png",
+          "caption": "주간 특별안전점검 [가설비계] (’23.04.06)"
+        },
+        {
+          "file": "photos/2023-04/s4_3_image11.jpeg",
+          "caption": "보건소 뇌심혈관질환예방 교육(’23.04.25)"
+        },
+        {
+          "file": "photos/2023-04/s4_4_image12.png",
+          "caption": "주간 특별안전점검 [신호수] (’23.04.20)"
+        },
+        {
+          "file": "photos/2023-04/s4_5_image17.jpeg",
+          "caption": "보건소 뇌심혈관질환 예방 교육 (‘23.04.12)"
+        },
+        {
+          "file": "photos/2023-04/s4_6_image14.png",
+          "caption": "주간 특별안전점검 [개구부 단부] (’23.04.13)"
+        },
+        {
+          "file": "photos/2023-04/s4_7_image16.jpeg",
+          "caption": "안전 점검의 날 행사(’23.04.04)"
+        },
+        {
+          "file": "photos/2023-04/s4_8_image15.png",
+          "caption": "주간 특별안전점검 [가설사무실] (’23.04.27)"
+        }
+      ],
+      "slide": 4
+    }
+  ],
+  "2023-05": [
+    {
+      "title": "공정 사진 - 2023.05월",
+      "category": "육상부",
+      "type": "공정사진",
+      "items": [
+        {
+          "file": "photos/2023-05/s3_1_image7.jpeg",
+          "caption": "Inner Shell Plate (4단) 용접 (’23.05.30)"
+        },
+        {
+          "file": "photos/2023-05/s3_2_image4.gif",
+          "caption": "#6탱크 외부 전경 (’23.05.31)"
+        },
+        {
+          "file": "photos/2023-05/s3_3_image6.png",
+          "caption": "배관 Spool 제작 및 설치 (’23.05.31)"
+        },
+        {
+          "file": "photos/2023-05/s3_4_image5.png",
+          "caption": "지반개량공사 외부 전경 (’23.05.31)"
+        },
+        {
+          "file": "photos/2023-05/s3_5_image8.jpeg",
+          "caption": "#7탱크 파일 항속채움 Con’c 타설 (’23.05.30)"
+        },
+        {
+          "file": "photos/2023-05/s3_6_image9.jpeg",
+          "caption": "#7탱크 Annular Bottom 철근가공/조립 (’23.05.31)"
+        }
+      ],
+      "slide": 3
+    },
+    {
+      "title": "안전점검 사진 - 2023.05월",
+      "category": "육상부",
+      "type": "안전점검",
+      "items": [
+        {
+          "file": "photos/2023-05/s4_1_image10.jpeg",
+          "caption": "해일 비상대응훈련 (’23.05.25)"
+        },
+        {
+          "file": "photos/2023-05/s4_2_image12.png",
+          "caption": "주간 특별안전점검 [건설기계] (’23.05.19)"
+        },
+        {
+          "file": "photos/2023-05/s4_3_image13.png",
+          "caption": "주간 특별안전점검 [낙하위험개소] (’23.05.25)"
+        },
+        {
+          "file": "photos/2023-05/s4_4_image14.jpeg",
+          "caption": "혹서기 온열질환예방 보건교육 (’23.05.30)"
+        },
+        {
+          "file": "photos/2023-05/s4_5_image11.png",
+          "caption": "주간 특별안전점검 [양중 작업] (’23.05.04)"
+        },
+        {
+          "file": "photos/2023-05/s4_6_image16.png",
+          "caption": "주간 특별안전점검 [건설기계] (’23.05.19)"
+        },
+        {
+          "file": "photos/2023-05/s4_7_image18.jpeg",
+          "caption": "안전 점검의 날 (’23.05.08)"
+        },
+        {
+          "file": "photos/2023-05/s4_8_image17.png",
+          "caption": "장비 전도 비상대응훈련 (‘23.05.23)"
+        }
+      ],
+      "slide": 4
+    }
+  ],
+  "2023-06": [
+    {
+      "title": "공정 사진 - 2023.06월",
+      "category": "육상부",
+      "type": "공정사진",
+      "items": [
+        {
+          "file": "photos/2023-06/s3_1_image4.gif",
+          "caption": "#6탱크 외부 전경 (’23.06.28)"
+        },
+        {
+          "file": "photos/2023-06/s3_2_image6.jpeg",
+          "caption": "Inner Shell Plate (6단) 설치 (’23.06.30)"
+        },
+        {
+          "file": "photos/2023-06/s3_3_image9.png",
+          "caption": "Dry Sand 3차 포설 (’23.06.21)"
+        },
+        {
+          "file": "photos/2023-06/s3_4_image5.jpeg",
+          "caption": "#7,8탱크 외부 전경 (’23.06.28)"
+        },
+        {
+          "file": "photos/2023-06/s3_5_image7.jpeg",
+          "caption": "#8탱크 Lean Concrete 타설 (’23.06.23)"
+        },
+        {
+          "file": "photos/2023-06/s3_6_image8.jpeg",
+          "caption": "#7탱크 Anchor Strap 설치 (’23.06.30)"
+        }
+      ],
+      "slide": 3
+    },
+    {
+      "title": "안전점검 사진 - 2023.06월",
+      "category": "육상부",
+      "type": "안전점검",
+      "items": [
+        {
+          "file": "photos/2023-06/s4_1_image16.jpeg",
+          "caption": "안전 점검의 날 (’23.06.07)"
+        },
+        {
+          "file": "photos/2023-06/s4_2_image14.png",
+          "caption": "주간 특별안전점검 [온열질환] (’23.06.22)"
+        },
+        {
+          "file": "photos/2023-06/s4_3_image15.png",
+          "caption": "주간 특별안전점검 [장마철 풍수해] (’23.06.30)"
+        },
+        {
+          "file": "photos/2023-06/s4_4_image17.jpeg",
+          "caption": "보건소 건강증진교육 (’23.06.27)"
+        },
+        {
+          "file": "photos/2023-06/s4_5_image12.png",
+          "caption": "산업안전보건위원회 (’23.06.08)"
+        },
+        {
+          "file": "photos/2023-06/s4_6_image10.png",
+          "caption": "주간 특별안전점검 [보호구] (’23.06.15)"
+        },
+        {
+          "file": "photos/2023-06/s4_7_image13.png",
+          "caption": "작업환경측정 (‘23.06.27)"
+        },
+        {
+          "file": "photos/2023-06/s4_8_image11.png",
+          "caption": "주간 특별안전점검 [장마철 풍수해] (’23.06.30)"
+        }
+      ],
+      "slide": 4
+    }
+  ],
+  "2023-07": [
+    {
+      "title": "공정 사진 - 2023.07월",
+      "category": "육상부",
+      "type": "공정사진",
+      "items": [
+        {
+          "file": "photos/2023-07/s3_1_image4.gif",
+          "caption": "#6탱크 외부 전경 (’23.07.26)"
+        },
+        {
+          "file": "photos/2023-07/s3_2_image5.gif",
+          "caption": "Shell Plate (5단+6단) 수평 용접 (’23.07.26)"
+        },
+        {
+          "file": "photos/2023-07/s3_3_image6.gif",
+          "caption": "소방 배관 Spool 설치 (’23.07.26)"
+        },
+        {
+          "file": "photos/2023-07/s3_4_image7.jpeg",
+          "caption": "지반개량공사 전경사진 (‘23.07.26)"
+        },
+        {
+          "file": "photos/2023-07/s3_5_image8.jpeg",
+          "caption": "#8탱크 Center 두부보강 철근 설치(’23.07.27)"
+        },
+        {
+          "file": "photos/2023-07/s3_6_image9.jpeg",
+          "caption": "#7탱크 Annular 구간 EBHS 전선관 설치(’23.07.26)"
+        }
+      ],
+      "slide": 3
+    },
+    {
+      "title": "안전점검 사진 - 2023.07월",
+      "category": "육상부",
+      "type": "안전점검",
+      "items": [
+        {
+          "file": "photos/2023-07/s4_1_image10.jpeg",
+          "caption": "안전 점검의 날 (’23.07.04)"
+        },
+        {
+          "file": "photos/2023-07/s4_2_image17.png",
+          "caption": "주간 특별안전점검 [위험물,고압가스] (’23.07.13)"
+        },
+        {
+          "file": "photos/2023-07/s4_3_image11.jpeg",
+          "caption": "근골격계 질환 예방 스트레칭 교육 (’23.07.26)"
+        },
+        {
+          "file": "photos/2023-07/s4_4_image16.png",
+          "caption": "주간 특별안전점검 [작업장 정리정돈] (’23.07.20)"
+        },
+        {
+          "file": "photos/2023-07/s4_5_image12.png",
+          "caption": "주간 특별안전점검 [위험물,고압가스] (’23.07.13)"
+        },
+        {
+          "file": "photos/2023-07/s4_6_image14.png",
+          "caption": "정기안전보건교육 (’23.07.04)"
+        },
+        {
+          "file": "photos/2023-07/s4_7_image13.png",
+          "caption": "주간 특별안전점검 [작업장 정리정돈] (’23.07.20)"
+        },
+        {
+          "file": "photos/2023-07/s4_8_image15.png",
+          "caption": "관리자 장비안전 교육 (’23.07.10)"
+        }
+      ],
+      "slide": 4
+    }
+  ],
+  "2023-08": [
+    {
+      "title": "공정 사진 - 2023.08월",
+      "category": "육상부",
+      "type": "공정사진",
+      "items": [
+        {
+          "file": "photos/2023-08/s4_1_image13.jpeg",
+          "caption": "#6탱크 외부 전경 (’23.08.29)"
+        },
+        {
+          "file": "photos/2023-08/s4_2_image11.jpeg",
+          "caption": "Inner Shell Plate 7단 설치 (’23.08.17)"
+        },
+        {
+          "file": "photos/2023-08/s4_3_image12.png",
+          "caption": "Inner Bottom Plate 용접 (’23.08.22)"
+        },
+        {
+          "file": "photos/2023-08/s4_4_image14.jpeg",
+          "caption": "#7, 8탱크 외부 전경 (‘23.08.21)"
+        },
+        {
+          "file": "photos/2023-08/s4_5_image9.jpeg",
+          "caption": "#7탱크 Wall #1 철근 조립 및 설치 (’23.08.25)"
+        },
+        {
+          "file": "photos/2023-08/s4_6_image10.JPG",
+          "caption": "#8탱크 EBHS 전선관 설치(’23.08.25)"
+        }
+      ],
+      "slide": 4
+    },
+    {
+      "title": "안전점검 사진 - 2023.08월",
+      "category": "육상부",
+      "type": "안전점검",
+      "items": [
+        {
+          "file": "photos/2023-08/s5_1_image21.png",
+          "caption": "안전 점검의 날 (’23.08.04)"
+        },
+        {
+          "file": "photos/2023-08/s5_2_image20.png",
+          "caption": "주간 특별안전점검 [풍수해 예방] (’23.08.09)"
+        },
+        {
+          "file": "photos/2023-08/s5_3_image19.png",
+          "caption": "주간 특별안전점검 [전도사고예방] (’23.08.25)"
+        },
+        {
+          "file": "photos/2023-08/s5_4_image22.jpeg",
+          "caption": "심폐소생술 교육 (’23.08.17)"
+        },
+        {
+          "file": "photos/2023-08/s5_5_image18.png",
+          "caption": "주간 특별안전점검 [온열질환 예방] (’23.08.03)"
+        },
+        {
+          "file": "photos/2023-08/s5_6_image15.jpeg",
+          "caption": "정기안전보건교육_VR체험 (’23.08.22)"
+        },
+        {
+          "file": "photos/2023-08/s5_7_image17.png",
+          "caption": "주간 특별안전점검 [풍수해 예방] (’23.08.09)"
+        },
+        {
+          "file": "photos/2023-08/s5_8_image16.jpeg",
+          "caption": "작업환경측정 전파 교육 (’23.08.23)"
+        }
+      ],
+      "slide": 5
+    }
+  ],
+  "2023-09": [
+    {
+      "title": "공사 사진 (6,7,8탱크) - 2023.09월",
+      "category": "육상부",
+      "type": "공정사진",
+      "items": [
+        {
+          "file": "photos/2023-09/s4_1_image9.jpeg",
+          "caption": "#6탱크 외부 전경 (’23.09.26)"
+        },
+        {
+          "file": "photos/2023-09/s4_2_image4.gif",
+          "caption": "Inner Shell Plate 8단 설치 착수 (’23.09.20)"
+        },
+        {
+          "file": "photos/2023-09/s4_3_image5.gif",
+          "caption": "Inner Bottom Plate 용접 (’23.09.20)"
+        },
+        {
+          "file": "photos/2023-09/s4_4_image6.png",
+          "caption": "#7, 8탱크 외부 전경 (‘23.09.20)"
+        },
+        {
+          "file": "photos/2023-09/s4_5_image7.png",
+          "caption": "#7탱크 Base Slab Center 1차 타설 (’23.09.19)"
+        },
+        {
+          "file": "photos/2023-09/s4_6_image8.png",
+          "caption": "#8탱크 Base Slab Dowel Bar 설치(’23.09.19)"
+        }
+      ],
+      "slide": 4
+    },
+    {
+      "title": "안전점검 사진 (6,7,8탱크) - 2023.09월",
+      "category": "육상부",
+      "type": "안전점검",
+      "items": [
+        {
+          "file": "photos/2023-09/s5_1_image17.png",
+          "caption": "안전점검의 날 (’23.09.04)"
+        },
+        {
+          "file": "photos/2023-09/s5_2_image15.png",
+          "caption": "주간 특별안전점검 [양중작업] (’23.09.07)"
+        },
+        {
+          "file": "photos/2023-09/s5_3_image14.png",
+          "caption": "주간 특별안전점검 [추락사고 예방] (’23.09.21)"
+        },
+        {
+          "file": "photos/2023-09/s5_4_image16.png",
+          "caption": "비상대응훈련 [인명구조] (’23.09.07)"
+        },
+        {
+          "file": "photos/2023-09/s5_5_image13.png",
+          "caption": "주간 특별안전점검 [양중작업] (’23.09.07)"
+        },
+        {
+          "file": "photos/2023-09/s5_6_image10.jpeg",
+          "caption": "안전점검의 날 (’23.09.04)"
+        },
+        {
+          "file": "photos/2023-09/s5_7_image12.png",
+          "caption": "주간 특별안전점검 [추락사고 예방] (’23.09.22)"
+        },
+        {
+          "file": "photos/2023-09/s5_8_image11.jpeg",
+          "caption": "정기안전보건 교육 (’23.09.22)"
+        }
+      ],
+      "slide": 5
+    },
+    {
+      "title": "공정 사진 (항만공사) - 2023.09월",
+      "category": "해상부",
+      "type": "공정사진",
+      "items": [
+        {
+          "file": "photos/2023-09/s6_1_image20.png",
+          "caption": "가설사무실  골조 및 판넬 (’23.09.19)"
+        },
+        {
+          "file": "photos/2023-09/s6_2_image21.png",
+          "caption": "가설사무실 지붕골조 양중 (’23.09.20)"
+        },
+        {
+          "file": "photos/2023-09/s6_3_image23.jpeg",
+          "caption": "등부표 제작 (’23.09.25)"
+        },
+        {
+          "file": "photos/2023-09/s6_4_image22.jpeg",
+          "caption": "가설사무실 마감 (‘23.09.26)"
+        },
+        {
+          "file": "photos/2023-09/s6_5_image18.jpeg",
+          "caption": "장비(렌탈) 운전원기능 시험(’23.09.18)"
+        },
+        {
+          "file": "photos/2023-09/s6_6_image19.jpeg",
+          "caption": "신규자 채용 교육 (’23.09.13)"
+        }
+      ],
+      "slide": 6
+    }
+  ],
+  "2023-10": [
+    {
+      "title": "공사 사진 (6,7,8탱크) - 2023.10월",
+      "category": "육상부",
+      "type": "공정사진",
+      "items": [
+        {
+          "file": "photos/2023-10/s4_1_image5.png",
+          "caption": "Inner Shell Plate 9단 설치 착수 (’23.10.17)"
+        },
+        {
+          "file": "photos/2023-10/s4_2_image4.gif",
+          "caption": "#6탱크 외부 전경 (’23.10.25)"
+        },
+        {
+          "file": "photos/2023-10/s4_3_image6.png",
+          "caption": "Roof 배관 설치 (’23.10.23)"
+        },
+        {
+          "file": "photos/2023-10/s4_4_image7.png",
+          "caption": "#7, 8탱크 외부 전경 (‘23.10.26)"
+        },
+        {
+          "file": "photos/2023-10/s4_5_image8.jpeg",
+          "caption": "#8탱크 Base Slab Annular 타설 (’23.10.05)"
+        },
+        {
+          "file": "photos/2023-10/s4_6_image9.jpeg",
+          "caption": "#7탱크 Wall 2단 타설 (’23.10.27)"
+        }
+      ],
+      "slide": 4
+    },
+    {
+      "title": "안전점검 사진 (6,7,8탱크) - 2023.10월",
+      "category": "육상부",
+      "type": "안전점검",
+      "items": [
+        {
+          "file": "photos/2023-10/s5_1_image15.gif",
+          "caption": "안전점검의 날 (’23.10.04)"
+        },
+        {
+          "file": "photos/2023-10/s5_2_image17.gif",
+          "caption": "주간 특별안전점검 [보호구착용] (’23.10.12)"
+        },
+        {
+          "file": "photos/2023-10/s5_3_image14.gif",
+          "caption": "상주 건설장비 점검 (’23.10.23)"
+        },
+        {
+          "file": "photos/2023-10/s5_4_image16.gif",
+          "caption": "주간 특별안전점검 [가설사무실] (’23.10.19)"
+        },
+        {
+          "file": "photos/2023-10/s5_5_image12.png",
+          "caption": "안전점검의 날 (’23.10.04)"
+        },
+        {
+          "file": "photos/2023-10/s5_6_image13.png",
+          "caption": "주간 특별안전점검 [보호구 착용] (’23.10.12)"
+        },
+        {
+          "file": "photos/2023-10/s5_7_image11.png",
+          "caption": "정기안전보건 교육 (’23.10.18)"
+        },
+        {
+          "file": "photos/2023-10/s5_8_image10.png",
+          "caption": "주간 특별안전점검 [가설사무실] (’23.10.19)"
+        }
+      ],
+      "slide": 5
+    },
+    {
+      "title": "공사 사진 (항만공사) - 2023.10월",
+      "category": "해상부",
+      "type": "공정사진",
+      "items": [
+        {
+          "file": "photos/2023-10/s6_1_image20.jpeg",
+          "caption": "정화조 설치(’23.10.10)"
+        },
+        {
+          "file": "photos/2023-10/s6_2_image18.jpeg",
+          "caption": "내부 바닥 몰탈 타설(’23.10.04)"
+        },
+        {
+          "file": "photos/2023-10/s6_3_image19.jpeg",
+          "caption": "데코타일 설치(’23.10.11)"
+        },
+        {
+          "file": "photos/2023-10/s6_4_image21.png",
+          "caption": "후렉스 간판 설치 (’23.10.12)"
+        },
+        {
+          "file": "photos/2023-10/s6_5_image22.jpeg",
+          "caption": "전기 배선(’23.10.16)"
+        },
+        {
+          "file": "photos/2023-10/s6_6_image23.png",
+          "caption": "네트워크 지선망 구성(‘23.10.24)"
+        }
+      ],
+      "slide": 6
+    },
+    {
+      "title": "안전점검 사진(항만공사) - 2023.10월",
+      "category": "해상부",
+      "type": "안전점검",
+      "items": [
+        {
+          "file": "photos/2023-10/s7_1_image25.tmp",
+          "caption": "정기안전보건교육(’23.09.18)"
+        },
+        {
+          "file": "photos/2023-10/s7_2_image24.png",
+          "caption": "노사합동점검(’23.10.11)"
+        },
+        {
+          "file": "photos/2023-10/s7_3_image27.png",
+          "caption": "23년 안전보건목표 수립 및 게시(’23.10.30)"
+        },
+        {
+          "file": "photos/2023-10/s7_4_image26.png",
+          "caption": "안전보건진단 (‘23.10.24~26)"
+        }
+      ],
+      "slide": 7
+    }
+  ],
+  "2023-11": [
+    {
+      "title": " - 2023.11월",
+      "category": "육상부",
+      "type": "공정사진",
+      "items": [
+        {
+          "file": "photos/2023-11/s4_1_image9.png",
+          "caption": "Inner Shell Plate 11단 설치 착수 (’23.11.21)"
+        },
+        {
+          "file": "photos/2023-11/s4_2_image4.jpeg",
+          "caption": "#6탱크 외부 전경 (’23.11.21)"
+        },
+        {
+          "file": "photos/2023-11/s4_3_image8.png",
+          "caption": "Roof 배관 보냉 설치 (’23.11.24)"
+        },
+        {
+          "file": "photos/2023-11/s4_4_image7.jpeg",
+          "caption": "#7, 8탱크 외부 전경 (‘23.11.21)"
+        },
+        {
+          "file": "photos/2023-11/s4_5_image6.jpeg",
+          "caption": "#8탱크 Base Slab Center 2차 타설 (’23.11.21)"
+        },
+        {
+          "file": "photos/2023-11/s4_6_image5.jpeg",
+          "caption": "#7탱크 Roof Rafter 조립/설치 (’23.11.21)"
+        }
+      ],
+      "slide": 4
+    },
+    {
+      "title": "안전점검 사진(#6탱크) - 2023.11월",
+      "category": "육상부",
+      "type": "안전점검",
+      "items": [
+        {
+          "file": "photos/2023-11/s5_1_image11.png",
+          "caption": "주간 특별안전점검 [화기작업] (’23.11.16)"
+        },
+        {
+          "file": "photos/2023-11/s5_2_image12.jpeg",
+          "caption": "안전점검의 날 (’23.11.06)"
+        },
+        {
+          "file": "photos/2023-11/s5_3_image10.png",
+          "caption": "주간 특별안전점검 [가설사무실, 창고] (’23.11.23)"
+        },
+        {
+          "file": "photos/2023-11/s5_4_image13.jpeg",
+          "caption": "정기안전보건 교육 (’23.11.24)"
+        },
+        {
+          "file": "photos/2023-11/s5_5_image15.jpeg",
+          "caption": "안전점검의 날 (’23.11.06)"
+        },
+        {
+          "file": "photos/2023-11/s5_6_image14.png",
+          "caption": "주간 특별안전점검 [작업선] (’23.11.09)"
+        },
+        {
+          "file": "photos/2023-11/s5_7_image16.png",
+          "caption": "주간 특별안전점검 [가설사무실, 창고] (’23.11.24)"
+        },
+        {
+          "file": "photos/2023-11/s5_8_image17.jpeg",
+          "caption": "장비 운전원 및 신호수 특별교육 (’23.11.15)"
+        }
+      ],
+      "slide": 5
+    },
+    {
+      "title": "공사 사진(항만공사) - 2023.11월",
+      "category": "해상부",
+      "type": "공정사진",
+      "items": [
+        {
+          "file": "photos/2023-11/s6_1_image20.png",
+          "caption": "등부표 설치(’23.11.08)"
+        },
+        {
+          "file": "photos/2023-11/s6_2_image21.png",
+          "caption": "바지선 조립 및 시추기 설치(’23.11.15)"
+        },
+        {
+          "file": "photos/2023-11/s6_3_image19.jpeg",
+          "caption": "오탁방지막 반입(’23.11.28)"
+        },
+        {
+          "file": "photos/2023-11/s6_4_image18.jpeg",
+          "caption": "준설토 오염도 조사 시료채취(’23.11.20)"
+        },
+        {
+          "file": "photos/2023-11/s6_5_image22.jpeg",
+          "caption": "안전보건섹션 지원점검 (‘23.11.22~23)"
+        },
+        {
+          "file": "photos/2023-11/s6_6_image23.jpeg",
+          "caption": "노사합동점검 (’23.11.15)"
+        }
+      ],
+      "slide": 6
+    }
+  ],
+  "2024-01": [
+    {
+      "title": " - 2024.01월",
+      "category": "육상부",
+      "type": "공정사진",
+      "items": [
+        {
+          "file": "photos/2024-01/s4_1_image4.png",
+          "caption": "#6탱크 외부 전경 (’24.01.25)"
+        },
+        {
+          "file": "photos/2024-01/s4_2_image5.png",
+          "caption": "#6탱크 Large Opening 콘크리트 타설 (’24.01.29)"
+        },
+        {
+          "file": "photos/2024-01/s4_3_image6.jpeg",
+          "caption": "#6탱크 수압시험 충수 (’24.01.30)"
+        },
+        {
+          "file": "photos/2024-01/s4_4_image7.png",
+          "caption": "#7, 8탱크 외부 전경 (‘24.01.25)"
+        },
+        {
+          "file": "photos/2024-01/s4_5_image8.jpeg",
+          "caption": "#8탱크 Wall 4단 콘크리트 타설 (’24.01.26)"
+        },
+        {
+          "file": "photos/2024-01/s4_6_image9.png",
+          "caption": "#8탱크 Roof Rafter 설치 (’24.01.29)"
+        }
+      ],
+      "slide": 4
+    },
+    {
+      "title": "안전점검 사진(#6탱크) - 2024.01월",
+      "category": "육상부",
+      "type": "안전점검",
+      "items": [
+        {
+          "file": "photos/2024-01/s5_1_image10.png",
+          "caption": "주간 특별안전점검 [건설기계, 중량물 작업] (’24.01.11)"
+        },
+        {
+          "file": "photos/2024-01/s5_2_image12.png",
+          "caption": "안전점검의 날 (’21.01.04)"
+        },
+        {
+          "file": "photos/2024-01/s5_3_image11.png",
+          "caption": "주간 특별안전점검 [가설작업대] (’24.01.18)"
+        },
+        {
+          "file": "photos/2024-01/s5_4_image13.png",
+          "caption": "한랭질환 예방 교육 (’24.01.24)"
+        },
+        {
+          "file": "photos/2024-01/s5_5_image16.png",
+          "caption": "#7탱크 낙하물 방지망 설치 (’24.01.09)"
+        },
+        {
+          "file": "photos/2024-01/s5_6_image15.png",
+          "caption": "주간 특별안전점검 [건설기계, 중량물 작업] (’24.01.11)"
+        },
+        {
+          "file": "photos/2024-01/s5_7_image14.png",
+          "caption": "주간 특별안전점검 [유류 및 고압가스] (’24.01.25)"
+        },
+        {
+          "file": "photos/2024-01/s5_8_image17.png",
+          "caption": "정기안전보건교육 (’24.01.24)"
+        }
+      ],
+      "slide": 5
+    },
+    {
+      "title": "공사 사진 (항만공사) - 2024.01월",
+      "category": "해상부",
+      "type": "공정사진",
+      "items": [
+        {
+          "file": "photos/2024-01/s6_1_image3.png",
+          "caption": "강관파일 반입(’24.01.03)"
+        },
+        {
+          "file": "photos/2024-01/s6_2_image23.png",
+          "caption": "강관파일(JP-1 A1A) 용접 (’24.01.22)"
+        },
+        {
+          "file": "photos/2024-01/s6_3_image22.jpg",
+          "caption": "오탁방지막 설치 (’24.01.02)"
+        },
+        {
+          "file": "photos/2024-01/s6_4_image24.png",
+          "caption": "잭업바지 셋팅(’24.01.15)"
+        },
+        {
+          "file": "photos/2024-01/s6_5_image20.jpeg",
+          "caption": "안전기원제 (’24.01.09)"
+        },
+        {
+          "file": "photos/2024-01/s6_6_image21.jpeg",
+          "caption": "‘24년 1월 월간안전점검(’24.01.10)"
+        },
+        {
+          "file": "photos/2024-01/s6_7_image19.png",
+          "caption": "건설기계 반입 점검(’24.01.16)"
+        },
+        {
+          "file": "photos/2024-01/s6_8_image18.jpeg",
+          "caption": "산업안전보건위원회(’24.01.24)"
+        }
+      ],
+      "slide": 6
+    }
+  ],
+  "2024-03": [
+    {
+      "title": " - 2024.03월",
+      "category": "육상부",
+      "type": "공정사진",
+      "items": [
+        {
+          "file": "photos/2024-03/s4_1_image9.png",
+          "caption": "#6탱크 벽체보냉(Resilient Blanket) 설치(’24.03.23)"
+        },
+        {
+          "file": "photos/2024-03/s4_2_image4.jpeg",
+          "caption": "#6탱크 외부 전경 (’24.03.27)"
+        },
+        {
+          "file": "photos/2024-03/s4_3_image8.png",
+          "caption": "#6탱크 LP Pump 설치 (‘24.03.27)"
+        },
+        {
+          "file": "photos/2024-03/s4_4_image5.jpeg",
+          "caption": "#7, 8탱크 외부 전경 (‘24.03.27)"
+        },
+        {
+          "file": "photos/2024-03/s4_5_image6.jpeg",
+          "caption": "#8탱크 Wall 7단 콘크리트 타설 (’24.03.27)"
+        },
+        {
+          "file": "photos/2024-03/s4_6_image7.jpeg",
+          "caption": "#8탱크 Roof Plate 설치 (’24.03.27)"
+        }
+      ],
+      "slide": 4
+    },
+    {
+      "title": "안전점검 사진(#6탱크) - 2024.03월",
+      "category": "육상부",
+      "type": "안전점검",
+      "items": [
+        {
+          "file": "photos/2024-03/s5_1_image17.jpeg",
+          "caption": "노사합동 점검 (’24.03.05)"
+        },
+        {
+          "file": "photos/2024-03/s5_2_image13.png",
+          "caption": "주간 특별안전점검 [해빙기 안전점검] (’24.03.07)"
+        },
+        {
+          "file": "photos/2024-03/s5_3_image16.png",
+          "caption": "관리감독자 교육 (’24.03.06)"
+        },
+        {
+          "file": "photos/2024-03/s5_4_image12.png",
+          "caption": "주간 특별안전점검 [관리대상 유해물질] (’24.03.14)"
+        },
+        {
+          "file": "photos/2024-03/s5_5_image14.png",
+          "caption": "상주 건설장비 안전점검 (’24.03.20-21)"
+        },
+        {
+          "file": "photos/2024-03/s5_6_image11.png",
+          "caption": "주간 특별안전점검 [해빙기 안전점검] (’24.03.07)"
+        },
+        {
+          "file": "photos/2024-03/s5_7_image15.png",
+          "caption": "낙하물 방지망 설치 (’24.03.13-14)"
+        },
+        {
+          "file": "photos/2024-03/s5_8_image10.png",
+          "caption": "주간 특별안전점검 [가설사무실] (’24.03.21)"
+        }
+      ],
+      "slide": 5
+    },
+    {
+      "title": "안전점검 사진 - 2024.03월",
+      "category": "육상부",
+      "type": "안전점검",
+      "items": [
+        {
+          "file": "photos/2024-03/s6_1_image21.png",
+          "caption": "오탁방지막(닻가지) 설치 (’24.03.23)"
+        },
+        {
+          "file": "photos/2024-03/s6_2_image20.jpeg",
+          "caption": "강관파일 반입 및 용접(’24.03.19)"
+        },
+        {
+          "file": "photos/2024-03/s6_3_image18.jpeg",
+          "caption": "그래브 준설(’24.03.12)"
+        },
+        {
+          "file": "photos/2024-03/s6_4_image19.jpeg",
+          "caption": "준설토 육상운반 ( ’24.03.12)"
+        },
+        {
+          "file": "photos/2024-03/s6_5_image25.jpeg",
+          "caption": "중대재해처벌법 이행현황 점검(’24.03.06)"
+        },
+        {
+          "file": "photos/2024-03/s6_6_image24.png",
+          "caption": "안전의날 행사 (’24.03.13)"
+        },
+        {
+          "file": "photos/2024-03/s6_7_image23.png",
+          "caption": "안전보건진단 강평(’24.03.27)"
+        },
+        {
+          "file": "photos/2024-03/s6_8_image22.png",
+          "caption": "심폐소생술 교육 (’24.03.26)"
+        }
+      ],
+      "slide": 6
+    }
+  ],
+  "2024-04": [
+    {
+      "title": " - 2024.04월",
+      "category": "육상부",
+      "type": "공정사진",
+      "items": [
+        {
+          "file": "photos/2024-04/s4_1_image9.png",
+          "caption": "#6탱크 Perlite Filling (’24.04.23)"
+        },
+        {
+          "file": "photos/2024-04/s4_2_image4.jpeg",
+          "caption": "#6탱크 외부 전경 (’24.04.26)"
+        },
+        {
+          "file": "photos/2024-04/s4_3_image5.jpeg",
+          "caption": "#7, 8탱크 외부 전경 (‘24.04.26)"
+        },
+        {
+          "file": "photos/2024-04/s4_4_image7.jpeg",
+          "caption": "RT Room 벽체 1단 콘크리트 타설 (‘24.04.26)"
+        },
+        {
+          "file": "photos/2024-04/s4_5_image8.png",
+          "caption": "Pipe Sleeper 구간 파일항타 (’24.04.22)"
+        },
+        {
+          "file": "photos/2024-04/s4_6_image6.jpeg",
+          "caption": "#8탱크 Roof Plate 설치 (’24.04.26)"
+        }
+      ],
+      "slide": 4
+    },
+    {
+      "title": "안전점검 사진(#6탱크) - 2024.04월",
+      "category": "육상부",
+      "type": "안전점검",
+      "items": [
+        {
+          "file": "photos/2024-04/s5_1_image12.png",
+          "caption": "주간 특별안전점검 [건설기계안전] (’24.04.11)"
+        },
+        {
+          "file": "photos/2024-04/s5_2_image11.jpeg",
+          "caption": "노사합동 점검 (’24.04.05)"
+        },
+        {
+          "file": "photos/2024-04/s5_3_image17.jpeg",
+          "caption": "비상대피 훈련 (’24.04.25)"
+        },
+        {
+          "file": "photos/2024-04/s5_4_image10.png",
+          "caption": "주간 특별안전점검 [화재사고예방] (’24.04.25)"
+        },
+        {
+          "file": "photos/2024-04/s5_5_image15.png",
+          "caption": "주간 특별안전점검 [전기 및 공도구] (’24.04.04)"
+        },
+        {
+          "file": "photos/2024-04/s5_6_image16.png",
+          "caption": "안전보건협의체 회의 (’24.04.11)"
+        },
+        {
+          "file": "photos/2024-04/s5_7_image13.png",
+          "caption": "주간 특별안전점검 [추락사고예방] (’24.04.18)"
+        },
+        {
+          "file": "photos/2024-04/s5_8_image14.png",
+          "caption": "정기안전보건교육 (’24.04.22)"
+        }
+      ],
+      "slide": 5
+    },
+    {
+      "title": "안전점검 사진 - 2024.04월",
+      "category": "육상부",
+      "type": "안전점검",
+      "items": [
+        {
+          "file": "photos/2024-04/s6_1_image18.jpeg",
+          "caption": "그래브 준설(’24.04.15)"
+        },
+        {
+          "file": "photos/2024-04/s6_2_image19.jpeg",
+          "caption": "육상 운반(’24.04.15)"
+        },
+        {
+          "file": "photos/2024-04/s6_3_image20.jpeg",
+          "caption": "정박지 호퍼준설(엔담호)(’24.04.15)"
+        },
+        {
+          "file": "photos/2024-04/s6_4_image21.jpeg",
+          "caption": "강관파일천공매입(’24.04.22)"
+        },
+        {
+          "file": "photos/2024-04/s6_5_image22.png",
+          "caption": "항만사업단장 안전점검(’24.04.02)"
+        },
+        {
+          "file": "photos/2024-04/s6_6_image25.jpeg",
+          "caption": "중대재해처벌법 이행현황 점검(’24.04.04)"
+        },
+        {
+          "file": "photos/2024-04/s6_7_image24.png",
+          "caption": "정기안전교육 (’24.04.15)"
+        },
+        {
+          "file": "photos/2024-04/s6_8_image23.jpeg",
+          "caption": "월간안전점검(’24.04.08)"
+        }
+      ],
+      "slide": 6
+    }
+  ],
+  "2024-05": [
+    {
+      "title": " - 2024.05월",
+      "category": "육상부",
+      "type": "공정사진",
+      "items": [
+        {
+          "file": "photos/2024-05/s4_1_image4.jpeg",
+          "caption": "#6탱크 외부 전경 (’24.05.28)"
+        },
+        {
+          "file": "photos/2024-05/s4_2_image8.png",
+          "caption": "#6탱크 N2 Purge & Dry Out 착수 (’24.05.09)"
+        },
+        {
+          "file": "photos/2024-05/s4_3_image6.jpeg",
+          "caption": "#7, 8탱크 외부 전경 (‘24.05.28)"
+        },
+        {
+          "file": "photos/2024-05/s4_4_image9.jpeg",
+          "caption": "주전기실 강관파일 항타 (‘24.05.28)"
+        },
+        {
+          "file": "photos/2024-05/s4_5_image5.jpeg",
+          "caption": "#7탱크 Roof Air Raising 완료 (’24.05.28)"
+        },
+        {
+          "file": "photos/2024-05/s4_6_image7.jpeg",
+          "caption": "#8탱크 Roof Plate 설치 (’24.05.28)"
+        }
+      ],
+      "slide": 4
+    },
+    {
+      "title": "안전점검 사진(#6탱크) - 2024.05월",
+      "category": "육상부",
+      "type": "안전점검",
+      "items": [
+        {
+          "file": "photos/2024-05/s5_1_image16.png",
+          "caption": "관리감독자 교육 (’24.05.10)"
+        },
+        {
+          "file": "photos/2024-05/s5_2_image10.png",
+          "caption": "주간 특별안전점검 [가설사무실] (’24.05.02)"
+        },
+        {
+          "file": "photos/2024-05/s5_3_image15.gif",
+          "caption": "산업안전보건위원회 (’24.05.22)"
+        },
+        {
+          "file": "photos/2024-05/s5_4_image12.png",
+          "caption": "주간 특별안전점검 [건설기계안전] (’24.05.09)"
+        },
+        {
+          "file": "photos/2024-05/s5_5_image11.png",
+          "caption": "주간 특별안전점검 [가설사무실] (’24.05.02)"
+        },
+        {
+          "file": "photos/2024-05/s5_6_image14.png",
+          "caption": "관리감독자 교육 (’24.05.10)"
+        },
+        {
+          "file": "photos/2024-05/s5_7_image13.png",
+          "caption": "주간 특별안전점검 [건설기계안전] (’24.05.09)"
+        },
+        {
+          "file": "photos/2024-05/s5_8_image17.gif",
+          "caption": "안전보건협의체 회의 (’24.05.13)"
+        }
+      ],
+      "slide": 5
+    },
+    {
+      "title": "안전점검 사진 - 2024.05월",
+      "category": "육상부",
+      "type": "안전점검",
+      "items": [
+        {
+          "file": "photos/2024-05/s6_1_image19.jpeg",
+          "caption": "현장 전경(’24.05.19)"
+        },
+        {
+          "file": "photos/2024-05/s6_2_image18.jpeg",
+          "caption": "현장 전경(’24.05.19)"
+        },
+        {
+          "file": "photos/2024-05/s6_3_image20.jpeg",
+          "caption": "동호안 슬래그 반입 및 정지작업(’24.05.27)"
+        },
+        {
+          "file": "photos/2024-05/s6_4_image21.jpeg",
+          "caption": "강관파일천공매입(’24.05.27)"
+        },
+        {
+          "file": "photos/2024-05/s6_5_image25.jpeg",
+          "caption": "중대재해처벌법 이행현황 점검(’24.05.08)"
+        },
+        {
+          "file": "photos/2024-05/s6_6_image24.jpeg",
+          "caption": "공사안전보건대장 이행현황 점검(’24.05.14)"
+        },
+        {
+          "file": "photos/2024-05/s6_7_image23.png",
+          "caption": "월간안전점검(’24.05.21)"
+        },
+        {
+          "file": "photos/2024-05/s6_8_image22.png",
+          "caption": "정기안전교육 (’24.05.27)"
+        }
+      ],
+      "slide": 6
+    }
+  ],
+  "2024-06": [
+    {
+      "title": " - 2024.06월",
+      "category": "육상부",
+      "type": "공정사진",
+      "items": [
+        {
+          "file": "photos/2024-06/s4_1_image4.jpeg",
+          "caption": "#6탱크 LP LNG Pump 기동 Test (’24.06.24)"
+        },
+        {
+          "file": "photos/2024-06/s4_2_image5.png",
+          "caption": "#6탱크 외부 전경 (’24.06.24)"
+        },
+        {
+          "file": "photos/2024-06/s4_3_image6.jpeg",
+          "caption": "#7, 8탱크 외부 전경 (‘24.06.24)"
+        },
+        {
+          "file": "photos/2024-06/s4_4_image7.jpeg",
+          "caption": "RT Room 차폐문 설치 (‘24.06.26)"
+        },
+        {
+          "file": "photos/2024-06/s4_5_image8.jpeg",
+          "caption": "#7탱크 외부 탱크 (’24.06.24)"
+        },
+        {
+          "file": "photos/2024-06/s4_6_image9.jpeg",
+          "caption": "#8탱크 외부 전경 (’24.06.24)"
+        }
+      ],
+      "slide": 4
+    },
+    {
+      "title": "안전점검 사진(#6탱크) - 2024.06월",
+      "category": "육상부",
+      "type": "안전점검",
+      "items": [
+        {
+          "file": "photos/2024-06/s5_1_image13.jpeg",
+          "caption": "고소작업차 특별교육 (’24.06.13)"
+        },
+        {
+          "file": "photos/2024-06/s5_2_image14.jpeg",
+          "caption": "안전보건협의체 회의 (’24.06.12)"
+        },
+        {
+          "file": "photos/2024-06/s5_3_image12.jpeg",
+          "caption": "안전보건협의체 회의 (’24.06.26)"
+        },
+        {
+          "file": "photos/2024-06/s5_4_image11.jpeg",
+          "caption": "고위험 건강상담 (‘24.06.18)"
+        },
+        {
+          "file": "photos/2024-06/s5_5_image10.png",
+          "caption": "주간 특별안전점검 [유류 및 고압가스 안전] (’24.06.13)"
+        },
+        {
+          "file": "photos/2024-06/s5_6_image17.png",
+          "caption": "작업환경측정 (’24.06.07)"
+        },
+        {
+          "file": "photos/2024-06/s5_7_image15.png",
+          "caption": "주간 특별안전점검 [혹서기 온열질환 예방] (’24.06.19)"
+        },
+        {
+          "file": "photos/2024-06/s5_8_image16.png",
+          "caption": "상주장비 안전점검 (’24.06.26)"
+        }
+      ],
+      "slide": 5
+    },
+    {
+      "title": "안전점검 사진 - 2024.06월",
+      "category": "육상부",
+      "type": "안전점검",
+      "items": [
+        {
+          "file": "photos/2024-06/s6_1_image21.jpeg",
+          "caption": "강관파일이음(’24.06.10)"
+        },
+        {
+          "file": "photos/2024-06/s6_2_image20.jpeg",
+          "caption": "강관파일천공매입(’24.06.10)"
+        },
+        {
+          "file": "photos/2024-06/s6_3_image18.png",
+          "caption": "육상 우회도로 터파기(’24.06.24)"
+        },
+        {
+          "file": "photos/2024-06/s6_4_image19.png",
+          "caption": "TP2 자켓 반입 및 설치(’24.06.24)"
+        }
+      ],
+      "slide": 6
+    }
+  ],
+  "2024-07": [
+    {
+      "title": " - 2024.07월",
+      "category": "육상부",
+      "type": "공정사진",
+      "items": [
+        {
+          "file": "photos/2024-07/s4_1_image4.jpeg",
+          "caption": "#7,8탱크 외부 전경 (’24.07.29)"
+        },
+        {
+          "file": "photos/2024-07/s4_2_image9.jpeg",
+          "caption": "제2LNG터미널 현장 전경 (’24.07.23)"
+        },
+        {
+          "file": "photos/2024-07/s4_3_image7.jpeg",
+          "caption": "Interconnecting P/R-1 파일 항타 (’24.07.29)"
+        },
+        {
+          "file": "photos/2024-07/s4_4_image6.jpeg",
+          "caption": "소방 U/G구간 터파기 (‘24.07.29)"
+        },
+        {
+          "file": "photos/2024-07/s4_5_image5.jpeg",
+          "caption": "#8탱크 외부 전경 (’24.07.29)"
+        },
+        {
+          "file": "photos/2024-07/s4_6_image8.jpeg",
+          "caption": "#7탱크 외부 전경 (’24.07.29)"
+        }
+      ],
+      "slide": 4
+    },
+    {
+      "title": "안전점검 사진(#7,8탱크) - 2024.07월",
+      "category": "육상부",
+      "type": "안전점검",
+      "items": [
+        {
+          "file": "photos/2024-07/s5_1_image10.png",
+          "caption": "주간 특별안전점검 [추락사고예방] (’24.07.04)"
+        },
+        {
+          "file": "photos/2024-07/s5_2_image14.png",
+          "caption": "안전점검의 날 행사 (’24.07.04)"
+        },
+        {
+          "file": "photos/2024-07/s5_3_image15.png",
+          "caption": "안전보건협의체 회의 (’24.07.11)"
+        },
+        {
+          "file": "photos/2024-07/s5_4_image11.png",
+          "caption": "주간 특별안전점검 [전기 및 공도구] (’24.07.11)"
+        },
+        {
+          "file": "photos/2024-07/s5_5_image16.png",
+          "caption": "장비운전원 및 신호수 특별교육 (’24.07.18)"
+        },
+        {
+          "file": "photos/2024-07/s5_6_image12.png",
+          "caption": "주간 특별안전점검 [건설기계 및 공도구] (’24.07.19)"
+        },
+        {
+          "file": "photos/2024-07/s5_7_image17.png",
+          "caption": "관리감독자 교육 (’24.07.22)"
+        },
+        {
+          "file": "photos/2024-07/s5_8_image13.png",
+          "caption": "주간 특별안전점검 [전도 및 정리정돈] (’24.07.25)"
+        }
+      ],
+      "slide": 5
+    },
+    {
+      "title": " - 2024.07월",
+      "category": "육상부",
+      "type": "공정사진",
+      "items": [
+        {
+          "file": "photos/2024-07/s6_1_image1.jpeg",
+          "caption": "혹서기 보건관리"
+        },
+        {
+          "file": "photos/2024-07/s6_2_image18.gif",
+          "caption": "철근 가공장 이동식 에어컨 작동 상태 점검"
+        },
+        {
+          "file": "photos/2024-07/s6_3_image20.gif",
+          "caption": "안전조회장 폭염단계별 표지판 부착"
+        },
+        {
+          "file": "photos/2024-07/s6_4_image22.gif",
+          "caption": "작업 투입전 물통 위생상태 확인"
+        },
+        {
+          "file": "photos/2024-07/s6_5_image19.gif",
+          "caption": "현장내 물통 비치 및 위생상태 확인"
+        },
+        {
+          "file": "photos/2024-07/s6_6_image21.gif",
+          "caption": "탱크 상부 이동식 에어컨, 그늘막 설치"
+        }
+      ],
+      "slide": 6
+    },
+    {
+      "title": "안전점검 사진 - 2024.07월",
+      "category": "육상부",
+      "type": "안전점검",
+      "items": [
+        {
+          "file": "photos/2024-07/s7_1_image26.jpeg",
+          "caption": "강관파일천공매입(’24.07.17)"
+        },
+        {
+          "file": "photos/2024-07/s7_2_image25.jpeg",
+          "caption": "TP-04 자켓 설치(’24.07.17)"
+        },
+        {
+          "file": "photos/2024-07/s7_3_image24.png",
+          "caption": "LP-05 콘크리트 타설(’24.07.21)"
+        },
+        {
+          "file": "photos/2024-07/s7_4_image23.jpeg",
+          "caption": "TP-01 피복석 제거(’24.07.20)"
+        },
+        {
+          "file": "photos/2024-07/s7_5_image27.jpeg",
+          "caption": "발주처 합동 점검(’24.07.18)"
+        },
+        {
+          "file": "photos/2024-07/s7_6_image28.jpeg",
+          "caption": "항만사업단장 점검(’24.07.16)"
+        },
+        {
+          "file": "photos/2024-07/s7_7_image30.jpeg",
+          "caption": "건설기계 정밀 점검(’24.07.08~10)"
+        },
+        {
+          "file": "photos/2024-07/s7_8_image29.jpeg",
+          "caption": "위험기계기구 점검(’24.07.04)"
+        }
+      ],
+      "slide": 7
+    }
+  ],
+  "2024-08": [
+    {
+      "title": " - 2024.08월",
+      "category": "육상부",
+      "type": "공정사진",
+      "items": [
+        {
+          "file": "photos/2024-08/s4_1_image6.jpeg",
+          "caption": "#7,8탱크 외부 전경 (’24.08.24)"
+        },
+        {
+          "file": "photos/2024-08/s4_2_image7.jpeg",
+          "caption": "제2 LNG터미널 현장 전경 (’24.08.24)"
+        },
+        {
+          "file": "photos/2024-08/s4_3_image8.jpeg",
+          "caption": "#7탱크 RingBeam Concrete 타설 (’24.08.13)"
+        },
+        {
+          "file": "photos/2024-08/s4_4_image9.png",
+          "caption": "#8탱크 지붕상량 [Roof Air Raising] (‘24.08.22)"
+        },
+        {
+          "file": "photos/2024-08/s4_5_image4.jpeg",
+          "caption": "#7탱크 외부 전경 (’24.08.24)"
+        },
+        {
+          "file": "photos/2024-08/s4_6_image5.jpeg",
+          "caption": "#8탱크 외부 전경 (’24.08.24)"
+        }
+      ],
+      "slide": 4
+    },
+    {
+      "title": "주간 특별안전점검 [가설사무실] (’24.08.08) - 2024.08월",
+      "category": "육상부",
+      "type": "안전점검",
+      "items": [
+        {
+          "file": "photos/2024-08/s5_1_image1.jpeg",
+          "caption": "노사합동 점검 (’24.08.06) 주간 특별안전점검 [가설사무실] (’24.08.08)"
+        },
+        {
+          "file": "photos/2024-08/s5_2_image11.png",
+          "caption": "주간 특별안전점검 [가설사무실] (’24.08.08)"
+        },
+        {
+          "file": "photos/2024-08/s5_3_image13.gif",
+          "caption": "노사합동 점검 (’24.08.06)"
+        },
+        {
+          "file": "photos/2024-08/s5_4_image10.gif",
+          "caption": "주간 특별안전점검 [건설기계 및 중량물] (’24.08.22)"
+        },
+        {
+          "file": "photos/2024-08/s5_5_image16.jpeg",
+          "caption": "관리감독자 교육 (’24.08.06)"
+        },
+        {
+          "file": "photos/2024-08/s5_6_image15.png",
+          "caption": "안전보건협의체 회의 (’24.08.12)"
+        },
+        {
+          "file": "photos/2024-08/s5_7_image17.jpeg",
+          "caption": "하반기 안전보건진단 (’24.08.19 - 21)"
+        },
+        {
+          "file": "photos/2024-08/s5_8_image12.gif",
+          "caption": "정기안전보건교육 (’24.08.20)"
+        },
+        {
+          "file": "photos/2024-08/s5_9_image14.jpeg",
+          "caption": "혹서기 근로자 빙과 지급 (주2회)"
+        }
+      ],
+      "slide": 5
+    },
+    {
+      "title": "안전점검 사진 - 2024.08월",
+      "category": "육상부",
+      "type": "안전점검",
+      "items": [
+        {
+          "file": "photos/2024-08/s6_1_image21.jpeg",
+          "caption": "강관파일천공매입(’24.08.05)"
+        },
+        {
+          "file": "photos/2024-08/s6_2_image18.jpeg",
+          "caption": "TP-05 Jacket 설치(’24.08.22)"
+        },
+        {
+          "file": "photos/2024-08/s6_3_image20.png",
+          "caption": "준설토 투기(’24.08.22)"
+        },
+        {
+          "file": "photos/2024-08/s6_4_image19.png",
+          "caption": "호퍼 준설(’24.08.23)"
+        },
+        {
+          "file": "photos/2024-08/s6_5_image23.jpeg",
+          "caption": "공사안전보건대장 이행현황 점검(’24.08.14)"
+        },
+        {
+          "file": "photos/2024-08/s6_6_image22.jpeg",
+          "caption": "안전의날 행사(’24.08.07)"
+        },
+        {
+          "file": "photos/2024-08/s6_7_image24.jpeg",
+          "caption": "항타기 사용전 점검(’24.08.16)"
+        },
+        {
+          "file": "photos/2024-08/s6_8_image25.jpeg",
+          "caption": "인프라 안전섹션 안전점검(’24.08.26)"
+        }
+      ],
+      "slide": 6
+    }
+  ],
+  "2024-09": [
+    {
+      "title": " - 2024.09월",
+      "category": "육상부",
+      "type": "공정사진",
+      "items": [
+        {
+          "file": "photos/2024-09/s4_1_image7.jpeg",
+          "caption": "#7,8탱크 외부 전경 (’24.09.23)"
+        },
+        {
+          "file": "photos/2024-09/s4_2_image6.jpeg",
+          "caption": "제2 LNG터미널 현장 전경 (’24.09.23)"
+        },
+        {
+          "file": "photos/2024-09/s4_3_image9.jpeg",
+          "caption": "#7탱크 Roof 1단 2차 Concrete 타설 (’24.09.13)"
+        },
+        {
+          "file": "photos/2024-09/s4_4_image8.jpeg",
+          "caption": "Process P/R 기초 거푸집 조립 (’24.09.26)"
+        },
+        {
+          "file": "photos/2024-09/s4_5_image4.jpeg",
+          "caption": "#7탱크 외부 전경 (’24.09.23)"
+        },
+        {
+          "file": "photos/2024-09/s4_6_image5.jpeg",
+          "caption": "#8탱크 외부 전경 (’24.09.23)"
+        }
+      ],
+      "slide": 4
+    },
+    {
+      "title": "주간 특별안전점검 [재해발생 특별점검] (’24.09.05) - 2024.09월",
+      "category": "육상부",
+      "type": "안전점검",
+      "items": [
+        {
+          "file": "photos/2024-09/s5_1_image1.jpeg",
+          "caption": "노사합동 점검 (’24.09.05) 주간 특별안전점검 [재해발생 특별점검] (’24.09.05)"
+        },
+        {
+          "file": "photos/2024-09/s5_2_image14.jpeg",
+          "caption": "노사합동 점검 (’24.09.05)"
+        },
+        {
+          "file": "photos/2024-09/s5_3_image17.png",
+          "caption": "주간 특별안전점검 [재해발생 특별점검] (’24.09.05)"
+        },
+        {
+          "file": "photos/2024-09/s5_4_image16.png",
+          "caption": "주간 특별안전점검 [연휴대비 사전점검] (’24.09.12)"
+        },
+        {
+          "file": "photos/2024-09/s5_5_image15.jpeg",
+          "caption": "관리감독자 교육 (’24.09.11)"
+        },
+        {
+          "file": "photos/2024-09/s5_6_image10.png",
+          "caption": "안전보건협의체 회의 (’24.09.12)"
+        },
+        {
+          "file": "photos/2024-09/s5_7_image12.png",
+          "caption": "정기안전보건교육 (’24.09.23)"
+        },
+        {
+          "file": "photos/2024-09/s5_8_image11.jpeg",
+          "caption": "산업안전보건 위원회 (’24.09.25)"
+        },
+        {
+          "file": "photos/2024-09/s5_9_image13.jpeg",
+          "caption": "상주 건설장비 점검 (‘24.09.25)"
+        }
+      ],
+      "slide": 5
+    },
+    {
+      "title": "안전점검 사진 - 2024.09월",
+      "category": "육상부",
+      "type": "안전점검",
+      "items": [
+        {
+          "file": "photos/2024-09/s6_1_image25.jpeg",
+          "caption": "LP-07 거푸집 해체(’24.09.09)"
+        },
+        {
+          "file": "photos/2024-09/s6_2_image24.jpeg",
+          "caption": "강관파일천공매입(’24.09.10)"
+        },
+        {
+          "file": "photos/2024-09/s6_3_image22.jpeg",
+          "caption": "교대구간 터파기(’24.09.24)"
+        },
+        {
+          "file": "photos/2024-09/s6_4_image23.jpeg",
+          "caption": "TP04 자켓파일 설치(’24.09.11)"
+        },
+        {
+          "file": "photos/2024-09/s6_5_image19.jpeg",
+          "caption": "항만사업단장 현장 접검(’24.09.10)"
+        },
+        {
+          "file": "photos/2024-09/s6_6_image18.jpeg",
+          "caption": "안전의날 행사(’24.09.11)"
+        },
+        {
+          "file": "photos/2024-09/s6_7_image20.jpeg",
+          "caption": "명절 후 작업 전 특별안전교육(’24.09.20)"
+        },
+        {
+          "file": "photos/2024-09/s6_8_image21.jpeg",
+          "caption": "중대재해 예방 자체 점검(’24.09.23)"
+        }
+      ],
+      "slide": 6
+    }
+  ],
+  "2024-11": [
+    {
+      "title": " - 2024.11월",
+      "category": "육상부",
+      "type": "공정사진",
+      "items": [
+        {
+          "file": "photos/2024-11/s6_1_image1.jpeg",
+          "caption": "■ #7,8탱크 외부전경"
+        },
+        {
+          "file": "photos/2024-11/s6_2_image8.jpeg",
+          "caption": "■ 당월 주요공사"
+        }
+      ],
+      "slide": 6
+    }
+  ],
+  "2025-06": [
     {
       "title": "공사사진 (육상부) - 06월",
       "category": "육상부",
       "type": "공사사진",
       "items": [
         {
-          "file": "photos/06월/s4_1_slide4_shape13.png",
+          "file": "photos/2025-06/s4_1_slide4_shape13.png",
           "caption": "제2 LNG터미널 현장 전경 (’25.06.26)"
         },
         {
-          "file": "photos/06월/s4_2_slide4_shape10.png",
+          "file": "photos/2025-06/s4_2_slide4_shape10.png",
           "caption": "제2 LNG터미널 현장 전경 (’25.06.19)"
         },
         {
-          "file": "photos/06월/s4_3_slide4_shape11.png",
+          "file": "photos/2025-06/s4_3_slide4_shape11.png",
           "caption": "#7탱크 Inner Shell Plate 6단 설치 착수 (’25.06.30)"
         },
         {
-          "file": "photos/06월/s4_4_slide4_shape12.png",
+          "file": "photos/2025-06/s4_4_slide4_shape12.png",
           "caption": "#8탱크 Inner Shell Plate 3단 설치/용접 完 (’25.06.24)"
         },
         {
-          "file": "photos/06월/s4_5_slide4_shape9.png",
+          "file": "photos/2025-06/s4_5_slide4_shape9.png",
           "caption": "Main Trestle Module(TP-08F) 현장 설치 (’25.06.23)"
         },
         {
-          "file": "photos/06월/s4_6_slide4_shape14.png",
+          "file": "photos/2025-06/s4_6_slide4_shape14.png",
           "caption": "Ground Flare 설비 입고 및 설치 착수 (’25.06.25)"
         }
       ]
@@ -37,35 +1839,35 @@ window.PHOTOS_DATA = {
       "type": "안전점검",
       "items": [
         {
-          "file": "photos/06월/s5_1_slide5_shape9.png",
+          "file": "photos/2025-06/s5_1_slide5_shape9.png",
           "caption": "주간 특별안전점검 [전도사고 예방] (’25.06.05)"
         },
         {
-          "file": "photos/06월/s5_2_slide5_shape14.png",
+          "file": "photos/2025-06/s5_2_slide5_shape14.png",
           "caption": "혹서기 온열질환 예방 교육 (’25.06.18)"
         },
         {
-          "file": "photos/06월/s5_3_slide5_shape10.png",
+          "file": "photos/2025-06/s5_3_slide5_shape10.png",
           "caption": "주간 특별안전점검 [추락사고 예방] (’25.06.12)"
         },
         {
-          "file": "photos/06월/s5_4_slide5_shape13.png",
+          "file": "photos/2025-06/s5_4_slide5_shape13.png",
           "caption": "작업환경측정 (‘25.06.20)"
         },
         {
-          "file": "photos/06월/s5_5_slide5_shape11.png",
+          "file": "photos/2025-06/s5_5_slide5_shape11.png",
           "caption": "주간 특별안전점검 [유류, 고압가스 저장소] (’25.06.19)"
         },
         {
-          "file": "photos/06월/s5_6_slide5_shape15.png",
+          "file": "photos/2025-06/s5_6_slide5_shape15.png",
           "caption": "상주건설장비 점검 (‘25.06.26)"
         },
         {
-          "file": "photos/06월/s5_7_slide5_shape12.png",
+          "file": "photos/2025-06/s5_7_slide5_shape12.png",
           "caption": "주간 특별안전점검 [근로자 휴게시설] (’25.06.26)"
         },
         {
-          "file": "photos/06월/s5_8_slide5_shape16.png",
+          "file": "photos/2025-06/s5_8_slide5_shape16.png",
           "caption": "안전보건협의체 회의 (‘25.06.27)"
         }
       ]
@@ -76,27 +1878,27 @@ window.PHOTOS_DATA = {
       "type": "공정사진",
       "items": [
         {
-          "file": "photos/06월/s6_1_slide6_shape8.png",
+          "file": "photos/2025-06/s6_1_slide6_shape8.png",
           "caption": "해상부 외부 전경 (’25.06.20)"
         },
         {
-          "file": "photos/06월/s6_2_slide6_shape9.png",
+          "file": "photos/2025-06/s6_2_slide6_shape9.png",
           "caption": "해상부 외부 전경 (’25.06.20)"
         },
         {
-          "file": "photos/06월/s6_3_slide6_shape11.png",
+          "file": "photos/2025-06/s6_3_slide6_shape11.png",
           "caption": "RCD 굴착(’25.06.02)"
         },
         {
-          "file": "photos/06월/s6_4_slide6_shape10.png",
+          "file": "photos/2025-06/s6_4_slide6_shape10.png",
           "caption": "JP02 테이프 방식(’25.06.06)"
         },
         {
-          "file": "photos/06월/s6_5_slide6_shape12.png",
+          "file": "photos/2025-06/s6_5_slide6_shape12.png",
           "caption": "LNG BD-04 자켓 설치(’25.06.09)"
         },
         {
-          "file": "photos/06월/s6_6_slide6_shape13.png",
+          "file": "photos/2025-06/s6_6_slide6_shape13.png",
           "caption": "RG-B,B1(TP12~JP2) 거치(’25.06.12)"
         }
       ]
@@ -107,68 +1909,68 @@ window.PHOTOS_DATA = {
       "type": "안전점검",
       "items": [
         {
-          "file": "photos/06월/s7_1_slide7_shape7.png",
+          "file": "photos/2025-06/s7_1_slide7_shape7.png",
           "caption": "중대재해처벌법 이행현황 점검 (’25.06.10)"
         },
         {
-          "file": "photos/06월/s7_2_slide7_shape13.png",
+          "file": "photos/2025-06/s7_2_slide7_shape13.png",
           "caption": "안전의날 행사 (’25.06.05)"
         },
         {
-          "file": "photos/06월/s7_3_slide7_shape8.png",
+          "file": "photos/2025-06/s7_3_slide7_shape8.png",
           "caption": "취약시기(태풍기,우기,혹서기) 점검 (’25.06.10)"
         },
         {
-          "file": "photos/06월/s7_4_slide7_shape12.png",
+          "file": "photos/2025-06/s7_4_slide7_shape12.png",
           "caption": "위험성평가 사전회의 (’25.06.10)"
         },
         {
-          "file": "photos/06월/s7_5_slide7_shape9.png",
+          "file": "photos/2025-06/s7_5_slide7_shape9.png",
           "caption": "항만사업단장 안전점검 (’25.06.12)"
         },
         {
-          "file": "photos/06월/s7_6_slide7_shape11.png",
+          "file": "photos/2025-06/s7_6_slide7_shape11.png",
           "caption": "노사합동점검 (’25.06.17)"
         },
         {
-          "file": "photos/06월/s7_7_slide7_shape10.png",
+          "file": "photos/2025-06/s7_7_slide7_shape10.png",
           "caption": "월간안전점검 (’25.06.17)"
         },
         {
-          "file": "photos/06월/s7_8_slide7_shape14.png",
+          "file": "photos/2025-06/s7_8_slide7_shape14.png",
           "caption": "작업환경측정 (’25.06.19)"
         }
       ]
     }
   ],
-  "07월": [
+  "2025-07": [
     {
       "title": "공사사진 (육상부) - 07월",
       "category": "육상부",
       "type": "공사사진",
       "items": [
         {
-          "file": "photos/07월/s6_1_slide6_shape10.png",
+          "file": "photos/2025-07/s6_1_slide6_shape10.png",
           "caption": "제2 LNG터미널 현장 전경 (’25.07.25)"
         },
         {
-          "file": "photos/07월/s6_2_slide6_shape9.png",
+          "file": "photos/2025-07/s6_2_slide6_shape9.png",
           "caption": "제2 LNG터미널 현장 전경 (’25.07.25)"
         },
         {
-          "file": "photos/07월/s6_3_slide6_shape14.png",
+          "file": "photos/2025-07/s6_3_slide6_shape14.png",
           "caption": "#7탱크 Inner Shell Plate 7단 설치  (’25.07.28)"
         },
         {
-          "file": "photos/07월/s6_4_slide6_shape13.png",
+          "file": "photos/2025-07/s6_4_slide6_shape13.png",
           "caption": "#8탱크 Inner Shell Plate 5단 설치  (’25.07.28)"
         },
         {
-          "file": "photos/07월/s6_5_slide6_shape11.png",
+          "file": "photos/2025-07/s6_5_slide6_shape11.png",
           "caption": "Bunkering 부두(3부두) 하역 철골 설치 (’25.07.28)"
         },
         {
-          "file": "photos/07월/s6_6_slide6_shape12.png",
+          "file": "photos/2025-07/s6_6_slide6_shape12.png",
           "caption": "Main Trestle Module(TP-11A) 현장 설치 (’25.07.28)"
         }
       ]
@@ -179,35 +1981,35 @@ window.PHOTOS_DATA = {
       "type": "안전점검",
       "items": [
         {
-          "file": "photos/07월/s7_1_slide7_shape9.png",
+          "file": "photos/2025-07/s7_1_slide7_shape9.png",
           "caption": "주간 특별안전점검 [줄걸이 작업안전] (’25.07.03)"
         },
         {
-          "file": "photos/07월/s7_2_slide7_shape13.png",
+          "file": "photos/2025-07/s7_2_slide7_shape13.png",
           "caption": "CPR 및 응급처치 교육 (’25.07.08)"
         },
         {
-          "file": "photos/07월/s7_3_slide7_shape10.png",
+          "file": "photos/2025-07/s7_3_slide7_shape10.png",
           "caption": "주간 특별안전점검 [전기기계 및 공도구] (’25.07.10)"
         },
         {
-          "file": "photos/07월/s7_4_slide7_shape15.png",
+          "file": "photos/2025-07/s7_4_slide7_shape15.png",
           "caption": "상주건설장비 점검 (’25.07.24)"
         },
         {
-          "file": "photos/07월/s7_5_slide7_shape11.png",
+          "file": "photos/2025-07/s7_5_slide7_shape11.png",
           "caption": "주간 특별안전점검 [전도사고 예방 및 정리정돈] (’25.07.14)"
         },
         {
-          "file": "photos/07월/s7_6_slide7_shape16.png",
+          "file": "photos/2025-07/s7_6_slide7_shape16.png",
           "caption": "관리감독자 특별교육 (’25.07.25)"
         },
         {
-          "file": "photos/07월/s7_7_slide7_shape12.png",
+          "file": "photos/2025-07/s7_7_slide7_shape12.png",
           "caption": "주간 특별안전점검 [추락사고 예방] (’25.07.24)"
         },
         {
-          "file": "photos/07월/s7_8_slide7_shape14.png",
+          "file": "photos/2025-07/s7_8_slide7_shape14.png",
           "caption": "안전보건협의체 회의 (’25.07.28)"
         }
       ]
@@ -218,27 +2020,27 @@ window.PHOTOS_DATA = {
       "type": "공정사진",
       "items": [
         {
-          "file": "photos/07월/s8_1_slide8_shape8.png",
+          "file": "photos/2025-07/s8_1_slide8_shape8.png",
           "caption": "해상부 외부 전경 (’25.07.17)"
         },
         {
-          "file": "photos/07월/s8_2_slide8_shape9.png",
+          "file": "photos/2025-07/s8_2_slide8_shape9.png",
           "caption": "해상부 외부 전경 (’25.07.17)"
         },
         {
-          "file": "photos/07월/s8_3_slide8_shape12.png",
+          "file": "photos/2025-07/s8_3_slide8_shape12.png",
           "caption": "RG-F(TP14~JP2) 타설(’25.07.07)"
         },
         {
-          "file": "photos/07월/s8_4_slide8_shape13.png",
+          "file": "photos/2025-07/s8_4_slide8_shape13.png",
           "caption": "RG-A2,F(LP08~JP2) 철근 조립(’25.07.07)"
         },
         {
-          "file": "photos/07월/s8_5_slide8_shape11.png",
+          "file": "photos/2025-07/s8_5_slide8_shape11.png",
           "caption": "LNG BD-04 그라우팅 (’25.07.27)"
         },
         {
-          "file": "photos/07월/s8_6_slide8_shape10.png",
+          "file": "photos/2025-07/s8_6_slide8_shape10.png",
           "caption": "LNG WP 철근조립(’25.07.27)"
         }
       ]
@@ -249,35 +2051,35 @@ window.PHOTOS_DATA = {
       "type": "안전점검",
       "items": [
         {
-          "file": "photos/07월/s9_1_slide9_shape6.png",
+          "file": "photos/2025-07/s9_1_slide9_shape6.png",
           "caption": "중대재해처벌법 이행현황 점검 (’25.07.08)"
         },
         {
-          "file": "photos/07월/s9_2_slide9_shape10.png",
+          "file": "photos/2025-07/s9_2_slide9_shape10.png",
           "caption": "2분기 발주자 안전점검(’25.07.01~02)"
         },
         {
-          "file": "photos/07월/s9_3_slide9_shape7.png",
+          "file": "photos/2025-07/s9_3_slide9_shape7.png",
           "caption": "본사임원(인프라 본부장) 점검(’25.07.10)"
         },
         {
-          "file": "photos/07월/s9_4_slide9_shape13.png",
+          "file": "photos/2025-07/s9_4_slide9_shape13.png",
           "caption": "산업안전보건위원회(’25.07.09)"
         },
         {
-          "file": "photos/07월/s9_5_slide9_shape8.png",
+          "file": "photos/2025-07/s9_5_slide9_shape8.png",
           "caption": "월간안전점검 (’25.07.15)"
         },
         {
-          "file": "photos/07월/s9_6_slide9_shape12.png",
+          "file": "photos/2025-07/s9_6_slide9_shape12.png",
           "caption": "항만사업안단 안전점검 (’25.07.22)"
         },
         {
-          "file": "photos/07월/s9_7_slide9_shape9.png",
+          "file": "photos/2025-07/s9_7_slide9_shape9.png",
           "caption": "테마(추락)안전점검 (’25.07.21)"
         },
         {
-          "file": "photos/07월/s9_8_slide9_shape11.png",
+          "file": "photos/2025-07/s9_8_slide9_shape11.png",
           "caption": "안전보건협의체 (’25.07.23)"
         }
       ]
@@ -288,27 +2090,27 @@ window.PHOTOS_DATA = {
       "type": "공정사진",
       "items": [
         {
-          "file": "photos/07월/s10_1_slide10_shape12.png",
+          "file": "photos/2025-07/s10_1_slide10_shape12.png",
           "caption": "케이블포설 장비 하역(’25.07.28)"
         },
         {
-          "file": "photos/07월/s10_2_slide10_shape11.png",
+          "file": "photos/2025-07/s10_2_slide10_shape11.png",
           "caption": "154kV 포설작업 (’25.07.14)"
         },
         {
-          "file": "photos/07월/s10_3_slide10_shape10.png",
+          "file": "photos/2025-07/s10_3_slide10_shape10.png",
           "caption": "계량장치 판넬설치(’25.07.10)"
         },
         {
-          "file": "photos/07월/s10_4_slide10_shape13.png",
+          "file": "photos/2025-07/s10_4_slide10_shape13.png",
           "caption": "클린도 측정 (’25.07.04)"
         },
         {
-          "file": "photos/07월/s10_5_slide10_shape9.png",
+          "file": "photos/2025-07/s10_5_slide10_shape9.png",
           "caption": "케이블접속(’25.07.02)"
         },
         {
-          "file": "photos/07월/s10_6_slide10_shape8.png",
+          "file": "photos/2025-07/s10_6_slide10_shape8.png",
           "caption": "케이블 입상(’25.07.08)"
         }
       ]
@@ -319,68 +2121,68 @@ window.PHOTOS_DATA = {
       "type": "안전점검",
       "items": [
         {
-          "file": "photos/07월/s11_1_slide11_shape9.png",
+          "file": "photos/2025-07/s11_1_slide11_shape9.png",
           "caption": "주간 특별안전점검 [줄걸이 작업안전] (’25.07.3)"
         },
         {
-          "file": "photos/07월/s11_2_slide11_shape11.png",
+          "file": "photos/2025-07/s11_2_slide11_shape11.png",
           "caption": "온열질환 혹서기 교육 (’25.07.02)"
         },
         {
-          "file": "photos/07월/s11_3_slide11_shape8.png",
+          "file": "photos/2025-07/s11_3_slide11_shape8.png",
           "caption": "주간 특별안전점검 [전기 기계,기구 및 공도구] (’25.07.10)"
         },
         {
-          "file": "photos/07월/s11_4_slide11_shape10.png",
+          "file": "photos/2025-07/s11_4_slide11_shape10.png",
           "caption": "노사합동점검 (’25.07.05)"
         },
         {
-          "file": "photos/07월/s11_5_slide11_shape7.png",
+          "file": "photos/2025-07/s11_5_slide11_shape7.png",
           "caption": "주간 특별안전점검 [전도사고 예방 및 정리정돈] (’25.07.17)"
         },
         {
-          "file": "photos/07월/s11_6_slide11_shape13.png",
+          "file": "photos/2025-07/s11_6_slide11_shape13.png",
           "caption": "안전보건협의체 회의 (’25.07.11)"
         },
         {
-          "file": "photos/07월/s11_7_slide11_shape6.png",
+          "file": "photos/2025-07/s11_7_slide11_shape6.png",
           "caption": "주간 특별안전점검 [추락사고 예방] (’25.07.24)"
         },
         {
-          "file": "photos/07월/s11_8_slide11_shape12.png",
+          "file": "photos/2025-07/s11_8_slide11_shape12.png",
           "caption": "비상훈련(온열질환) (’25.07.18)"
         }
       ]
     }
   ],
-  "08월": [
+  "2025-08": [
     {
       "title": "공사사진 (육상부) - 08월",
       "category": "육상부",
       "type": "공사사진",
       "items": [
         {
-          "file": "photos/08월/s6_1_slide6_shape9.png",
+          "file": "photos/2025-08/s6_1_slide6_shape9.png",
           "caption": "제2 LNG터미널 현장 전경 (’25.08.27)"
         },
         {
-          "file": "photos/08월/s6_2_slide6_shape10.png",
+          "file": "photos/2025-08/s6_2_slide6_shape10.png",
           "caption": "제2 LNG터미널 현장 전경 (’25.08.27)"
         },
         {
-          "file": "photos/08월/s6_3_slide6_shape11.png",
+          "file": "photos/2025-08/s6_3_slide6_shape11.png",
           "caption": "#7탱크 Inner Shell Plate 7단 설치  (’25.08.23)"
         },
         {
-          "file": "photos/08월/s6_4_slide6_shape12.png",
+          "file": "photos/2025-08/s6_4_slide6_shape12.png",
           "caption": "#7탱크 Internal Pipe 조립  (’25.08.27)"
         },
         {
-          "file": "photos/08월/s6_5_slide6_shape13.png",
+          "file": "photos/2025-08/s6_5_slide6_shape13.png",
           "caption": "Air Compressor Shelter 철골 설치 (’25.08.28)"
         },
         {
-          "file": "photos/08월/s6_6_slide6_shape14.png",
+          "file": "photos/2025-08/s6_6_slide6_shape14.png",
           "caption": "Main Trestle Module(LP-05AB) 현장설치 (’25.08.26)"
         }
       ]
@@ -391,35 +2193,35 @@ window.PHOTOS_DATA = {
       "type": "안전점검",
       "items": [
         {
-          "file": "photos/08월/s7_1_slide7_shape13.png",
+          "file": "photos/2025-08/s7_1_slide7_shape13.png",
           "caption": "공사 재개 前 안전 컨설팅 (‘25.08.08)"
         },
         {
-          "file": "photos/08월/s7_2_slide7_shape10.png",
+          "file": "photos/2025-08/s7_2_slide7_shape10.png",
           "caption": "중대재해 근절 특별교육 (‘25.08.20)"
         },
         {
-          "file": "photos/08월/s7_3_slide7_shape11.png",
+          "file": "photos/2025-08/s7_3_slide7_shape11.png",
           "caption": "노사합동 점검 (‘25.08.21)"
         },
         {
-          "file": "photos/08월/s7_4_slide7_shape14.png",
+          "file": "photos/2025-08/s7_4_slide7_shape14.png",
           "caption": "본사 임원 안전점검 (‘25.08.21)"
         },
         {
-          "file": "photos/08월/s7_5_slide7_shape12.png",
+          "file": "photos/2025-08/s7_5_slide7_shape12.png",
           "caption": "찾아가는 음료차 나눔행사 (‘25.08.22)"
         },
         {
-          "file": "photos/08월/s7_6_slide7_shape9.png",
+          "file": "photos/2025-08/s7_6_slide7_shape9.png",
           "caption": "주간 특별안전점검 [작업시작 前 안전점검] (’25.08.22)"
         },
         {
-          "file": "photos/08월/s7_7_slide7_shape15.png",
+          "file": "photos/2025-08/s7_7_slide7_shape15.png",
           "caption": "혹서기 보냉장구 지급 (’25.08.27)"
         },
         {
-          "file": "photos/08월/s7_8_slide7_shape16.png",
+          "file": "photos/2025-08/s7_8_slide7_shape16.png",
           "caption": "본사 작업 재개 후 확인 점검 (’25.08.28)"
         }
       ]
@@ -430,27 +2232,27 @@ window.PHOTOS_DATA = {
       "type": "공정사진",
       "items": [
         {
-          "file": "photos/08월/s8_1_slide8_shape12.png",
+          "file": "photos/2025-08/s8_1_slide8_shape12.png",
           "caption": "해상부 외부 전경 (’25.08.19)"
         },
         {
-          "file": "photos/08월/s8_2_slide8_shape13.png",
+          "file": "photos/2025-08/s8_2_slide8_shape13.png",
           "caption": "해상부 외부 전경 (’25.08.19)"
         },
         {
-          "file": "photos/08월/s8_3_slide8_shape8.png",
+          "file": "photos/2025-08/s8_3_slide8_shape8.png",
           "caption": "PG-E, PG-C(WP~LP7) 2기 거치(’25.08.23)"
         },
         {
-          "file": "photos/08월/s8_4_slide8_shape9.png",
+          "file": "photos/2025-08/s8_4_slide8_shape9.png",
           "caption": "RG-A2(LP7~8) 슬래브 철근 조립(’25.08.23)"
         },
         {
-          "file": "photos/08월/s8_5_slide8_shape10.png",
+          "file": "photos/2025-08/s8_5_slide8_shape10.png",
           "caption": "LNG부두 WP1 Deck 2차타설(’25.08.24)"
         },
         {
-          "file": "photos/08월/s8_6_slide8_shape11.png",
+          "file": "photos/2025-08/s8_6_slide8_shape11.png",
           "caption": "LNG부두 BD03 링플레이트 설치(’25.08.24)"
         }
       ]
@@ -461,35 +2263,35 @@ window.PHOTOS_DATA = {
       "type": "안전점검",
       "items": [
         {
-          "file": "photos/08월/s9_1_slide9_shape10.png",
+          "file": "photos/2025-08/s9_1_slide9_shape10.png",
           "caption": "공사안전보건대장 이행현황 점검(’25.08.04)"
         },
         {
-          "file": "photos/08월/s9_2_slide9_shape6.png",
+          "file": "photos/2025-08/s9_2_slide9_shape6.png",
           "caption": "[P-INT'L]공사재개 사전 합동점검 (’25.08.20)"
         },
         {
-          "file": "photos/08월/s9_3_slide9_shape11.png",
+          "file": "photos/2025-08/s9_3_slide9_shape11.png",
           "caption": "감전재해 예방점검(’25.08.06))"
         },
         {
-          "file": "photos/08월/s9_4_slide9_shape9.png",
+          "file": "photos/2025-08/s9_4_slide9_shape9.png",
           "caption": "작업 재개 전 특별안전 교육(’25.08.21)"
         },
         {
-          "file": "photos/08월/s9_5_slide9_shape12.png",
+          "file": "photos/2025-08/s9_5_slide9_shape12.png",
           "caption": "그룹사 TF 안전점검 (’25.08.07~08)"
         },
         {
-          "file": "photos/08월/s9_6_slide9_shape8.png",
+          "file": "photos/2025-08/s9_6_slide9_shape8.png",
           "caption": "중대재해처벌법 이행현황 점검(’25.08.22)"
         },
         {
-          "file": "photos/08월/s9_7_slide9_shape13.png",
+          "file": "photos/2025-08/s9_7_slide9_shape13.png",
           "caption": "본사 임원 안전점검(’25.08.20~22)"
         },
         {
-          "file": "photos/08월/s9_8_slide9_shape7.png",
+          "file": "photos/2025-08/s9_8_slide9_shape7.png",
           "caption": "본사 임원 안전점검(’25.08.23~24)"
         }
       ]
@@ -500,27 +2302,27 @@ window.PHOTOS_DATA = {
       "type": "공정사진",
       "items": [
         {
-          "file": "photos/08월/s10_1_slide10_shape8.png",
+          "file": "photos/2025-08/s10_1_slide10_shape8.png",
           "caption": "1,2L 접속준비(’25.08.13)"
         },
         {
-          "file": "photos/08월/s10_2_slide10_shape9.png",
+          "file": "photos/2025-08/s10_2_slide10_shape9.png",
           "caption": "케이블접속(’25.08.20)"
         },
         {
-          "file": "photos/08월/s10_3_slide10_shape11.png",
+          "file": "photos/2025-08/s10_3_slide10_shape11.png",
           "caption": "2L 애관방식(’25.08.09)"
         },
         {
-          "file": "photos/08월/s10_4_slide10_shape10.png",
+          "file": "photos/2025-08/s10_4_slide10_shape10.png",
           "caption": "1L 부품 및 애관삽입(’25.08.04)"
         },
         {
-          "file": "photos/08월/s10_5_slide10_shape12.png",
+          "file": "photos/2025-08/s10_5_slide10_shape12.png",
           "caption": "케이블 다음질 및 직선작업(’25.08.18)"
         },
         {
-          "file": "photos/08월/s10_6_slide10_shape13.png",
+          "file": "photos/2025-08/s10_6_slide10_shape13.png",
           "caption": "케이블 조립작업(’25.08.21)"
         }
       ]
@@ -531,68 +2333,68 @@ window.PHOTOS_DATA = {
       "type": "안전점검",
       "items": [
         {
-          "file": "photos/08월/s11_1_slide11_shape9.png",
+          "file": "photos/2025-08/s11_1_slide11_shape9.png",
           "caption": "노사합동점검 (’25.08.04)"
         },
         {
-          "file": "photos/08월/s11_2_slide11_shape10.png",
+          "file": "photos/2025-08/s11_2_slide11_shape10.png",
           "caption": "사외 사망사고 관련 특별교육 (’25.08.06)"
         },
         {
-          "file": "photos/08월/s11_3_slide11_shape6.png",
+          "file": "photos/2025-08/s11_3_slide11_shape6.png",
           "caption": "주간 특별안전점검 [작업시작前 안전점검] (’25.08.21)"
         },
         {
-          "file": "photos/08월/s11_4_slide11_shape11.png",
+          "file": "photos/2025-08/s11_4_slide11_shape11.png",
           "caption": "안전보건협의체 (’25.08.21)"
         },
         {
-          "file": "photos/08월/s11_5_slide11_shape7.png",
+          "file": "photos/2025-08/s11_5_slide11_shape7.png",
           "caption": "주간 특별안전점검 [중량물 취급 작업안전 ] (’25.08.28)"
         },
         {
-          "file": "photos/08월/s11_6_slide11_shape12.png",
+          "file": "photos/2025-08/s11_6_slide11_shape12.png",
           "caption": "정기안전보건교육 (’25.08.26)"
         },
         {
-          "file": "photos/08월/s11_7_slide11_shape8.png",
+          "file": "photos/2025-08/s11_7_slide11_shape8.png",
           "caption": "경영층 특별안전점검 (’25.08.29)"
         },
         {
-          "file": "photos/08월/s11_8_slide11_shape13.png",
+          "file": "photos/2025-08/s11_8_slide11_shape13.png",
           "caption": "특별안전보건교육 (’25.08.29)"
         }
       ]
     }
   ],
-  "09월": [
+  "2025-09": [
     {
       "title": "공사사진 (육상부) - 09월",
       "category": "육상부",
       "type": "공사사진",
       "items": [
         {
-          "file": "photos/09월/s6_1_slide6_shape9.png",
+          "file": "photos/2025-09/s6_1_slide6_shape9.png",
           "caption": "제2 LNG터미널 현장 전경 (’25.09.27)"
         },
         {
-          "file": "photos/09월/s6_2_slide6_shape10.png",
+          "file": "photos/2025-09/s6_2_slide6_shape10.png",
           "caption": "제2 LNG터미널 현장 전경 (’25.09.27)"
         },
         {
-          "file": "photos/09월/s6_3_slide6_shape13.png",
+          "file": "photos/2025-09/s6_3_slide6_shape13.png",
           "caption": "#7탱크 Inner Shell Plate 8단 설치  (’25.09.20)"
         },
         {
-          "file": "photos/09월/s6_4_slide6_shape12.png",
+          "file": "photos/2025-09/s6_4_slide6_shape12.png",
           "caption": "#8탱크 Inner Shell Plate 6단 설치  (’25.09.24)"
         },
         {
-          "file": "photos/09월/s6_5_slide6_shape14.png",
+          "file": "photos/2025-09/s6_5_slide6_shape14.png",
           "caption": "Neutralization Basin 벽체 1차 Con’c 타설 (’25.09.29)"
         },
         {
-          "file": "photos/09월/s6_6_slide6_shape11.png",
+          "file": "photos/2025-09/s6_6_slide6_shape11.png",
           "caption": "Main Trestle Module(TP-12A) 현장설치 (’25.09.27)"
         }
       ]
@@ -603,35 +2405,35 @@ window.PHOTOS_DATA = {
       "type": "안전점검",
       "items": [
         {
-          "file": "photos/09월/s7_1_slide7_shape11.png",
+          "file": "photos/2025-09/s7_1_slide7_shape11.png",
           "caption": "타운홀 미팅 (‘25.09.02)"
         },
         {
-          "file": "photos/09월/s7_2_slide7_shape9.png",
+          "file": "photos/2025-09/s7_2_slide7_shape9.png",
           "caption": "노동부 특별점검 (‘25.09.03-05)"
         },
         {
-          "file": "photos/09월/s7_3_slide7_shape10.png",
+          "file": "photos/2025-09/s7_3_slide7_shape10.png",
           "caption": "노사합동 점검 (‘25.09.04)"
         },
         {
-          "file": "photos/09월/s7_4_slide7_shape12.png",
+          "file": "photos/2025-09/s7_4_slide7_shape12.png",
           "caption": "산업안전보건위원회 (’25.09.17)"
         },
         {
-          "file": "photos/09월/s7_5_slide7_shape16.png",
+          "file": "photos/2025-09/s7_5_slide7_shape16.png",
           "caption": "자율안전컨설팅 (’25.09.18)"
         },
         {
-          "file": "photos/09월/s7_6_slide7_shape15.png",
+          "file": "photos/2025-09/s7_6_slide7_shape15.png",
           "caption": "장비 운전원 및 신호수 특별교육 (’25.09.22)"
         },
         {
-          "file": "photos/09월/s7_7_slide7_shape13.png",
+          "file": "photos/2025-09/s7_7_slide7_shape13.png",
           "caption": "정기안전보건교육 (’25.09.23-25)"
         },
         {
-          "file": "photos/09월/s7_8_slide7_shape14.png",
+          "file": "photos/2025-09/s7_8_slide7_shape14.png",
           "caption": "안전보건협의체 회의 (’25.09.26)"
         }
       ]
@@ -642,27 +2444,27 @@ window.PHOTOS_DATA = {
       "type": "공정사진",
       "items": [
         {
-          "file": "photos/09월/s8_1_slide8_shape8.png",
+          "file": "photos/2025-09/s8_1_slide8_shape8.png",
           "caption": "해상부 외부 전경 (’25.09.02)"
         },
         {
-          "file": "photos/09월/s8_2_slide8_shape9.png",
+          "file": "photos/2025-09/s8_2_slide8_shape9.png",
           "caption": "해상부 외부 전경 (’25.09.02)"
         },
         {
-          "file": "photos/09월/s8_3_slide8_shape12.png",
+          "file": "photos/2025-09/s8_3_slide8_shape12.png",
           "caption": "(LP08~WP02) 가드레일 기초 타설(’25.09.15)"
         },
         {
-          "file": "photos/09월/s8_4_slide8_shape13.png",
+          "file": "photos/2025-09/s8_4_slide8_shape13.png",
           "caption": "(JP2~LP8) 브라켓 해체(’25.09.15)"
         },
         {
-          "file": "photos/09월/s8_5_slide8_shape10.png",
+          "file": "photos/2025-09/s8_5_slide8_shape10.png",
           "caption": "LNG부두 MD-04 거푸집 제작(’25.09.19)"
         },
         {
-          "file": "photos/09월/s8_6_slide8_shape11.png",
+          "file": "photos/2025-09/s8_6_slide8_shape11.png",
           "caption": "LNG부두 MD-06 강관파일 두부정리(’25.09.19)"
         }
       ]
@@ -673,35 +2475,35 @@ window.PHOTOS_DATA = {
       "type": "안전점검",
       "items": [
         {
-          "file": "photos/09월/s9_1_slide9_shape9.png",
+          "file": "photos/2025-09/s9_1_slide9_shape9.png",
           "caption": "기계 · 전기 섹션 점검(’25.09.03~04)"
         },
         {
-          "file": "photos/09월/s9_2_slide9_shape8.png",
+          "file": "photos/2025-09/s9_2_slide9_shape8.png",
           "caption": "정기안전보건교육(’25.09.01)"
         },
         {
-          "file": "photos/09월/s9_3_slide9_shape10.png",
+          "file": "photos/2025-09/s9_3_slide9_shape10.png",
           "caption": "중대재해처벌법 이행현황 점검(’25.09.09)"
         },
         {
-          "file": "photos/09월/s9_4_slide9_shape7.png",
+          "file": "photos/2025-09/s9_4_slide9_shape7.png",
           "caption": "[P-INT’L] 민창기 본부장 점검(’25.09.10)"
         },
         {
-          "file": "photos/09월/s9_5_slide9_shape11.png",
+          "file": "photos/2025-09/s9_5_slide9_shape11.png",
           "caption": "월간안전점검(’25.09.16)"
         },
         {
-          "file": "photos/09월/s9_6_slide9_shape6.png",
+          "file": "photos/2025-09/s9_6_slide9_shape6.png",
           "caption": "[P-INT’L] 신은주 실장 점검(’25.09.16)"
         },
         {
-          "file": "photos/09월/s9_7_slide9_shape12.png",
+          "file": "photos/2025-09/s9_7_slide9_shape12.png",
           "caption": "위험성평가 사전회의(’25.09.17)"
         },
         {
-          "file": "photos/09월/s9_8_slide9_shape13.png",
+          "file": "photos/2025-09/s9_8_slide9_shape13.png",
           "caption": "타운홀 미팅(’25.09.22)"
         }
       ]
@@ -712,27 +2514,27 @@ window.PHOTOS_DATA = {
       "type": "공정사진",
       "items": [
         {
-          "file": "photos/09월/s10_1_slide10_shape9.png",
+          "file": "photos/2025-09/s10_1_slide10_shape9.png",
           "caption": "선로점검(’25.09.08)"
         },
         {
-          "file": "photos/09월/s10_2_slide10_shape10.png",
+          "file": "photos/2025-09/s10_2_slide10_shape10.png",
           "caption": "선로점검(’25.09.19)"
         },
         {
-          "file": "photos/09월/s10_3_slide10_shape12.png",
+          "file": "photos/2025-09/s10_3_slide10_shape12.png",
           "caption": "AC내전압시험(’25.09.02)"
         },
         {
-          "file": "photos/09월/s10_4_slide10_shape11.png",
+          "file": "photos/2025-09/s10_4_slide10_shape11.png",
           "caption": "테스트 부싱 설치(’25.09.01)"
         },
         {
-          "file": "photos/09월/s10_5_slide10_shape13.png",
+          "file": "photos/2025-09/s10_5_slide10_shape13.png",
           "caption": "AC내전압시험(’25.09.02)"
         },
         {
-          "file": "photos/09월/s10_6_slide10_shape8.png",
+          "file": "photos/2025-09/s10_6_slide10_shape8.png",
           "caption": "표시찰 부착’25.09.18)"
         }
       ]
@@ -743,68 +2545,68 @@ window.PHOTOS_DATA = {
       "type": "안전점검",
       "items": [
         {
-          "file": "photos/09월/s11_1_slide11_shape9.png",
+          "file": "photos/2025-09/s11_1_slide11_shape9.png",
           "caption": "노사합동점검 (’25.09.04)"
         },
         {
-          "file": "photos/09월/s11_2_slide11_shape15.png",
+          "file": "photos/2025-09/s11_2_slide11_shape15.png",
           "caption": "안전 위반자 관련 특별교육 (’25.09.03)"
         },
         {
-          "file": "photos/09월/s11_3_slide11_shape1.png",
+          "file": "photos/2025-09/s11_3_slide11_shape1.png",
           "caption": "주간 특별안전점검 [전기기계 등 안전점검] (’25.09.11)"
         },
         {
-          "file": "photos/09월/s11_4_slide11_shape11.png",
+          "file": "photos/2025-09/s11_4_slide11_shape11.png",
           "caption": "안전보건협의체 (’25.09.15)"
         },
         {
-          "file": "photos/09월/s11_5_slide11_shape7.png",
+          "file": "photos/2025-09/s11_5_slide11_shape7.png",
           "caption": "주간 특별안전점검 [건설장비 작업안전 ] (’25.09.25)"
         },
         {
-          "file": "photos/09월/s11_6_slide11_shape12.png",
+          "file": "photos/2025-09/s11_6_slide11_shape12.png",
           "caption": "채용시 교육 (’25.09.15)"
         },
         {
-          "file": "photos/09월/s11_7_slide11_shape8.png",
+          "file": "photos/2025-09/s11_7_slide11_shape8.png",
           "caption": "온열질환 예방 점검 (’25.09.04)"
         },
         {
-          "file": "photos/09월/s11_8_slide11_shape19.png",
+          "file": "photos/2025-09/s11_8_slide11_shape19.png",
           "caption": "특별안전보건교육 (’25.09.17)"
         }
       ]
     }
   ],
-  "10월": [
+  "2025-10": [
     {
       "title": "공사사진 (육상부) - 10월",
       "category": "육상부",
       "type": "공사사진",
       "items": [
         {
-          "file": "photos/10월/s6_1_slide6_shape11.png",
+          "file": "photos/2025-10/s6_1_slide6_shape11.png",
           "caption": "제2 LNG터미널 현장 전경 (’25.10.24)"
         },
         {
-          "file": "photos/10월/s6_2_slide6_shape9.png",
+          "file": "photos/2025-10/s6_2_slide6_shape9.png",
           "caption": "제2 LNG터미널 현장 전경 (’25.10.24)"
         },
         {
-          "file": "photos/10월/s6_3_slide6_shape12.png",
+          "file": "photos/2025-10/s6_3_slide6_shape12.png",
           "caption": "#7탱크 Inner Shell Plate 9단 설치  (’25.10.31)"
         },
         {
-          "file": "photos/10월/s6_4_slide6_shape13.png",
+          "file": "photos/2025-10/s6_4_slide6_shape13.png",
           "caption": "#8탱크 Inner Shell Plate 7단 설치  (’25.10.31)"
         },
         {
-          "file": "photos/10월/s6_5_slide6_shape14.png",
+          "file": "photos/2025-10/s6_5_slide6_shape14.png",
           "caption": "해상 Module (TP-14A) 설치 (’25.10.29)"
         },
         {
-          "file": "photos/10월/s6_6_slide6_shape10.png",
+          "file": "photos/2025-10/s6_6_slide6_shape10.png",
           "caption": "벙커링 3부두 데크플레이트 설치 (’25.10.24)"
         }
       ]
@@ -815,35 +2617,35 @@ window.PHOTOS_DATA = {
       "type": "안전점검",
       "items": [
         {
-          "file": "photos/10월/s7_1_slide7_shape9.png",
+          "file": "photos/2025-10/s7_1_slide7_shape9.png",
           "caption": "노사합동점검(10.02)"
         },
         {
-          "file": "photos/10월/s7_2_slide7_shape11.png",
+          "file": "photos/2025-10/s7_2_slide7_shape11.png",
           "caption": "정기안전보건교육(10.13-10.17)"
         },
         {
-          "file": "photos/10월/s7_3_slide7_shape10.png",
+          "file": "photos/2025-10/s7_3_slide7_shape10.png",
           "caption": "주간 테마안전점검[감전사고 예방](10.16)"
         },
         {
-          "file": "photos/10월/s7_4_slide7_shape14.png",
+          "file": "photos/2025-10/s7_4_slide7_shape14.png",
           "caption": "자율안전컨설팅(10.21)"
         },
         {
-          "file": "photos/10월/s7_5_slide7_shape13.png",
+          "file": "photos/2025-10/s7_5_slide7_shape13.png",
           "caption": "상주건설장비점검(10.22)"
         },
         {
-          "file": "photos/10월/s7_6_slide7_shape15.png",
+          "file": "photos/2025-10/s7_6_slide7_shape15.png",
           "caption": "타운홀 미팅(10.23)"
         },
         {
-          "file": "photos/10월/s7_7_slide7_shape12.png",
+          "file": "photos/2025-10/s7_7_slide7_shape12.png",
           "caption": "주간 테마안전점검[화재,폭발사고 예방](10.23)"
         },
         {
-          "file": "photos/10월/s7_8_slide7_shape16.png",
+          "file": "photos/2025-10/s7_8_slide7_shape16.png",
           "caption": "안전보건협의체 회의(10.27)"
         }
       ]
@@ -854,27 +2656,27 @@ window.PHOTOS_DATA = {
       "type": "공정사진",
       "items": [
         {
-          "file": "photos/10월/s8_1_slide8_shape8.png",
+          "file": "photos/2025-10/s8_1_slide8_shape8.png",
           "caption": "해상부 외부 전경 (’25.10.27)"
         },
         {
-          "file": "photos/10월/s8_2_slide8_shape9.png",
+          "file": "photos/2025-10/s8_2_slide8_shape9.png",
           "caption": "해상부 외부 전경 (’25.10.27)"
         },
         {
-          "file": "photos/10월/s8_3_slide8_shape12.png",
+          "file": "photos/2025-10/s8_3_slide8_shape12.png",
           "caption": "R/W 슬래브 타설(TP16~벙커링WP)(‘25.10.20)"
         },
         {
-          "file": "photos/10월/s8_4_slide8_shape13.png",
+          "file": "photos/2025-10/s8_4_slide8_shape13.png",
           "caption": "LNG CP-02 거푸집 해체 및 면보수(’25.10.20)"
         },
         {
-          "file": "photos/10월/s8_5_slide8_shape10.png",
+          "file": "photos/2025-10/s8_5_slide8_shape10.png",
           "caption": "벙커링 MD-03,04 가시설 해체(’25.10.26)"
         },
         {
-          "file": "photos/10월/s8_6_slide8_shape11.png",
+          "file": "photos/2025-10/s8_6_slide8_shape11.png",
           "caption": "LNG부두 BD-01 철근 조립(’25.10.26)"
         }
       ]
@@ -885,35 +2687,35 @@ window.PHOTOS_DATA = {
       "type": "안전점검",
       "items": [
         {
-          "file": "photos/10월/s9_1_slide9_shape11.png",
+          "file": "photos/2025-10/s9_1_slide9_shape11.png",
           "caption": "중대재해처벌법 이행현황 점검(’25.10.16)"
         },
         {
-          "file": "photos/10월/s9_2_slide9_shape8.png",
+          "file": "photos/2025-10/s9_2_slide9_shape8.png",
           "caption": "건설장비 외주점검(’25.10.13)"
         },
         {
-          "file": "photos/10월/s9_3_slide9_shape12.png",
+          "file": "photos/2025-10/s9_3_slide9_shape12.png",
           "caption": "월간안전점검(’25.10.21)"
         },
         {
-          "file": "photos/10월/s9_4_slide9_shape7.png",
+          "file": "photos/2025-10/s9_4_slide9_shape7.png",
           "caption": "[P-INT’L] 신은주 실장 점검(’25.10.14)"
         },
         {
-          "file": "photos/10월/s9_5_slide9_shape13.png",
+          "file": "photos/2025-10/s9_5_slide9_shape13.png",
           "caption": "항만사업단장 점검(’25.10.22)"
         },
         {
-          "file": "photos/10월/s9_6_slide9_shape6.png",
+          "file": "photos/2025-10/s9_6_slide9_shape6.png",
           "caption": "타운홀 미팅(’25.10.16)"
         },
         {
-          "file": "photos/10월/s9_7_slide9_shape9.png",
+          "file": "photos/2025-10/s9_7_slide9_shape9.png",
           "caption": "위험성평가 사전회의(’25.10.22)"
         },
         {
-          "file": "photos/10월/s9_8_slide9_shape10.png",
+          "file": "photos/2025-10/s9_8_slide9_shape10.png",
           "caption": "하반기 정기 진단 점검(’25.10.22)"
         }
       ]
@@ -924,27 +2726,27 @@ window.PHOTOS_DATA = {
       "type": "공정사진",
       "items": [
         {
-          "file": "photos/10월/s10_1_slide10_shape8.png",
+          "file": "photos/2025-10/s10_1_slide10_shape8.png",
           "caption": "연소방재 작업(’25.10.29)"
         },
         {
-          "file": "photos/10월/s10_2_slide10_shape10.png",
+          "file": "photos/2025-10/s10_2_slide10_shape10.png",
           "caption": "전선관배관(’25.10.28)"
         },
         {
-          "file": "photos/10월/s10_3_slide10_shape9.png",
+          "file": "photos/2025-10/s10_3_slide10_shape9.png",
           "caption": "EDG ROOM TRAY 설치 작업(’25.10.28)"
         },
         {
-          "file": "photos/10월/s10_4_slide10_shape13.png",
+          "file": "photos/2025-10/s10_4_slide10_shape13.png",
           "caption": "EDG ROOM Panel 설치 및 TRAY 설치작업(’25.10.31)"
         },
         {
-          "file": "photos/10월/s10_5_slide10_shape11.png",
+          "file": "photos/2025-10/s10_5_slide10_shape11.png",
           "caption": "TR YARD PANEL 설치(’25.10.28)"
         },
         {
-          "file": "photos/10월/s10_6_slide10_shape12.png",
+          "file": "photos/2025-10/s10_6_slide10_shape12.png",
           "caption": "Tray Cover상가’(25.10.27)"
         }
       ]
@@ -955,68 +2757,68 @@ window.PHOTOS_DATA = {
       "type": "안전점검",
       "items": [
         {
-          "file": "photos/10월/s11_1_slide11_shape9.png",
+          "file": "photos/2025-10/s11_1_slide11_shape9.png",
           "caption": "안전보건협의체 (’25.10.30)"
         },
         {
-          "file": "photos/10월/s11_2_slide11_shape17.png",
+          "file": "photos/2025-10/s11_2_slide11_shape17.png",
           "caption": "근로자 건강관리 키오스크 설치 (’25.10.30)"
         },
         {
-          "file": "photos/10월/s11_3_slide11_shape1.png",
+          "file": "photos/2025-10/s11_3_slide11_shape1.png",
           "caption": "주간 특별안전점검 [감전사고예방] (’25.10.16)"
         },
         {
-          "file": "photos/10월/s11_4_slide11_shape18.png",
+          "file": "photos/2025-10/s11_4_slide11_shape18.png",
           "caption": "작업중지권 Guide 배포 (’25.10.01)"
         },
         {
-          "file": "photos/10월/s11_5_slide11_shape7.png",
+          "file": "photos/2025-10/s11_5_slide11_shape7.png",
           "caption": "주간 특별안전점검 [화재, 폭발사고 예방 ] (’25.10.23)"
         },
         {
-          "file": "photos/10월/s11_6_slide11_shape12.png",
+          "file": "photos/2025-10/s11_6_slide11_shape12.png",
           "caption": "채용시 교육 (’25.09.15)"
         },
         {
-          "file": "photos/10월/s11_7_slide11_shape8.png",
+          "file": "photos/2025-10/s11_7_slide11_shape8.png",
           "caption": "주간 특별안전점검 [동절기 대비 휴게시설 ] (’25.10.30)"
         },
         {
-          "file": "photos/10월/s11_8_slide11_shape13.png",
+          "file": "photos/2025-10/s11_8_slide11_shape13.png",
           "caption": "특별안전보건교육 (’25.09.17)"
         }
       ]
     }
   ],
-  "11월": [
+  "2025-11": [
     {
       "title": "공사사진 (육상부) - 11월",
       "category": "육상부",
       "type": "공사사진",
       "items": [
         {
-          "file": "photos/11월/s6_1_slide6_shape11.png",
+          "file": "photos/2025-11/s6_1_slide6_shape11.png",
           "caption": "제2 LNG터미널 육상부 전경 (’25.11.29)"
         },
         {
-          "file": "photos/11월/s6_2_slide6_shape12.png",
+          "file": "photos/2025-11/s6_2_slide6_shape12.png",
           "caption": "제2 LNG터미널 해상 Jetty 상부시설 전경 (’25.11.29)"
         },
         {
-          "file": "photos/11월/s6_3_slide6_shape9.png",
+          "file": "photos/2025-11/s6_3_slide6_shape9.png",
           "caption": "#7탱크 Inner Shell Plate 10단 설치 (’25.11.29)"
         },
         {
-          "file": "photos/11월/s6_4_slide6_shape10.png",
+          "file": "photos/2025-11/s6_4_slide6_shape10.png",
           "caption": "BOG Compressor 설치 (’25.11.21)"
         },
         {
-          "file": "photos/11월/s6_5_slide6_shape13.png",
+          "file": "photos/2025-11/s6_5_slide6_shape13.png",
           "caption": "LNG 2부두 Gangway Tower/철골 설치 (’25.11.29)"
         },
         {
-          "file": "photos/11월/s6_6_slide6_shape14.png",
+          "file": "photos/2025-11/s6_6_slide6_shape14.png",
           "caption": "벙커링 3부두 Gangway Tower/철골 설치 (’25.11.29)"
         }
       ]
@@ -1027,35 +2829,35 @@ window.PHOTOS_DATA = {
       "type": "안전점검",
       "items": [
         {
-          "file": "photos/11월/s7_1_slide7_shape10.png",
+          "file": "photos/2025-11/s7_1_slide7_shape10.png",
           "caption": "노사합동 점검 (11.04)"
         },
         {
-          "file": "photos/11월/s7_2_slide7_shape9.png",
+          "file": "photos/2025-11/s7_2_slide7_shape9.png",
           "caption": "비상대응 훈련 (11.04)"
         },
         {
-          "file": "photos/11월/s7_3_slide7_shape12.png",
+          "file": "photos/2025-11/s7_3_slide7_shape12.png",
           "caption": "정기안전보건교육 (11.10~11.14)"
         },
         {
-          "file": "photos/11월/s7_4_slide7_shape13.png",
+          "file": "photos/2025-11/s7_4_slide7_shape13.png",
           "caption": "포스코 홀딩스 주관 SGS 컨설팅 (11.18)"
         },
         {
-          "file": "photos/11월/s7_5_slide7_shape14.png",
+          "file": "photos/2025-11/s7_5_slide7_shape14.png",
           "caption": "타운홀 미팅 (11.24)"
         },
         {
-          "file": "photos/11월/s7_6_slide7_shape15.png",
+          "file": "photos/2025-11/s7_6_slide7_shape15.png",
           "caption": "자율안전컨설팅 (11.25)"
         },
         {
-          "file": "photos/11월/s7_7_slide7_shape11.png",
+          "file": "photos/2025-11/s7_7_slide7_shape11.png",
           "caption": "안전보건협의체 회의 (11.26)"
         },
         {
-          "file": "photos/11월/s7_8_slide7_shape16.png",
+          "file": "photos/2025-11/s7_8_slide7_shape16.png",
           "caption": "산업안전보건위원회 (11.27)"
         }
       ]
@@ -1066,27 +2868,27 @@ window.PHOTOS_DATA = {
       "type": "공정사진",
       "items": [
         {
-          "file": "photos/11월/s8_1_slide8_shape9.png",
+          "file": "photos/2025-11/s8_1_slide8_shape9.png",
           "caption": "해상부 외부 전경 (’25.11.13)"
         },
         {
-          "file": "photos/11월/s8_2_slide8_shape8.png",
+          "file": "photos/2025-11/s8_2_slide8_shape8.png",
           "caption": "해상부 외부 전경 (’25.11.13)"
         },
         {
-          "file": "photos/11월/s8_3_slide8_shape12.png",
+          "file": "photos/2025-11/s8_3_slide8_shape12.png",
           "caption": "벙커링 BD-01 휀더 설치(25.11.05)"
         },
         {
-          "file": "photos/11월/s8_4_slide8_shape13.png",
+          "file": "photos/2025-11/s8_4_slide8_shape13.png",
           "caption": "R/W 브라켓 해체 (JP02~TP15)(’25.11.07)"
         },
         {
-          "file": "photos/11월/s8_5_slide8_shape11.png",
+          "file": "photos/2025-11/s8_5_slide8_shape11.png",
           "caption": "LNG MD-05,06 QRH,Capstan 설치(’25.11.23)"
         },
         {
-          "file": "photos/11월/s8_6_slide8_shape10.png",
+          "file": "photos/2025-11/s8_6_slide8_shape10.png",
           "caption": "교량점검시설 수직사다리 설치(’25.11.23)"
         }
       ]
@@ -1097,35 +2899,35 @@ window.PHOTOS_DATA = {
       "type": "안전점검",
       "items": [
         {
-          "file": "photos/11월/s9_1_slide9_shape11.png",
+          "file": "photos/2025-11/s9_1_slide9_shape11.png",
           "caption": "공사안전보건대장 이행현황 점검(’25.11.03)"
         },
         {
-          "file": "photos/11월/s9_2_slide9_shape8.png",
+          "file": "photos/2025-11/s9_2_slide9_shape8.png",
           "caption": "고용노동부 불시 점검(’25.10.28)"
         },
         {
-          "file": "photos/11월/s9_3_slide9_shape13.png",
+          "file": "photos/2025-11/s9_3_slide9_shape13.png",
           "caption": "중대재해처벌법 이행현황 점검(’25.11.13)"
         },
         {
-          "file": "photos/11월/s9_4_slide9_shape7.png",
+          "file": "photos/2025-11/s9_4_slide9_shape7.png",
           "caption": "2025년 하반기 비상대응훈련(’25.11.12)"
         },
         {
-          "file": "photos/11월/s9_5_slide9_shape12.png",
+          "file": "photos/2025-11/s9_5_slide9_shape12.png",
           "caption": "월간안전점검(’25.11.18)"
         },
         {
-          "file": "photos/11월/s9_6_slide9_shape6.png",
+          "file": "photos/2025-11/s9_6_slide9_shape6.png",
           "caption": "[P-INT’L] 발주자 4분기 점검(’25.11.13~14)"
         },
         {
-          "file": "photos/11월/s9_7_slide9_shape9.png",
+          "file": "photos/2025-11/s9_7_slide9_shape9.png",
           "caption": "[P-INT’L] 신은주 실장 점검(’25.11.19)"
         },
         {
-          "file": "photos/11월/s9_8_slide9_shape10.png",
+          "file": "photos/2025-11/s9_8_slide9_shape10.png",
           "caption": "안전의날 행사(’25.11.21)"
         }
       ]
@@ -1136,27 +2938,27 @@ window.PHOTOS_DATA = {
       "type": "공정사진",
       "items": [
         {
-          "file": "photos/11월/s10_1_slide10_shape8.png",
+          "file": "photos/2025-11/s10_1_slide10_shape8.png",
           "caption": "비계해체작업(’25.11.24)"
         },
         {
-          "file": "photos/11월/s10_2_slide10_shape9.png",
+          "file": "photos/2025-11/s10_2_slide10_shape9.png",
           "caption": "비계해체작업(’25.11.26)"
         },
         {
-          "file": "photos/11월/s10_3_slide10_shape10.png",
+          "file": "photos/2025-11/s10_3_slide10_shape10.png",
           "caption": "EDG ROOM CABLE 포설(’25.11.25)"
         },
         {
-          "file": "photos/11월/s10_4_slide10_shape11.png",
+          "file": "photos/2025-11/s10_4_slide10_shape11.png",
           "caption": "공동가대 TRAY COVER 설치 작업(’25.11.01)"
         },
         {
-          "file": "photos/11월/s10_5_slide10_shape12.png",
+          "file": "photos/2025-11/s10_5_slide10_shape12.png",
           "caption": "공동가대 전구간 Tray Bolt 보강 (’25.11.12)"
         },
         {
-          "file": "photos/11월/s10_6_slide10_shape13.png",
+          "file": "photos/2025-11/s10_6_slide10_shape13.png",
           "caption": "EDR ROOM Tray Support’작업(25.11.20)"
         }
       ]
@@ -1167,68 +2969,68 @@ window.PHOTOS_DATA = {
       "type": "안전점검",
       "items": [
         {
-          "file": "photos/11월/s11_1_slide11_shape11.png",
+          "file": "photos/2025-11/s11_1_slide11_shape11.png",
           "caption": "안전보건협의체 (’25.11.07)"
         },
         {
-          "file": "photos/11월/s11_2_slide11_shape10.png",
+          "file": "photos/2025-11/s11_2_slide11_shape10.png",
           "caption": "하역운반기계 특별안전 교육(’25.11.10)"
         },
         {
-          "file": "photos/11월/s11_3_slide11_shape1.png",
+          "file": "photos/2025-11/s11_3_slide11_shape1.png",
           "caption": "주간 특별안전점검 [동절기 화재 사고 예방] (’25.11.27)"
         },
         {
-          "file": "photos/11월/s11_4_slide11_shape12.png",
+          "file": "photos/2025-11/s11_4_slide11_shape12.png",
           "caption": "채용시 교육 (’25.11.03)"
         },
         {
-          "file": "photos/11월/s11_5_slide11_shape8.png",
+          "file": "photos/2025-11/s11_5_slide11_shape8.png",
           "caption": "특별 안전점검[밀폐 공간 작업프로그램 ] (’25.11.21)"
         },
         {
-          "file": "photos/11월/s11_6_slide11_shape13.png",
+          "file": "photos/2025-11/s11_6_slide11_shape13.png",
           "caption": "안전보건관리책임자 순회점검 (‘25.11.17)"
         },
         {
-          "file": "photos/11월/s11_7_slide11_shape9.png",
+          "file": "photos/2025-11/s11_7_slide11_shape9.png",
           "caption": "주간 특별안전점검 [중량물 취급 작업 (’25.11.13)"
         },
         {
-          "file": "photos/11월/s11_8_slide11_shape14.png",
+          "file": "photos/2025-11/s11_8_slide11_shape14.png",
           "caption": "합동안전점검 (‘25.11.21)"
         }
       ]
     }
   ],
-  "12월": [
+  "2025-12": [
     {
       "title": "공사사진 (육상부) - 12월",
       "category": "육상부",
       "type": "공사사진",
       "items": [
         {
-          "file": "photos/12월/s6_1_slide6_shape9.png",
+          "file": "photos/2025-12/s6_1_slide6_shape9.png",
           "caption": "제2 LNG터미널 육상부 전경 (’25.12.19)"
         },
         {
-          "file": "photos/12월/s6_2_slide6_shape11.png",
+          "file": "photos/2025-12/s6_2_slide6_shape11.png",
           "caption": "제2 LNG터미널 해상 Jetty 상부시설 전경 (’25.12.19)"
         },
         {
-          "file": "photos/12월/s6_3_slide6_shape14.png",
+          "file": "photos/2025-12/s6_3_slide6_shape14.png",
           "caption": "#8탱크 Inner Shell Plate 9단 설치 (’25.12.29)"
         },
         {
-          "file": "photos/12월/s6_4_slide6_shape13.png",
+          "file": "photos/2025-12/s6_4_slide6_shape13.png",
           "caption": "#8탱크 Small Opening Con’c 타설 (’25.12.30)"
         },
         {
-          "file": "photos/12월/s6_5_slide6_shape10.png",
+          "file": "photos/2025-12/s6_5_slide6_shape10.png",
           "caption": "LNG 2부두 Jetty 전기실 철골 설치 (’25.12.19)"
         },
         {
-          "file": "photos/12월/s6_6_slide6_shape12.png",
+          "file": "photos/2025-12/s6_6_slide6_shape12.png",
           "caption": "벙커링 3부두 철골 설치 (’25.12.19)"
         }
       ]
@@ -1239,35 +3041,35 @@ window.PHOTOS_DATA = {
       "type": "안전점검",
       "items": [
         {
-          "file": "photos/12월/s7_1_slide7_shape9.png",
+          "file": "photos/2025-12/s7_1_slide7_shape9.png",
           "caption": "노사합동점검 (12.3)"
         },
         {
-          "file": "photos/12월/s7_2_slide7_shape10.png",
+          "file": "photos/2025-12/s7_2_slide7_shape10.png",
           "caption": "작업환경측정 (12.4-12.5)"
         },
         {
-          "file": "photos/12월/s7_3_slide7_shape11.png",
+          "file": "photos/2025-12/s7_3_slide7_shape11.png",
           "caption": "정기안전보건교육 (12.8)"
         },
         {
-          "file": "photos/12월/s7_4_slide7_shape12.png",
+          "file": "photos/2025-12/s7_4_slide7_shape12.png",
           "caption": "동절기 방한용품 지급 (12.10)"
         },
         {
-          "file": "photos/12월/s7_5_slide7_shape13.png",
+          "file": "photos/2025-12/s7_5_slide7_shape13.png",
           "caption": "동절기 핫팩 지급 (12.17)"
         },
         {
-          "file": "photos/12월/s7_6_slide7_shape14.png",
+          "file": "photos/2025-12/s7_6_slide7_shape14.png",
           "caption": "자율안전컨설팅 (12.23)"
         },
         {
-          "file": "photos/12월/s7_7_slide7_shape15.png",
+          "file": "photos/2025-12/s7_7_slide7_shape15.png",
           "caption": "관리감독자교육 (12.23)"
         },
         {
-          "file": "photos/12월/s7_8_slide7_shape16.png",
+          "file": "photos/2025-12/s7_8_slide7_shape16.png",
           "caption": "상주건설장비점검 (12.26)"
         }
       ]
@@ -1278,27 +3080,27 @@ window.PHOTOS_DATA = {
       "type": "공정사진",
       "items": [
         {
-          "file": "photos/12월/s8_1_slide8_shape9.png",
+          "file": "photos/2025-12/s8_1_slide8_shape9.png",
           "caption": "해상부 외부 전경 (’25.12.13)"
         },
         {
-          "file": "photos/12월/s8_2_slide8_shape8.png",
+          "file": "photos/2025-12/s8_2_slide8_shape8.png",
           "caption": "해상부 외부 전경 (’25.12.13)"
         },
         {
-          "file": "photos/12월/s8_3_slide8_shape10.png",
+          "file": "photos/2025-12/s8_3_slide8_shape10.png",
           "caption": "LNG BD Fender 설치(25.12.03)"
         },
         {
-          "file": "photos/12월/s8_4_slide8_shape11.png",
+          "file": "photos/2025-12/s8_4_slide8_shape11.png",
           "caption": "LNG Catwalk 거치(’25.12.04)"
         },
         {
-          "file": "photos/12월/s8_5_slide8_shape12.png",
+          "file": "photos/2025-12/s8_5_slide8_shape12.png",
           "caption": "LNG MD 핸드레일 설치(’25.12.12)"
         },
         {
-          "file": "photos/12월/s8_6_slide8_shape13.png",
+          "file": "photos/2025-12/s8_6_slide8_shape13.png",
           "caption": "LNG MD-04 테이프방식(’25.12.17)"
         }
       ]
@@ -1309,35 +3111,35 @@ window.PHOTOS_DATA = {
       "type": "안전점검",
       "items": [
         {
-          "file": "photos/12월/s9_1_slide9_shape11.png",
+          "file": "photos/2025-12/s9_1_slide9_shape11.png",
           "caption": "중대재해처벌법 이행현황 점검(’25.12.10)"
         },
         {
-          "file": "photos/12월/s9_2_slide9_shape8.png",
+          "file": "photos/2025-12/s9_2_slide9_shape8.png",
           "caption": "노사합동점검(’25.12.11)"
         },
         {
-          "file": "photos/12월/s9_3_slide9_shape13.png",
+          "file": "photos/2025-12/s9_3_slide9_shape13.png",
           "caption": "월간안전점검(’25.12.16)"
         },
         {
-          "file": "photos/12월/s9_4_slide9_shape7.png",
+          "file": "photos/2025-12/s9_4_slide9_shape7.png",
           "caption": "안전의날 행사(’25.12.18)"
         },
         {
-          "file": "photos/12월/s9_5_slide9_shape12.png",
+          "file": "photos/2025-12/s9_5_slide9_shape12.png",
           "caption": "항만사업단장 현장 점검(25.12.19)"
         },
         {
-          "file": "photos/12월/s9_6_slide9_shape6.png",
+          "file": "photos/2025-12/s9_6_slide9_shape6.png",
           "caption": "작업재개 전 특별점검(25.12.22)"
         },
         {
-          "file": "photos/12월/s9_7_slide9_shape9.png",
+          "file": "photos/2025-12/s9_7_slide9_shape9.png",
           "caption": "안전보건협의체 회의(’25.12.23)"
         },
         {
-          "file": "photos/12월/s9_8_slide9_shape10.png",
+          "file": "photos/2025-12/s9_8_slide9_shape10.png",
           "caption": "산업안전보건위원회(’25.12.23)"
         }
       ]
@@ -1348,27 +3150,27 @@ window.PHOTOS_DATA = {
       "type": "공정사진",
       "items": [
         {
-          "file": "photos/12월/s10_1_slide10_shape8.png",
+          "file": "photos/2025-12/s10_1_slide10_shape8.png",
           "caption": "비계해체작업(’25.12.01)"
         },
         {
-          "file": "photos/12월/s10_2_slide10_shape9.png",
+          "file": "photos/2025-12/s10_2_slide10_shape9.png",
           "caption": "비계해체작업(’25.12.04)"
         },
         {
-          "file": "photos/12월/s10_3_slide10_shape10.png",
+          "file": "photos/2025-12/s10_3_slide10_shape10.png",
           "caption": "비계자재 반출(’25.12.08)"
         },
         {
-          "file": "photos/12월/s10_4_slide10_shape11.png",
+          "file": "photos/2025-12/s10_4_slide10_shape11.png",
           "caption": "행정동 CABLE 결선 및 정리(’25.12.15)"
         },
         {
-          "file": "photos/12월/s10_5_slide10_shape12.png",
+          "file": "photos/2025-12/s10_5_slide10_shape12.png",
           "caption": "전기실~EDG ROOM CABLE 입선 및 결선(’25.12.23)"
         },
         {
-          "file": "photos/12월/s10_6_slide10_shape13.png",
+          "file": "photos/2025-12/s10_6_slide10_shape13.png",
           "caption": "SNG전기실 CABLE 철거(25.12.30)"
         }
       ]
@@ -1379,68 +3181,68 @@ window.PHOTOS_DATA = {
       "type": "안전점검",
       "items": [
         {
-          "file": "photos/12월/s11_1_slide11_shape10.png",
+          "file": "photos/2025-12/s11_1_slide11_shape10.png",
           "caption": "안전보건협의체 (’25.12.19)"
         },
         {
-          "file": "photos/12월/s11_2_slide11_shape11.png",
+          "file": "photos/2025-12/s11_2_slide11_shape11.png",
           "caption": "정기안전보건교육(’25.12.22)"
         },
         {
-          "file": "photos/12월/s11_3_slide11_shape4.png",
+          "file": "photos/2025-12/s11_3_slide11_shape4.png",
           "caption": "주간 특별안전점검 [산업재해 예방] (’25.12.18)"
         },
         {
-          "file": "photos/12월/s11_4_slide11_shape13.png",
+          "file": "photos/2025-12/s11_4_slide11_shape13.png",
           "caption": "채용시 교육 (’25.12.16)"
         },
         {
-          "file": "photos/12월/s11_5_slide11_shape8.png",
+          "file": "photos/2025-12/s11_5_slide11_shape8.png",
           "caption": "주간 특별안전점검[감전사고 예방] (’25.12.11)"
         },
         {
-          "file": "photos/12월/s11_6_slide11_shape14.png",
+          "file": "photos/2025-12/s11_6_slide11_shape14.png",
           "caption": "중대재해 사고사례 전파 교육(‘25.12.12)"
         },
         {
-          "file": "photos/12월/s11_7_slide11_shape9.png",
+          "file": "photos/2025-12/s11_7_slide11_shape9.png",
           "caption": "주간 특별안전점검 [건설장비](’25.12.04)"
         },
         {
-          "file": "photos/12월/s11_8_slide11_shape12.png",
+          "file": "photos/2025-12/s11_8_slide11_shape12.png",
           "caption": "합동안전점검 (‘25.12.10)"
         }
       ]
     }
   ],
-  "01월": [
+  "2026-01": [
     {
       "title": "공사 사진 (육상부) - 1월",
       "category": "육상부",
       "type": "공사사진",
       "items": [
         {
-          "file": "photos/01월/s6_1_image8.jpeg",
+          "file": "photos/2026-01/s6_1_image8.jpeg",
           "caption": "제2 LNG터미널 육상부 전경 ('26.01.30)"
         },
         {
-          "file": "photos/01월/s6_2_image9.jpeg",
+          "file": "photos/2026-01/s6_2_image9.jpeg",
           "caption": "제2 LNG터미널 해상 Jetty 상부시설 전경 ('26.01.30)"
         },
         {
-          "file": "photos/01월/s6_6_image13.jpeg",
+          "file": "photos/2026-01/s6_6_image13.jpeg",
           "caption": "해상 Module (WP-03B) 설치 完 ('26.01.20)"
         },
         {
-          "file": "photos/01월/s6_3_image10.jpeg",
+          "file": "photos/2026-01/s6_3_image10.jpeg",
           "caption": "벙커링 3부두 로딩암(2103LA) 설치 ('26.01.27)"
         },
         {
-          "file": "photos/01월/s6_5_image12.jpeg",
+          "file": "photos/2026-01/s6_5_image12.jpeg",
           "caption": "LNG 2부두 Jetty 전기실 데크 플레이트 설치공사 ('26.01.30)"
         },
         {
-          "file": "photos/01월/s6_4_image11.jpeg",
+          "file": "photos/2026-01/s6_4_image11.jpeg",
           "caption": "벙커링 3부두 로딩암(2104L) 설치 ('26.01.30)"
         }
       ]
@@ -1451,35 +3253,35 @@ window.PHOTOS_DATA = {
       "type": "안전점검",
       "items": [
         {
-          "file": "photos/01월/s7_3_image16.png",
+          "file": "photos/2026-01/s7_3_image16.png",
           "caption": "노사합동점검 (1.6)"
         },
         {
-          "file": "photos/01월/s7_1_image14.png",
+          "file": "photos/2026-01/s7_1_image14.png",
           "caption": "한랭질환 예방 건강상담 (1.12)"
         },
         {
-          "file": "photos/01월/s7_4_image17.png",
+          "file": "photos/2026-01/s7_4_image17.png",
           "caption": "자율안전컨설팅 (1.20)"
         },
         {
-          "file": "photos/01월/s7_2_image15.png",
+          "file": "photos/2026-01/s7_2_image15.png",
           "caption": "동절기 어묵 꼬치 나눔 행사 (1.21)"
         },
         {
-          "file": "photos/01월/s7_6_image19.png",
+          "file": "photos/2026-01/s7_6_image19.png",
           "caption": "정기안전보건교육 (1.21~1.23)"
         },
         {
-          "file": "photos/01월/s7_5_image18.png",
+          "file": "photos/2026-01/s7_5_image18.png",
           "caption": "PM주관 타운홀 미팅 (1.27)"
         },
         {
-          "file": "photos/01월/s7_8_image21.png",
+          "file": "photos/2026-01/s7_8_image21.png",
           "caption": "상주건설장비 점검 (1.28)"
         },
         {
-          "file": "photos/01월/s7_7_image20.png",
+          "file": "photos/2026-01/s7_7_image20.png",
           "caption": "안전보건협의체 회의 (1.28)"
         }
       ]
@@ -1490,27 +3292,27 @@ window.PHOTOS_DATA = {
       "type": "공정사진",
       "items": [
         {
-          "file": "photos/01월/s8_1_image22.jpeg",
+          "file": "photos/2026-01/s8_1_image22.jpeg",
           "caption": "해상부 외부 전경 ('26.01.10)"
         },
         {
-          "file": "photos/01월/s8_2_image23.jpeg",
+          "file": "photos/2026-01/s8_2_image23.jpeg",
           "caption": "해상부 외부 전경 ('26.01.10)"
         },
         {
-          "file": "photos/01월/s8_4_image25.png",
+          "file": "photos/2026-01/s8_4_image25.png",
           "caption": "LNG MD-06 오일휀스 설치 ('26.01.19)"
         },
         {
-          "file": "photos/01월/s8_5_image26.png",
+          "file": "photos/2026-01/s8_5_image26.png",
           "caption": "LNG MD-03 LADDER 설치 ('26.01.13)"
         },
         {
-          "file": "photos/01월/s8_6_image27.png",
+          "file": "photos/2026-01/s8_6_image27.png",
           "caption": "LNG MD-01 자켓 청소 ('26.01.07)"
         },
         {
-          "file": "photos/01월/s8_3_image24.png",
+          "file": "photos/2026-01/s8_3_image24.png",
           "caption": "LNG CP-01 테이프방식 ('26.01.06)"
         }
       ]
@@ -1521,35 +3323,35 @@ window.PHOTOS_DATA = {
       "type": "안전점검",
       "items": [
         {
-          "file": "photos/01월/s9_4_image31.jpeg",
+          "file": "photos/2026-01/s9_4_image31.jpeg",
           "caption": "동절기 안전점검 ('26.01.08)"
         },
         {
-          "file": "photos/01월/s9_3_image30.jpeg",
+          "file": "photos/2026-01/s9_3_image30.jpeg",
           "caption": "선박 홋줄 특별점검 ('26.01.08)"
         },
         {
-          "file": "photos/01월/s9_8_image35.jpeg",
+          "file": "photos/2026-01/s9_8_image35.jpeg",
           "caption": "위험성평가 사전회의 ('26.01.14)"
         },
         {
-          "file": "photos/01월/s9_2_image29.jpeg",
+          "file": "photos/2026-01/s9_2_image29.jpeg",
           "caption": "중처법 이행현황 월간점검 ('26.01.14)"
         },
         {
-          "file": "photos/01월/s9_7_image34.jpeg",
+          "file": "photos/2026-01/s9_7_image34.jpeg",
           "caption": "'26년 중점관리사항 회의 ('26.01.15)"
         },
         {
-          "file": "photos/01월/s9_1_image28.jpeg",
+          "file": "photos/2026-01/s9_1_image28.jpeg",
           "caption": "안전기원제 ('26.01.16)"
         },
         {
-          "file": "photos/01월/s9_6_image33.jpeg",
+          "file": "photos/2026-01/s9_6_image33.jpeg",
           "caption": "월간안전점검 ('26.01.20)"
         },
         {
-          "file": "photos/01월/s9_5_image32.jpeg",
+          "file": "photos/2026-01/s9_5_image32.jpeg",
           "caption": "부지항만사업단장 점검 ('26.01.23)"
         }
       ]
@@ -1560,27 +3362,27 @@ window.PHOTOS_DATA = {
       "type": "공정사진",
       "items": [
         {
-          "file": "photos/01월/s10_5_image40.jpeg",
+          "file": "photos/2026-01/s10_5_image40.jpeg",
           "caption": "154kV 외부전경"
         },
         {
-          "file": "photos/01월/s10_6_image41.jpeg",
+          "file": "photos/2026-01/s10_6_image41.jpeg",
           "caption": "154kV 외부전경"
         },
         {
-          "file": "photos/01월/s10_4_image39.jpeg",
+          "file": "photos/2026-01/s10_4_image39.jpeg",
           "caption": "연료탱크 안전발판/사다리 설치 ('26.01.12)"
         },
         {
-          "file": "photos/01월/s10_3_image38.jpeg",
+          "file": "photos/2026-01/s10_3_image38.jpeg",
           "caption": "판넬 하부 마감처리 ('25.01.05)"
         },
         {
-          "file": "photos/01월/s10_2_image37.jpeg",
+          "file": "photos/2026-01/s10_2_image37.jpeg",
           "caption": "LNG 2터미널 CABLE 입선/결선 ('26.01.22)"
         },
         {
-          "file": "photos/01월/s10_1_image36.jpeg",
+          "file": "photos/2026-01/s10_1_image36.jpeg",
           "caption": "SNG 1전기실 연소방재 ('26.01.22)"
         }
       ]
@@ -1591,68 +3393,68 @@ window.PHOTOS_DATA = {
       "type": "안전점검",
       "items": [
         {
-          "file": "photos/01월/s11_1_image42.png",
+          "file": "photos/2026-01/s11_1_image42.png",
           "caption": "주간 특별안전점검 [전도사고 예방] ('26.01.22)"
         },
         {
-          "file": "photos/01월/s11_5_image46.png",
+          "file": "photos/2026-01/s11_5_image46.png",
           "caption": "순회점검 ('26.01.01~'26.01.31)"
         },
         {
-          "file": "photos/01월/s11_3_image44.png",
+          "file": "photos/2026-01/s11_3_image44.png",
           "caption": "주간 특별안전점검 [중량물 취급 작업안전] ('26.01.15)"
         },
         {
-          "file": "photos/01월/s11_4_image45.png",
+          "file": "photos/2026-01/s11_4_image45.png",
           "caption": "정기안전보건교육 ('26.01.15)"
         },
         {
-          "file": "photos/01월/s11_7_image48.png",
+          "file": "photos/2026-01/s11_7_image48.png",
           "caption": "안전보건협의체 ('26.01.13)"
         },
         {
-          "file": "photos/01월/s11_8_image49.png",
+          "file": "photos/2026-01/s11_8_image49.png",
           "caption": "고위험작업 집중안전관리 ('26.01.14)"
         },
         {
-          "file": "photos/01월/s11_2_image43.png",
+          "file": "photos/2026-01/s11_2_image43.png",
           "caption": "주간 특별안전점검 [추락사고 예방] ('26.01.08)"
         },
         {
-          "file": "photos/01월/s11_6_image47.png",
+          "file": "photos/2026-01/s11_6_image47.png",
           "caption": "합동안전점검 ('26.01.13)"
         }
       ]
     }
   ],
-  "02월": [
+  "2026-02": [
     {
       "title": "공사 사진 (육상부) - 2월",
       "category": "육상부",
       "type": "공사사진",
       "items": [
         {
-          "file": "photos/02월/s6_4_image11.jpeg",
+          "file": "photos/2026-02/s6_4_image11.jpeg",
           "caption": "LNG 2부두 언로딩암(2101LA) 선적 ('26.02.09)"
         },
         {
-          "file": "photos/02월/s6_3_image10.jpeg",
+          "file": "photos/2026-02/s6_3_image10.jpeg",
           "caption": "#7탱크 Hydrostatic Test 착수 ('26.02.13)"
         },
         {
-          "file": "photos/02월/s6_1_image8.jpeg",
+          "file": "photos/2026-02/s6_1_image8.jpeg",
           "caption": "LNG 2부두 언로딩암 설치 ('26.02.13)"
         },
         {
-          "file": "photos/02월/s6_2_image9.jpeg",
+          "file": "photos/2026-02/s6_2_image9.jpeg",
           "caption": "벙커링 3부두 언로딩암 설치 ('26.02.13)"
         },
         {
-          "file": "photos/02월/s6_5_image12.jpeg",
+          "file": "photos/2026-02/s6_5_image12.jpeg",
           "caption": "제2 LNG터미널 육상부 전경 ('26.02.28)"
         },
         {
-          "file": "photos/02월/s6_6_image13.jpeg",
+          "file": "photos/2026-02/s6_6_image13.jpeg",
           "caption": "제2 LNG터미널 해상 Jetty 전경 ('26.02.28)"
         }
       ]
@@ -1663,35 +3465,35 @@ window.PHOTOS_DATA = {
       "type": "안전점검",
       "items": [
         {
-          "file": "photos/02월/s7_3_image16.png",
+          "file": "photos/2026-02/s7_3_image16.png",
           "caption": "상주건설장비 점검 ('26.02.26)"
         },
         {
-          "file": "photos/02월/s7_1_image14.png",
+          "file": "photos/2026-02/s7_1_image14.png",
           "caption": "산업안전보건위원회 ('26.02.26)"
         },
         {
-          "file": "photos/02월/s7_8_image21.png",
+          "file": "photos/2026-02/s7_8_image21.png",
           "caption": "정기안전보건교육 ('26.02.25-27)"
         },
         {
-          "file": "photos/02월/s7_2_image15.png",
+          "file": "photos/2026-02/s7_2_image15.png",
           "caption": "안전보건협의체 회의 ('26.02.25)"
         },
         {
-          "file": "photos/02월/s7_6_image19.png",
+          "file": "photos/2026-02/s7_6_image19.png",
           "caption": "PM 주관 타운홀 미팅 ('26.02.23)"
         },
         {
-          "file": "photos/02월/s7_7_image20.png",
+          "file": "photos/2026-02/s7_7_image20.png",
           "caption": "관리감독자 교육 ('26.02.24)"
         },
         {
-          "file": "photos/02월/s7_4_image17.png",
+          "file": "photos/2026-02/s7_4_image17.png",
           "caption": "노사합동점검 ('26.02.04)"
         },
         {
-          "file": "photos/02월/s7_5_image18.png",
+          "file": "photos/2026-02/s7_5_image18.png",
           "caption": "동절기 어묵 꼬치 나눔 행사 ('26.02.23)"
         }
       ]
@@ -1702,27 +3504,27 @@ window.PHOTOS_DATA = {
       "type": "공정사진",
       "items": [
         {
-          "file": "photos/02월/s8_5_image26.jpeg",
+          "file": "photos/2026-02/s8_5_image26.jpeg",
           "caption": "해상부 외부 전경 ('26.02.03)"
         },
         {
-          "file": "photos/02월/s8_6_image27.jpeg",
+          "file": "photos/2026-02/s8_6_image27.jpeg",
           "caption": "해상부 외부 전경 ('26.02.03)"
         },
         {
-          "file": "photos/02월/s8_1_image22.png",
+          "file": "photos/2026-02/s8_1_image22.png",
           "caption": "벙커링 MD-01 LADDER 설치 ('26.02.02)"
         },
         {
-          "file": "photos/02월/s8_2_image23.png",
+          "file": "photos/2026-02/s8_2_image23.png",
           "caption": "LNG BD-01 자켓 청소 ('26.02.02)"
         },
         {
-          "file": "photos/02월/s8_3_image24.png",
+          "file": "photos/2026-02/s8_3_image24.png",
           "caption": "LNG MD-01 오일휀스 설치 ('26.02.10)"
         },
         {
-          "file": "photos/02월/s8_4_image25.png",
+          "file": "photos/2026-02/s8_4_image25.png",
           "caption": "LNG MD-01 자켓 및 점검로 도장 ('26.02.09)"
         }
       ]
@@ -1733,35 +3535,35 @@ window.PHOTOS_DATA = {
       "type": "안전점검",
       "items": [
         {
-          "file": "photos/02월/s9_1_image28.jpg",
+          "file": "photos/2026-02/s9_1_image28.jpg",
           "caption": "공사안전보건대장 이행 현황 점검 ('26.02.03)"
         },
         {
-          "file": "photos/02월/s9_2_image29.jpg",
+          "file": "photos/2026-02/s9_2_image29.jpg",
           "caption": "노사합동점검 ('26.02.10)"
         },
         {
-          "file": "photos/02월/s9_3_image30.jpg",
+          "file": "photos/2026-02/s9_3_image30.jpg",
           "caption": "중처법 이행현황 월간점검 ('26.02.10)"
         },
         {
-          "file": "photos/02월/s9_6_image33.jpg",
+          "file": "photos/2026-02/s9_6_image33.jpg",
           "caption": "직책자 임원 점검 ('26.02.11)"
         },
         {
-          "file": "photos/02월/s9_7_image34.jpg",
+          "file": "photos/2026-02/s9_7_image34.jpg",
           "caption": "위험성평가 사전회의 ('26.02.12)"
         },
         {
-          "file": "photos/02월/s9_4_image31.jpg",
+          "file": "photos/2026-02/s9_4_image31.jpg",
           "caption": "월간 안전점검 ('26.02.12)"
         },
         {
-          "file": "photos/02월/s9_5_image32.jpg",
+          "file": "photos/2026-02/s9_5_image32.jpg",
           "caption": "발주자 명절대비 자율점검 ('26.02.12)"
         },
         {
-          "file": "photos/02월/s9_8_image35.jpg",
+          "file": "photos/2026-02/s9_8_image35.jpg",
           "caption": "작업 재개 전 안전점검 ('26.02.23)"
         }
       ]
@@ -1772,27 +3574,27 @@ window.PHOTOS_DATA = {
       "type": "공정사진",
       "items": [
         {
-          "file": "photos/02월/s10_5_image40.jpeg",
+          "file": "photos/2026-02/s10_5_image40.jpeg",
           "caption": "154kV 수전행사 ('26.02.10)"
         },
         {
-          "file": "photos/02월/s10_6_image41.jpeg",
+          "file": "photos/2026-02/s10_6_image41.jpeg",
           "caption": "154kV 수전행사 ('26.02.10)"
         },
         {
-          "file": "photos/02월/s10_1_image36.jpeg",
+          "file": "photos/2026-02/s10_1_image36.jpeg",
           "caption": "자동소화장치 설치 ('26.02.04)"
         },
         {
-          "file": "photos/02월/s10_2_image37.jpeg",
+          "file": "photos/2026-02/s10_2_image37.jpeg",
           "caption": "접지단자함 명판 교체 ('26.02.04)"
         },
         {
-          "file": "photos/02월/s10_3_image38.jpeg",
+          "file": "photos/2026-02/s10_3_image38.jpeg",
           "caption": "자동소화장치 설치 ('26.02.03)"
         },
         {
-          "file": "photos/02월/s10_4_image39.jpeg",
+          "file": "photos/2026-02/s10_4_image39.jpeg",
           "caption": "154kV 수전 ('26.02.10)"
         }
       ]
@@ -1803,68 +3605,68 @@ window.PHOTOS_DATA = {
       "type": "안전점검",
       "items": [
         {
-          "file": "photos/02월/s11_1_image42.png",
+          "file": "photos/2026-02/s11_1_image42.png",
           "caption": "주간 특별안전점검 [추락사고 예방] ('26.02.25)"
         },
         {
-          "file": "photos/02월/s11_5_image46.png",
+          "file": "photos/2026-02/s11_5_image46.png",
           "caption": "안전보건협의체 ('26.02.12)"
         },
         {
-          "file": "photos/02월/s11_4_image45.png",
+          "file": "photos/2026-02/s11_4_image45.png",
           "caption": "발주처 특별안전점검 [시설물 및 정리정돈] ('26.02.20)"
         },
         {
-          "file": "photos/02월/s11_6_image47.png",
+          "file": "photos/2026-02/s11_6_image47.png",
           "caption": "순회점검 및 합동안전점검 ('26.02.12)"
         },
         {
-          "file": "photos/02월/s11_2_image43.png",
+          "file": "photos/2026-02/s11_2_image43.png",
           "caption": "경영층 특별안전점검 [안전보건실 현장 점검] ('26.02.19)"
         },
         {
-          "file": "photos/02월/s11_8_image49.png",
+          "file": "photos/2026-02/s11_8_image49.png",
           "caption": "고위험작업 집중안전관리 ('26.02.01~'26.02.26)"
         },
         {
-          "file": "photos/02월/s11_3_image44.png",
+          "file": "photos/2026-02/s11_3_image44.png",
           "caption": "주간 특별안전점검 [구조물] ('26.02.05)"
         },
         {
-          "file": "photos/02월/s11_7_image48.png",
+          "file": "photos/2026-02/s11_7_image48.png",
           "caption": "정기안전보건교육 ('26.02.13)"
         }
       ]
     }
   ],
-  "03월": [
+  "2026-03": [
     {
       "title": "공사 사진 (육상부) - 3월",
       "category": "육상부",
       "type": "공사사진",
       "items": [
         {
-          "file": "photos/03월/s4_4_image7.jpeg",
+          "file": "photos/2026-03/s4_4_image7.jpeg",
           "caption": "#7탱크 잔수 처리 및 청소 ('26.03.20)"
         },
         {
-          "file": "photos/03월/s4_3_image6.jpeg",
+          "file": "photos/2026-03/s4_3_image6.jpeg",
           "caption": "#8탱크 Internal Pipe & Support 설치 ('26.03.23)"
         },
         {
-          "file": "photos/03월/s4_5_image8.jpeg",
+          "file": "photos/2026-03/s4_5_image8.jpeg",
           "caption": "#7탱크 Roof 도장 ('26.03.20)"
         },
         {
-          "file": "photos/03월/s4_6_image9.jpeg",
+          "file": "photos/2026-03/s4_6_image9.jpeg",
           "caption": "LNG 2부두 Jetty 전기실 판넬 설치 ('26.03.28)"
         },
         {
-          "file": "photos/03월/s4_1_image4.jpeg",
+          "file": "photos/2026-03/s4_1_image4.jpeg",
           "caption": "제2 LNG터미널 육상부 전경 ('26.03.28)"
         },
         {
-          "file": "photos/03월/s4_2_image5.jpeg",
+          "file": "photos/2026-03/s4_2_image5.jpeg",
           "caption": "제2 LNG터미널 해상 Jetty 전경 ('26.03.28)"
         }
       ]
@@ -1875,35 +3677,35 @@ window.PHOTOS_DATA = {
       "type": "안전점검",
       "items": [
         {
-          "file": "photos/03월/s5_3_image12.png",
+          "file": "photos/2026-03/s5_3_image12.png",
           "caption": "정기안전보건교육 (3.24-3.25)"
         },
         {
-          "file": "photos/03월/s5_8_image17.png",
+          "file": "photos/2026-03/s5_8_image17.png",
           "caption": "안전보건협의체 회의 (3.27)"
         },
         {
-          "file": "photos/03월/s5_6_image15.png",
+          "file": "photos/2026-03/s5_6_image15.png",
           "caption": "관리감독자교육 (3.20)"
         },
         {
-          "file": "photos/03월/s5_5_image14.png",
+          "file": "photos/2026-03/s5_5_image14.png",
           "caption": "그룹사 안전보건경영진단 (3.23~3.24)"
         },
         {
-          "file": "photos/03월/s5_7_image16.png",
+          "file": "photos/2026-03/s5_7_image16.png",
           "caption": "신호수 및 유도원 특별교육 (3.10)"
         },
         {
-          "file": "photos/03월/s5_1_image10.png",
+          "file": "photos/2026-03/s5_1_image10.png",
           "caption": "자율안전컨설팅 (3.20)"
         },
         {
-          "file": "photos/03월/s5_4_image13.png",
+          "file": "photos/2026-03/s5_4_image13.png",
           "caption": "노사합동점검 (3.4)"
         },
         {
-          "file": "photos/03월/s5_2_image11.png",
+          "file": "photos/2026-03/s5_2_image11.png",
           "caption": "하반기 안전보건진단 (3.10-3.12)"
         }
       ]
@@ -1914,27 +3716,27 @@ window.PHOTOS_DATA = {
       "type": "공정사진",
       "items": [
         {
-          "file": "photos/03월/s6_1_image18.jpeg",
+          "file": "photos/2026-03/s6_1_image18.jpeg",
           "caption": "해상부 외부 전경 ('26.03.04)"
         },
         {
-          "file": "photos/03월/s6_2_image19.jpeg",
+          "file": "photos/2026-03/s6_2_image19.jpeg",
           "caption": "해상부 외부 전경 ('26.03.04)"
         },
         {
-          "file": "photos/03월/s6_4_image21.png",
+          "file": "photos/2026-03/s6_4_image21.png",
           "caption": "LNG WP 자켓 도장 ('26.03.04)"
         },
         {
-          "file": "photos/03월/s6_5_image22.png",
+          "file": "photos/2026-03/s6_5_image22.png",
           "caption": "LNG WP 자켓 도장 ('26.03.12)"
         },
         {
-          "file": "photos/03월/s6_6_image23.png",
+          "file": "photos/2026-03/s6_6_image23.png",
           "caption": "제작장 고철용 강관파일 정리 ('26.03.27)"
         },
         {
-          "file": "photos/03월/s6_3_image20.png",
+          "file": "photos/2026-03/s6_3_image20.png",
           "caption": "Safety Guard 이설/설치 ('26.03.26)"
         }
       ]
@@ -1945,35 +3747,35 @@ window.PHOTOS_DATA = {
       "type": "안전점검",
       "items": [
         {
-          "file": "photos/03월/s7_2_image25.jpg",
+          "file": "photos/2026-03/s7_2_image25.jpg",
           "caption": "유해위험기계기구 점검 ('26.03.03)"
         },
         {
-          "file": "photos/03월/s7_8_image31.png",
+          "file": "photos/2026-03/s7_8_image31.png",
           "caption": "안전관리계획서 이행현황 점검 ('26.03.04)"
         },
         {
-          "file": "photos/03월/s7_4_image27.jpg",
+          "file": "photos/2026-03/s7_4_image27.jpg",
           "caption": "해빙기 안전점검 ('26.03.11)"
         },
         {
-          "file": "photos/03월/s7_6_image29.png",
+          "file": "photos/2026-03/s7_6_image29.png",
           "caption": "중처법 이행현황 점검 ('26.03.11)"
         },
         {
-          "file": "photos/03월/s7_1_image24.jpg",
+          "file": "photos/2026-03/s7_1_image24.jpg",
           "caption": "위험성평가 사전회의 ('26.03.11)"
         },
         {
-          "file": "photos/03월/s7_7_image30.png",
+          "file": "photos/2026-03/s7_7_image30.png",
           "caption": "현장 안전 타운홀 미팅 ('26.03.11)"
         },
         {
-          "file": "photos/03월/s7_3_image26.jpg",
+          "file": "photos/2026-03/s7_3_image26.jpg",
           "caption": "산업안전보건위원회 ('26.03.11)"
         },
         {
-          "file": "photos/03월/s7_5_image28.jpg",
+          "file": "photos/2026-03/s7_5_image28.jpg",
           "caption": "월간 안전점검 ('26.03.19)"
         }
       ]
