@@ -1397,7 +1397,7 @@ PANELS.overview = () => {
         <div class="halfgauge-row">
           <div class="halfgauge"><canvas id="hg-land"></canvas><div class="halfgauge-num">${acc_land ?? '-'}</div><div class="halfgauge-lbl">육상부</div></div>
           <div class="halfgauge"><canvas id="hg-sea"></canvas><div class="halfgauge-num">${acc_sea ?? '-'}</div><div class="halfgauge-lbl">해상부</div></div>
-          <div class="halfgauge"><canvas id="hg-elec"></canvas><div class="halfgauge-num">${acc_elec ?? '完'}</div><div class="halfgauge-lbl">154kV</div></div>
+          <div class="halfgauge"><canvas id="hg-elec"></canvas><div class="halfgauge-num">${acc_elec ?? '완료'}</div><div class="halfgauge-lbl">154kV</div></div>
         </div>
         <div class="kpi-row" style="margin-top: 4px;">
           <div class="kpi ${totalSerious > 0 ? 'red' : 'green'}"><div class="v">${totalSerious}</div><div class="l">중대재해</div></div>
@@ -1771,8 +1771,8 @@ PANEL_INIT.progress = () => {
     data: {
       labels: monthsShort,
       datasets: [
-        { type: 'line', label: '종합 계획', data: d.progress.종합.plan, borderColor: '#475569', borderDash: [4,3], borderWidth: 2, pointRadius: 3, pointBackgroundColor: '#475569' },
-        { type: 'line', label: '종합 실적', data: d.progress.종합.actual, borderColor: '#475569', borderWidth: 4, pointRadius: 5, pointBackgroundColor: '#475569', backgroundColor: '#47556922', fill: false },
+        { type: 'line', label: '종합 계획', data: d.progress.종합.plan, borderColor: '#dc2626', borderDash: [4,3], borderWidth: 3, pointRadius: 4, pointBackgroundColor: '#dc2626' },
+        { type: 'line', label: '종합 실적', data: d.progress.종합.actual, borderColor: '#dc2626', borderWidth: 5, pointRadius: 6, pointBackgroundColor: '#dc2626', backgroundColor: '#dc262622', fill: false },
         { type: 'line', label: '육상 계획', data: d.progress.육상부.plan, borderColor: '#2563eb', borderDash: [6,4], borderWidth: 2, pointRadius: 3, pointBackgroundColor: '#2563eb' },
         { type: 'line', label: '육상 실적', data: d.progress.육상부.actual, borderColor: '#2563eb', borderWidth: 3, pointRadius: 4, pointBackgroundColor: '#2563eb' },
         { type: 'line', label: '해상 계획', data: d.progress.해상부.plan, borderColor: '#10b981', borderDash: [6,4], borderWidth: 2, pointRadius: 3, pointBackgroundColor: '#10b981' },
@@ -2195,7 +2195,7 @@ PANELS.safety = () => {
       <div class="card col-3">
         <h3>154kV 무재해 일수</h3>
         <div class="kpi" style="background:${d.no_accident_days["154kV"][lastIdx] ? '#dcfce7' : '#dbeafe'}; color:${d.no_accident_days["154kV"][lastIdx] ? '#15803d' : '#1e40af'}; height: 110px; display: flex; flex-direction: column; justify-content: center;">
-          <div class="v" style="font-size: 40px;">${d.no_accident_days["154kV"][lastIdx] ?? '完'}</div>
+          <div class="v" style="font-size: 40px;">${d.no_accident_days["154kV"][lastIdx] ?? '완료'}</div>
           <div class="l">${d.no_accident_days["154kV"][lastIdx] ? "일 ('24.12.1 ~ )" : "공사 완료"}</div>
         </div>
       </div>
@@ -2400,7 +2400,7 @@ PANEL_INIT.safety = () => {
 //------------------------------------------------------------
 // Photos
 //------------------------------------------------------------
-let currentPhotoFilter = { year: '2026', month: 'all', category: 'all', type: 'all' };
+let currentPhotoFilter = { year: 'all', month: 'all', category: 'all', type: 'all' };
 let currentPhotoSet = []; // for lightbox navigation
 let currentPhotoIdx = 0;
 
@@ -2435,9 +2435,9 @@ PANELS.photos = () => {
     yearGroups[y].push(m);
   });
   const years = Object.keys(yearGroups).sort();
-  // 디폴트 연도가 데이터에 없으면 최신 연도로
-  if (!yearGroups[currentPhotoFilter.year]) {
-    currentPhotoFilter.year = years[years.length - 1] || 'all';
+  // 디폴트 연도가 데이터에 없으면 전체로
+  if (currentPhotoFilter.year !== 'all' && !yearGroups[currentPhotoFilter.year]) {
+    currentPhotoFilter.year = 'all';
   }
 
   // 선택된 연도의 월 목록
@@ -3437,7 +3437,7 @@ PANELS.info = () => `
       <h3>📋 프로젝트 개요</h3>
       <table style="width: auto;">
         <tr><td style="width: 140px; color: #888;">프로젝트명</td><td><b>광양 제2 LNG터미널 증설공사</b></td></tr>
-        <tr><td style="color: #888;">담당</td><td>에너지건설 TF</td></tr>
+        <tr><td style="color: #888;">담당</td><td>에너지건설 TF 박경태</td></tr>
         <tr><td style="color: #888;">보고기간</td><td>2023년 2월 ~ 2026년 3월 <span style="color:var(--text-muted);">(누락월: 2023-12, 2024-02, 2024-10·12, 2025-01~05)</span></td></tr>
         <tr><td style="color: #888;">목적</td><td>에너지건설 TF 주요 지표 Dashboard 구축</td></tr>
       </table>
@@ -3447,15 +3447,12 @@ PANELS.info = () => `
       <ul class="info-list">
         <li>PJT별 주요 지표를 PPT/Excel로 수기 관리, 누적 데이터/장기 추세 분석 어려움</li>
         <li>현장 공정 상황을 직관적으로 확인할 시각화 툴 부재</li>
-        <li>SAP 내 건별 검색 및 보고서 취합 시 수작업 다수 발생</li>
       </ul>
     </div>
     <div class="card col-6">
       <h3>✅ TO-BE (개선 방향)</h3>
       <ul class="info-list">
         <li>데이터 입력 일원화 + 시공사 직접 업로드 프로세스</li>
-        <li>RPA 기반 보고 자동화 (주간/월간 PDF 자동 생성)</li>
-        <li>SAP ERP 실시간 연동 (기성/예산/실적 자동 수집)</li>
       </ul>
     </div>
     <div class="card col-12">
