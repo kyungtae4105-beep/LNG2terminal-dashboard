@@ -315,6 +315,50 @@
   .chart-tall { height: 280px; }
   .chart-short { height: 200px; }
 
+  /* Half-circle gauges (안전 현황 요약용) */
+  .halfgauge-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+  .halfgauge {
+    position: relative;
+    height: 110px;
+    background: var(--surface-2);
+    border-radius: var(--radius-sm);
+    padding: 8px 6px 6px;
+    text-align: center;
+    overflow: hidden;
+  }
+  .halfgauge canvas { width: 100% !important; height: 100% !important; }
+  .halfgauge-num {
+    position: absolute;
+    left: 0; right: 0;
+    bottom: 24px;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1;
+  }
+  .halfgauge-lbl {
+    position: absolute;
+    left: 0; right: 0;
+    bottom: 6px;
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 600;
+  }
+
+  /* Edu table */
+  .edu-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .edu-table th, .edu-table td { padding: 6px 8px; border: 1px solid var(--border); text-align: right; }
+  .edu-table th { background: var(--surface-2); color: var(--text); font-weight: 600; }
+  .edu-table td:first-child, .edu-table th:first-child { text-align: left; font-weight: 600; }
+  .edu-table tr:nth-child(even) td { background: var(--surface-3); }
+  .edu-table .total-col { background: #fef9c3 !important; font-weight: 700; color: #92400e; }
+  .edu-table .empty-cell { color: var(--text-soft); }
+
   .scroll-table { max-height: 320px; overflow-y: auto; }
   .scroll-table::-webkit-scrollbar { width: 8px; }
   .scroll-table::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 4px; }
@@ -1288,18 +1332,16 @@ PANELS.overview = () => {
         <div class="chart-container chart-short"><canvas id="ov-incident"></canvas></div>
       </div>
       <div class="card col-4">
-        <h3>안전 현황 요약</h3>
-        <div class="kpi-row">
-          <div class="kpi green"><div class="v">${acc_sea ?? '-'}</div><div class="l">해상부 무재해</div></div>
-          <div class="kpi green"><div class="v">${acc_land ?? '-'}</div><div class="l">육상부 무재해</div></div>
-          <div class="kpi" style="background:${acc_elec ? '#dcfce7' : '#dbeafe'}; color:${acc_elec ? '#15803d' : '#1e40af'};"><div class="v">${acc_elec ?? '完'}</div><div class="l">154kV ${acc_elec ? '무재해' : '공사완료'}</div></div>
-          <div class="kpi ${totalSerious > 0 ? 'red' : 'green'}"><div class="v">${totalSerious}</div><div class="l">중대재해</div></div>
+        <h3>🛡️ 안전 현황 요약 (무재해)</h3>
+        <div class="halfgauge-row">
+          <div class="halfgauge"><canvas id="hg-land"></canvas><div class="halfgauge-num">${acc_land ?? '-'}</div><div class="halfgauge-lbl">육상부</div></div>
+          <div class="halfgauge"><canvas id="hg-sea"></canvas><div class="halfgauge-num">${acc_sea ?? '-'}</div><div class="halfgauge-lbl">해상부</div></div>
+          <div class="halfgauge"><canvas id="hg-elec"></canvas><div class="halfgauge-num">${acc_elec ?? '完'}</div><div class="halfgauge-lbl">154kV</div></div>
         </div>
-        <div class="kpi-row" style="margin-top: 8px;">
-          <div class="kpi orange"><div class="v">${totalGongsang}</div><div class="l">공상</div></div>
+        <div class="kpi-row" style="margin-top: 4px;">
+          <div class="kpi ${totalSerious > 0 ? 'red' : 'green'}"><div class="v">${totalSerious}</div><div class="l">중대재해</div></div>
           <div class="kpi orange"><div class="v">${totalAcc}</div><div class="l">재해 누적</div></div>
           <div class="kpi" style="background:#cffafe; color:#0e7490;"><div class="v">${totalNM}</div><div class="l">Near Miss</div></div>
-          <div class="kpi" style="background:#f0f9ff; color:#0369a1;"><div class="v">${d.progress.months.length}</div><div class="l">보고 월수</div></div>
         </div>
       </div>
 
@@ -1339,8 +1381,8 @@ PANELS.overview = () => {
         <div class="chart-container"><canvas id="ov-audit"></canvas></div>
       </div>
       <div class="card col-5">
-        <h3>🎓 육상부 안전교육 누적 인원</h3>
-        <div class="chart-container"><canvas id="ov-edu"></canvas></div>
+        <h3>🎓 육상부 안전교육 누적 인원 (표)</h3>
+        <div id="ov-edu-table" style="max-height: 300px; overflow: auto;"></div>
       </div>
     </div>
   `;
@@ -1535,25 +1577,53 @@ PANEL_INIT.overview = () => {
     }
   });
 
-  destroyChart('ov-edu');
-  const eduCats = ['채용/작업변경', '특별교육', '관리감독자', '정기교육'];
-  const eduColors = ['#007acc','#10b981','#ffd54f','#f43f5e'];
-  charts['ov-edu'] = new Chart(document.getElementById('ov-edu'), {
-    type: 'line',
-    data: {
-      labels: monthsShort,
-      datasets: eduCats.map((c,i) => ({
-        label: c, data: d.safety_edu_land[c],
-        borderColor: eduColors[i], backgroundColor: eduColors[i] + '33',
-        fill: true, tension: 0.3, spanGaps: false
-      }))
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } }, tooltip: { mode: 'index', intersect: false } },
-      scales: { y: { beginAtZero: true }, x: { grid: { display: false } } }
-    }
-  });
+  // 안전교육 누적 인원 — 표 형식
+  const eduRoot = document.getElementById('ov-edu-table');
+  if (eduRoot) {
+    const eduCats = ['채용/작업변경', '특별교육', '관리감독자', '정기교육'];
+    let h = '<table class="edu-table"><thead><tr><th>교육명</th>';
+    monthsShort.forEach(m => { h += `<th>${m}</th>`; });
+    h += '<th class="total-col">누계</th></tr></thead><tbody>';
+    eduCats.forEach(c => {
+      h += `<tr><td>${c}</td>`;
+      const arr = d.safety_edu_land[c];
+      arr.forEach(v => {
+        if (v == null) h += `<td class="empty-cell">-</td>`;
+        else h += `<td>${v.toLocaleString()}</td>`;
+      });
+      // last non-null = 누계 (data is already cumulative)
+      const lastNonNull = lastValidIdx(arr);
+      const total = arr[lastNonNull] ?? 0;
+      h += `<td class="total-col">${total.toLocaleString()}</td></tr>`;
+    });
+    h += '</tbody></table>';
+    eduRoot.innerHTML = h;
+  }
+
+  // Half-circle gauges (무재해 일수)
+  // Use a target reference (max of values * 1.2 as default) so the arc shows progress relatively
+  const noaccArr = [
+    d.no_accident_days.육상부[lastIdx] ?? 0,
+    d.no_accident_days.해상부[lastIdx] ?? 0,
+    d.no_accident_days["154kV"][lastIdx] ?? 0
+  ];
+  const gaugeMax = Math.max(...noaccArr, 1) * 1.15;  // 15% headroom
+  const renderHalfGauge = (canvasId, value, color) => {
+    destroyChart(canvasId);
+    const el = document.getElementById(canvasId);
+    if (!el) return;
+    const v = value ?? 0;
+    const filled = Math.min(v, gaugeMax);
+    const remaining = Math.max(0, gaugeMax - filled);
+    charts[canvasId] = new Chart(el, {
+      type: 'doughnut',
+      data: { datasets: [{ data: [filled, remaining], backgroundColor: [color, '#e2e8f0'], borderWidth: 0, circumference: 180, rotation: 270, cutout: '70%' }] },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { enabled: false } } }
+    });
+  };
+  renderHalfGauge('hg-land', d.no_accident_days.육상부[lastIdx], '#2563eb');
+  renderHalfGauge('hg-sea', d.no_accident_days.해상부[lastIdx], '#10b981');
+  renderHalfGauge('hg-elec', d.no_accident_days["154kV"][lastIdx], '#f59e0b');
 };
 
 //------------------------------------------------------------
@@ -2736,33 +2806,185 @@ function resetPhotosData() {
 //------------------------------------------------------------
 // Milestones
 //------------------------------------------------------------
-PANELS.milestones = () => `
+// Filter state for milestones panel
+let _msFilter = { quarter: 'all', sub: 'all', status: 'all' };
+
+function _msQuarterOf(dateStr) {
+  // "2025-06-04" -> "2025 Q2"
+  const [y, m] = dateStr.split('-');
+  const q = Math.ceil(parseInt(m, 10) / 3);
+  return `${y} Q${q}`;
+}
+
+PANELS.milestones = () => {
+  const d = D();
+  const all = d.milestones || [];
+  // Compute available filters
+  const quarters = Array.from(new Set(all.map(m => _msQuarterOf(m.date)))).sort();
+  const subs = Array.from(new Set(all.map(m => m.sub))).sort();
+  const statuses = Array.from(new Set(all.map(m => m.status))).sort();
+  // Quarter counts
+  const qCounts = {};
+  quarters.forEach(q => qCounts[q] = all.filter(m => _msQuarterOf(m.date) === q).length);
+  const totalDone = all.filter(m => m.status === '완료').length;
+  const totalStart = all.filter(m => m.status === '착수').length;
+
+  return `
   <div class="grid">
-    <div class="card col-7">
-      <h3>1Q 주요 공정 마일스톤 (실적)</h3>
-      <div class="scroll-table" style="max-height: none;">
+    <!-- Summary KPI row -->
+    <div class="card col-3">
+      <h3>총 마일스톤</h3>
+      <div class="kpi" style="background:#dbeafe; color:#1e3a8a; height: 90px;">
+        <div class="v" style="font-size: 32px;">${all.length}</div>
+        <div class="l">건 (${quarters[0] ?? ''} ~ ${quarters[quarters.length-1] ?? ''})</div>
+      </div>
+    </div>
+    <div class="card col-3">
+      <h3>완료</h3>
+      <div class="kpi green" style="height: 90px;">
+        <div class="v" style="font-size: 32px;">${totalDone}</div>
+        <div class="l">건 (${all.length ? (totalDone/all.length*100).toFixed(0) : 0}%)</div>
+      </div>
+    </div>
+    <div class="card col-3">
+      <h3>착수</h3>
+      <div class="kpi" style="background:#fef3c7; color:#92400e; height: 90px;">
+        <div class="v" style="font-size: 32px;">${totalStart}</div>
+        <div class="l">건 (착수 후 진행 中)</div>
+      </div>
+    </div>
+    <div class="card col-3">
+      <h3>최근 분기</h3>
+      <div class="kpi" style="background:#dcfce7; color:#15803d; height: 90px;">
+        <div class="v" style="font-size: 32px;">${qCounts[quarters[quarters.length-1]] ?? 0}</div>
+        <div class="l">${quarters[quarters.length-1] ?? '-'} 신규</div>
+      </div>
+    </div>
+
+    <!-- Quarter timeline chart -->
+    <div class="card col-12">
+      <h3>📊 분기별 마일스톤 분포 (완료 / 착수)</h3>
+      <div class="chart-container chart-tall"><canvas id="ms-quarter"></canvas></div>
+    </div>
+
+    <!-- Filter toolbar + table -->
+    <div class="card col-12">
+      <h3>📋 마일스톤 상세 (필터 가능)</h3>
+      <div class="ms-toolbar" style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 10px; padding: 10px; background: var(--surface-2); border-radius: var(--radius-sm);">
+        <strong style="font-size: 12px;">📅 분기:</strong>
+        <button class="ms-btn" data-filter="quarter" data-val="all">전체 (${all.length})</button>
+        ${quarters.map(q => `<button class="ms-btn" data-filter="quarter" data-val="${q}">${q} (${qCounts[q]})</button>`).join('')}
+        <span style="width: 12px;"></span>
+        <strong style="font-size: 12px;">🏗️ 공구:</strong>
+        <button class="ms-btn" data-filter="sub" data-val="all">전체</button>
+        ${subs.map(s => `<button class="ms-btn" data-filter="sub" data-val="${s}">${s}</button>`).join('')}
+        <span style="width: 12px;"></span>
+        <strong style="font-size: 12px;">📌 상태:</strong>
+        <button class="ms-btn" data-filter="status" data-val="all">전체</button>
+        ${statuses.map(st => `<button class="ms-btn" data-filter="status" data-val="${st}">${st}</button>`).join('')}
+        <span style="margin-left: auto; font-size: 11px; color: var(--text-muted);" id="ms-count"></span>
+      </div>
+      <div class="scroll-table" style="max-height: 600px; overflow: auto;">
         <table id="ms-table"></table>
       </div>
     </div>
-    <div class="card col-5">
-      <h3>차월(4월) 주요 공정 계획</h3>
+
+    <!-- Next month plan -->
+    <div class="card col-12">
+      <h3>🗓️ 차월(4월) 주요 공정 계획</h3>
       <div class="scroll-table" style="max-height: none;">
         <table id="ms-plan-table"></table>
       </div>
     </div>
   </div>
 `;
+};
 PANEL_INIT.milestones = () => {
   const d = D();
-  const tbl = document.getElementById('ms-table');
-  let html = '<thead><tr><th>일자</th><th>공구</th><th>공종</th><th>주요 내용</th><th>상태</th></tr></thead><tbody>';
-  d.milestones.forEach(m => {
-    const cls = m.status === '완료' ? 'badge-done' : 'badge-start';
-    html += `<tr><td>${m.date}</td><td>${m.sub}</td><td>${m.공종}</td><td>${m.title}</td><td><span class="badge ${cls}">${m.status}</span></td></tr>`;
-  });
-  html += '</tbody>';
-  tbl.innerHTML = html;
+  const all = d.milestones || [];
 
+  // Render quarter chart
+  const quarters = Array.from(new Set(all.map(m => _msQuarterOf(m.date)))).sort();
+  const doneCounts = quarters.map(q => all.filter(m => _msQuarterOf(m.date) === q && m.status === '완료').length);
+  const startCounts = quarters.map(q => all.filter(m => _msQuarterOf(m.date) === q && m.status === '착수').length);
+  destroyChart('ms-quarter');
+  charts['ms-quarter'] = new Chart(document.getElementById('ms-quarter'), {
+    type: 'bar',
+    data: {
+      labels: quarters,
+      datasets: [
+        { label: '완료', data: doneCounts, backgroundColor: '#15803d', stack: 's', borderRadius: 4 },
+        { label: '착수', data: startCounts, backgroundColor: '#f59e0b', stack: 's', borderRadius: 4 },
+        { type: 'line', label: '누적', data: quarters.map((_, i) => quarters.slice(0, i+1).reduce((s,q,idx) => s + doneCounts[idx] + startCounts[idx], 0)), borderColor: '#dc2626', borderWidth: 3, pointRadius: 5, pointBackgroundColor: '#dc2626', yAxisID: 'y1', tension: 0.3 }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { position: 'bottom' }, tooltip: { mode: 'index', intersect: false } },
+      scales: {
+        y: { stacked: true, beginAtZero: true, title: { display: true, text: '신규 마일스톤(건)' } },
+        y1: { position: 'right', beginAtZero: true, grid: { display: false }, title: { display: true, text: '누적(건)' } },
+        x: { stacked: true, grid: { display: false } }
+      }
+    }
+  });
+
+  // Render filtered table
+  const renderMsTable = () => {
+    let filtered = all;
+    if (_msFilter.quarter !== 'all') filtered = filtered.filter(m => _msQuarterOf(m.date) === _msFilter.quarter);
+    if (_msFilter.sub !== 'all') filtered = filtered.filter(m => m.sub === _msFilter.sub);
+    if (_msFilter.status !== 'all') filtered = filtered.filter(m => m.status === _msFilter.status);
+
+    const tbl = document.getElementById('ms-table');
+    let html = '<thead><tr><th style="width:90px;">일자</th><th style="width:120px;">공구</th><th style="width:80px;">공종</th><th>주요 내용</th><th style="width:70px;">상태</th></tr></thead><tbody>';
+    if (filtered.length === 0) {
+      html += '<tr><td colspan="5" style="text-align: center; color: var(--text-muted); padding: 20px;">조건에 맞는 마일스톤이 없습니다.</td></tr>';
+    } else {
+      filtered.forEach(m => {
+        const cls = m.status === '완료' ? 'badge-done' : 'badge-start';
+        html += `<tr><td>${m.date}</td><td>${m.sub}</td><td>${m.공종}</td><td>${m.title}</td><td><span class="badge ${cls}">${m.status}</span></td></tr>`;
+      });
+    }
+    html += '</tbody>';
+    tbl.innerHTML = html;
+    const cnt = document.getElementById('ms-count');
+    if (cnt) cnt.textContent = `${filtered.length} / ${all.length} 건`;
+  };
+
+  // Bind filter buttons
+  const root = document.querySelector('.panel[data-tab="milestones"]');
+  if (root) {
+    root.querySelectorAll('.ms-btn').forEach(btn => {
+      btn.style.cssText = 'padding: 4px 10px; font-size: 12px; border: 1px solid var(--border); border-radius: 4px; background: var(--surface); color: var(--text); cursor: pointer;';
+      // initial active state
+      if (btn.dataset.val === _msFilter[btn.dataset.filter]) {
+        btn.style.background = 'var(--primary)';
+        btn.style.color = '#fff';
+        btn.style.borderColor = 'var(--primary)';
+      }
+      btn.onclick = () => {
+        const f = btn.dataset.filter;
+        _msFilter[f] = btn.dataset.val;
+        // Update visual active
+        root.querySelectorAll(`.ms-btn[data-filter="${f}"]`).forEach(b => {
+          if (b.dataset.val === _msFilter[f]) {
+            b.style.background = 'var(--primary)';
+            b.style.color = '#fff';
+            b.style.borderColor = 'var(--primary)';
+          } else {
+            b.style.background = 'var(--surface)';
+            b.style.color = 'var(--text)';
+            b.style.borderColor = 'var(--border)';
+          }
+        });
+        renderMsTable();
+      };
+    });
+  }
+  renderMsTable();
+
+  // Next month plan table
   const tbl2 = document.getElementById('ms-plan-table');
   let html2 = '<thead><tr><th>예정일</th><th>공종</th><th>주요 내용</th></tr></thead><tbody>';
   d.next_month_plan.forEach(p => {
