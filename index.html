@@ -57,19 +57,23 @@
   /* ====== Title bar ====== */
   .titlebar {
     background: var(--surface);
-    height: 40px;
+    height: 52px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 16px;
+    padding: 0 18px;
     border-bottom: 1px solid var(--border);
     -webkit-app-region: drag;
     flex-shrink: 0;
+    gap: 16px;
   }
+  .titlebar .brand { display: flex; align-items: center; gap: 14px; }
+  .titlebar .brand .logo { height: 26px; width: auto; display: block; }
+  .titlebar .brand .divider { width: 1px; height: 22px; background: var(--border); }
   .titlebar .menu { display: flex; gap: 16px; font-size: 12px; color: var(--text-muted); font-weight: 500; }
   .titlebar .menu span { cursor: pointer; padding: 4px 8px; border-radius: 4px; transition: background 0.15s, color 0.15s; }
   .titlebar .menu span:hover { background: var(--surface-2); color: var(--text); }
-  .titlebar .title { font-size: 13px; color: var(--text); font-weight: 600; letter-spacing: -0.01em; }
+  .titlebar .title { font-size: 14px; color: var(--text); font-weight: 600; letter-spacing: -0.01em; }
   .titlebar .controls { display: flex; gap: 8px; }
   .titlebar .controls span { width: 12px; height: 12px; border-radius: 50%; background: #cbd5e1; }
   .titlebar .controls .min { background: #fbbf24; }
@@ -130,16 +134,16 @@
     overflow: hidden;
   }
   .sidebar-header {
-    height: 44px;
-    padding: 0 18px;
+    height: 48px;
+    padding: 0 16px;
     display: flex;
     align-items: center;
-    text-transform: uppercase;
-    font-size: 11px;
-    color: var(--text-soft);
-    letter-spacing: 0.06em;
+    font-size: 13px;
+    color: var(--text);
+    letter-spacing: -0.01em;
     font-weight: 700;
     border-bottom: 1px solid var(--border);
+    background: var(--surface-2);
   }
   .sidebar-content { flex: 1; overflow-y: auto; padding: 8px 8px; }
   .menu-item {
@@ -848,7 +852,11 @@
 
 <!-- Title bar -->
 <div class="titlebar">
-  <div class="title">광양 제2 LNG터미널 증설공사 — 주요 지표 Dashboard</div>
+  <div class="brand">
+    <img src="assets/posco_intl_logo.png" alt="POSCO INTERNATIONAL" class="logo">
+    <div class="divider"></div>
+    <div class="title">광양 제2 LNG터미널 증설공사 — 주요 지표 Dashboard</div>
+  </div>
   <div class="controls"><span class="min"></span><span class="max"></span><span class="close"></span></div>
 </div>
 
@@ -856,7 +864,7 @@
 
   <!-- Sidebar (Explorer) -->
   <div class="sidebar">
-    <div class="sidebar-header">EXPLORER — 광양 LNG TF</div>
+    <div class="sidebar-header">광양 제2 LNG터미널 증설공사</div>
     <div class="sidebar-content">
       <div class="menu-group">📋 종합</div>
       <div class="menu-item active" data-tab="overview"><span class="ic">📊</span>종합 대시보드</div>
@@ -891,7 +899,7 @@
 <div class="statusbar">
   <span>📍 광양</span>
   <span>👤 에너지건설 TF</span>
-  <span>📅 보고기간: 2026-01 ~ 2026-03</span>
+  <span>📅 보고기간: 2025년 6월 ~ 2026년 3월</span>
   <span class="right">UTF-8</span>
   <span>Korean</span>
   <span id="status-msg">Ready</span>
@@ -3321,7 +3329,7 @@ PANELS.info = () => `
       <table style="width: auto;">
         <tr><td style="width: 140px; color: #888;">프로젝트명</td><td><b>광양 제2 LNG터미널 증설공사</b></td></tr>
         <tr><td style="color: #888;">담당</td><td>에너지건설 TF</td></tr>
-        <tr><td style="color: #888;">보고기간</td><td>2026년 1월 ~ 3월</td></tr>
+        <tr><td style="color: #888;">보고기간</td><td>2025년 6월 ~ 2026년 3월</td></tr>
         <tr><td style="color: #888;">목적</td><td>에너지건설 TF 주요 지표 Dashboard 구축</td></tr>
       </table>
     </div>
