@@ -1024,6 +1024,32 @@ function destroyChart(id) { if (charts[id]) { charts[id].destroy(); delete chart
 // PANELS — HTML markup builders
 //============================================================
 const D = () => window.DASHBOARD_DATA;
+// 최근 N개월만 슬라이스한 데이터 객체를 반환 (시계열 차트/표용)
+// 마일스톤·project 정보 등 시계열이 아닌 필드는 그대로 보존
+function sliceLastN(d, n) {
+  if (!d || !d.progress || !Array.isArray(d.progress.months)) return d;
+  const N = d.progress.months.length;
+  if (N <= n) return d;
+  const start = N - n;
+  const out = JSON.parse(JSON.stringify(d));
+  for (const key of ['progress','manpower','no_accident_days','safety_audit_land','safety_edu_land']) {
+    const obj = out[key];
+    if (!obj) continue;
+    if (Array.isArray(obj.months)) obj.months = obj.months.slice(start);
+    for (const k of Object.keys(obj)) {
+      if (k === 'months') continue;
+      const v = obj[k];
+      if (Array.isArray(v)) obj[k] = v.slice(start);
+      else if (v && typeof v === 'object') {
+        for (const k2 of Object.keys(v)) {
+          if (Array.isArray(v[k2])) v[k2] = v[k2].slice(start);
+        }
+      }
+    }
+  }
+  return out;
+}
+const D10 = () => sliceLastN(D(), 10);
 const PANELS = {};
 const PANEL_INIT = {};
 
@@ -1277,8 +1303,8 @@ function saveTabEdits(tabKey) {
 // Overview
 //------------------------------------------------------------
 PANELS.overview = () => {
-  const d = D();
-  const lastIdx = getLastIdx();
+  const d = D10();
+  const lastIdx = lastValidIdx(d.progress.종합.actual);
   const lastMonth = d.progress.months[lastIdx];
   const lastLabel = fmtMonthShort(lastMonth);
   const overall = d.progress.종합.actual[lastIdx] ?? 0;
@@ -1326,15 +1352,19 @@ PANELS.overview = () => {
     </span>`
   ).join('') : '';
 
+  // 최근 10개월 표시 범위
+  const firstM = d.progress.months[0] || '';
+  const lastM = d.progress.months[d.progress.months.length-1] || '';
   return `
     <div class="grid">
       <!-- 단계/보고기간 안내 -->
       <div class="card col-12" style="padding:12px 16px;background:linear-gradient(90deg,#f0f9ff 0%,#fefce8 100%);">
         <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
-          <div style="font-weight:700;color:var(--text);font-size:13px;">📋 보고기간: <span style="color:var(--primary-dark);">2023.02 ~ 2026.03</span> (38개월)</div>
+          <div style="font-weight:700;color:var(--text);font-size:13px;">📊 차트 표시기간: <span style="color:var(--danger);">${firstM} ~ ${lastM} (최근 10개월)</span></div>
+          <div style="height:18px;width:1px;background:var(--border);"></div>
+          <div style="font-size:12px;color:var(--text-muted);">📋 전체 보고기간: 2023.02 ~ 2026.03 (38개월) · 사진/마일스톤은 전체 표시</div>
           <div style="height:18px;width:1px;background:var(--border);"></div>
           ${phaseInfo}
-          <div style="margin-left:auto;font-size:11px;color:var(--text-muted);">갭: ${gaps.length}개월 (${gaps.slice(0,4).join(', ')}${gaps.length > 4 ? ' …' : ''})</div>
         </div>
       </div>
 
@@ -1348,7 +1378,7 @@ PANELS.overview = () => {
           <div class="gauge-sub">
             <div class="gauge-sub-item"><div class="v">${land.toFixed(1)}%</div><div class="l">육상 / 계획 ${landP.toFixed(1)}</div></div>
             <div class="gauge-sub-item"><div class="v">${sea.toFixed(1)}%</div><div class="l">해상 / 계획 ${seaP.toFixed(1)}</div></div>
-            <div class="gauge-sub-item"><div class="v">${elec == null ? '完' : elec.toFixed(0)+'%'}</div><div class="l">154kV ${elecP == null ? '' : '/ 계획 '+elecP.toFixed(0)}</div></div>
+            <div class="gauge-sub-item"><div class="v">${(elec == null || elec >= 100) ? '완료' : elec.toFixed(0)+'%'}</div><div class="l">154kV ${(elecP == null || (elec != null && elec >= 100)) ? '' : '/ 계획 '+elecP.toFixed(0)}</div></div>
           </div>
         </div>
       </div>
@@ -1419,8 +1449,8 @@ PANELS.overview = () => {
   `;
 };
 PANEL_INIT.overview = () => {
-  const d = D();
-  const lastIdx = getLastIdx();
+  const d = D10();
+  const lastIdx = lastValidIdx(d.progress.종합.actual);
   const overall = d.progress.종합.actual[lastIdx] ?? 0;
   const months = d.progress.months;
   const monthsShort = months.map(fmtMonthCompact);
@@ -1440,7 +1470,7 @@ PANEL_INIT.overview = () => {
       datasets: [
         { type: 'bar', label: '계획 (Plan)', data: d.progress.종합.plan, backgroundColor: '#cbd5e1', borderRadius: 4, order: 3 },
         { type: 'bar', label: '실적 (Actual)', data: d.progress.종합.actual, backgroundColor: '#2563eb', borderRadius: 4, order: 2 },
-        { type: 'line', label: '실적 추세', data: d.progress.종합.actual, borderColor: '#f59e0b', backgroundColor: '#f59e0b22', tension: 0.4, borderWidth: 3, pointRadius: 4, pointBackgroundColor: '#f59e0b', order: 1, fill: false }
+        { type: 'line', label: '실적 추세', data: d.progress.종합.actual, borderColor: '#dc2626', backgroundColor: '#dc262622', tension: 0.4, borderWidth: 5, pointRadius: 5, pointBackgroundColor: '#dc2626', pointBorderColor: '#dc2626', order: 1, fill: false }
       ]
     },
     options: {
@@ -1661,8 +1691,8 @@ PANEL_INIT.overview = () => {
 // Progress
 //------------------------------------------------------------
 PANELS.progress = () => {
-  const d = D();
-  const lastIdx = getLastIdx();
+  const d = D10();
+  const lastIdx = lastValidIdx(d.progress.종합.actual);
   const lastMonth = d.progress.months[lastIdx];
   return `
   ${tabToolbar('progress')}
@@ -1698,8 +1728,8 @@ PANELS.progress = () => {
     <div class="card col-3">
       <h3>154kV</h3>
       <div class="kpi" style="background:#fef3c7; color:#92400e; height: 90px;">
-        <div class="v" style="font-size: 32px;">${d.progress["154kV"].actual[lastIdx] == null ? '完' : d.progress["154kV"].actual[lastIdx].toFixed(0)+'%'}</div>
-        <div class="l">${d.progress["154kV"].actual[lastIdx] == null ? '공사 완료' : '계획 '+d.progress["154kV"].plan[lastIdx].toFixed(0)+'%'}</div>
+        <div class="v" style="font-size: 32px;">${(d.progress["154kV"].actual[lastIdx] == null || d.progress["154kV"].actual[lastIdx] >= 100) ? '완료' : d.progress["154kV"].actual[lastIdx].toFixed(0)+'%'}</div>
+        <div class="l">${(d.progress["154kV"].actual[lastIdx] == null || d.progress["154kV"].actual[lastIdx] >= 100) ? '공사 완료' : '계획 '+d.progress["154kV"].plan[lastIdx].toFixed(0)+'%'}</div>
       </div>
     </div>
 
@@ -1732,7 +1762,7 @@ PANELS.progress = () => {
 };
 PANEL_INIT.progress = () => {
   bindTabToolbar('progress');
-  const d = D();
+  const d = D10();
   const months = d.progress.months;
   const monthsShort = months.map(fmtMonthCompact);
 
@@ -1859,8 +1889,8 @@ PANEL_INIT.progress = () => {
 // Resource (Manpower)
 //------------------------------------------------------------
 PANELS.resource = () => {
-  const d = D();
-  const lastIdx = getLastIdx();
+  const d = D10();
+  const lastIdx = lastValidIdx(d.progress.종합.actual);
   const lastMonth = d.manpower.months[lastIdx];
   const totalMgr = ['육상부','해상부','154kV'].reduce((s,k) => s + (d.manpower[k].manager[lastIdx] ?? 0), 0);
   const totalPtn = ['육상부','해상부','154kV'].reduce((s,k) => s + (d.manpower[k].partner[lastIdx] ?? 0), 0);
@@ -1948,8 +1978,8 @@ PANELS.resource = () => {
 };
 PANEL_INIT.resource = () => {
   bindTabToolbar('resource');
-  const d = D();
-  const lastIdx = getLastIdx();
+  const d = D10();
+  const lastIdx = lastValidIdx(d.progress.종합.actual);
   const months = d.manpower.months;
   const monthsShort = months.map(fmtMonthCompact);
 
@@ -2120,8 +2150,8 @@ PANEL_INIT.resource = () => {
 // Safety
 //------------------------------------------------------------
 PANELS.safety = () => {
-  const d = D();
-  const lastIdx = getLastIdx();
+  const d = D10();
+  const lastIdx = lastValidIdx(d.progress.종합.actual);
   const inc = d.incident_summary;
   const totalSerious = inc.reduce((s,r) => s + r.중대재해, 0);
   const totalAcc = inc.reduce((s,r) => s + r.공상 + r.일반재해 + r.중대재해, 0);
@@ -2240,7 +2270,7 @@ PANELS.safety = () => {
 };
 PANEL_INIT.safety = () => {
   bindTabToolbar('safety');
-  const d = D();
+  const d = D10();
   const months = d.no_accident_days.months;
   const monthsShort = months.map(fmtMonthCompact);
 
