@@ -2309,10 +2309,17 @@ PANEL_INIT.safety = () => {
     options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 11 } } } }, scales: { y: { beginAtZero: true }, x: { grid: { display: false } } } }
   });
 
+  // 안전 차트(지적 합계/안전교육/지적 항목별 추이)는 2026-01부터 표시
+  const safetyStartIdx = months.findIndex(m => m >= '2026-01');
+  const safetyMonths = safetyStartIdx >= 0 ? months.slice(safetyStartIdx) : months;
+  const safetyMonthsShort = safetyMonths.map(fmtMonthCompact);
+  const safetySliceStart = safetyStartIdx >= 0 ? safetyStartIdx : 0;
+
   // Audit trend (sum of all categories per month)
   destroyChart('sf-audit-trend');
   const auditAllCats = ['추락','전도','낙하/비래','감전','충돌/협착','붕괴/도괴','화재/폭발','질식','기타'];
-  const auditTotals = d.safety_audit_land.months.map((_, i) => {
+  const auditTotals = safetyMonths.map((_, k) => {
+    const i = safetySliceStart + k;
     const vals = auditAllCats.map(c => d.safety_audit_land[c][i]);
     if (vals.every(v => v == null)) return null;
     return vals.reduce((s,v) => s + (v ?? 0), 0);
@@ -2320,10 +2327,10 @@ PANEL_INIT.safety = () => {
   charts['sf-audit-trend'] = new Chart(document.getElementById('sf-audit-trend'), {
     type: 'bar',
     data: {
-      labels: monthsShort,
+      labels: safetyMonthsShort,
       datasets: [{
         label: '월간 지적 합계', data: auditTotals,
-        backgroundColor: monthsShort.map((_, i) => monthColor(i)),
+        backgroundColor: safetyMonthsShort.map((_, i) => monthColor(safetySliceStart + i)),
         borderRadius: 4,
       }]
     },
@@ -2340,9 +2347,9 @@ PANEL_INIT.safety = () => {
   charts['sf-edu'] = new Chart(document.getElementById('sf-edu'), {
     type: 'line',
     data: {
-      labels: monthsShort,
+      labels: safetyMonthsShort,
       datasets: eduCats.map((c,i) => ({
-        label: c, data: d.safety_edu_land[c],
+        label: c, data: d.safety_edu_land[c].slice(safetySliceStart),
         borderColor: eduColors[i], backgroundColor: eduColors[i]+'33',
         fill: true, tension: 0.3, pointRadius: 4, spanGaps: false
       }))
@@ -2375,16 +2382,16 @@ PANEL_INIT.safety = () => {
     }
   });
 
-  // Audit lines: each category as a separate line over months
+  // Audit lines: each category as a separate line over months (2026-01~)
   destroyChart('sf-audit-lines');
   const lineCats = ['추락','전도','낙하/비래','감전','충돌/협착','붕괴/도괴','화재/폭발','기타'];
   const lineColors = ['#dc2626','#f97316','#eab308','#06b6d4','#10b981','#a855f7','#ef4444','#64748b'];
   charts['sf-audit-lines'] = new Chart(document.getElementById('sf-audit-lines'), {
     type: 'line',
     data: {
-      labels: monthsShort,
+      labels: safetyMonthsShort,
       datasets: lineCats.map((c,i) => ({
-        label: c, data: d.safety_audit_land[c],
+        label: c, data: d.safety_audit_land[c].slice(safetySliceStart),
         borderColor: lineColors[i], backgroundColor: lineColors[i] + '22',
         borderWidth: 2, tension: 0.3, pointRadius: 4, spanGaps: false, fill: false
       }))
