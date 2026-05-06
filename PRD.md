@@ -2,8 +2,8 @@
 
 > **Product Requirements Document**
 > 작성: POSCO INTERNATIONAL 에너지건설 TF
-> 버전: v1.0 (2026-04)
-> 관련 문서: [BRD.md](./BRD.md), [README.md](./README.md), [DEPLOYMENT.md](./DEPLOYMENT.md)
+> 버전: v1.1 (2026-05)
+> 관련 문서: [BRD.md](./BRD.md) · [README.md](./README.md) · [DEPLOYMENT.md](./DEPLOYMENT.md)
 
 ---
 
@@ -16,9 +16,11 @@
 공정·인력·안전·마일스톤·현장사진을 단일 정적 웹 페이지에서 통합 시각화하는 임직원 전용 대시보드.
 
 ### 1.3 핵심 가치 제안
-- **빌드리스(Buildless)** — `index.html` 더블클릭 또는 Cloudflare Pages 직접 서빙
-- **편집 가능 데이터** — 브라우저 UI에서 인라인 수정 → JSON 내보내기 → git push
-- **사진까지 한 곳에** — 분기별 PPT에 흩어진 작업사진 112장을 월/공종 필터로 통합 열람
+- **빌드리스(Buildless)** — `index.html` 더블클릭 또는 Cloudflare Pages 직접 서빙. Node/Webpack 의존 0
+- **Data-as-Code** — 데이터는 `data.js` / `photos.js` 의 전역 객체. 편집 도구는 동일 페이지 안에서 내장
+- **Single File UI** — 모든 CSS/JS를 `index.html` 내부에 둬 라우팅·번들링 복잡도 제거
+- **VS Code-like 인터페이스** — 익숙한 IDE 메타포(Activity Bar / Sidebar / Tabs / Status Bar)로 학습 비용 최소화
+- **사진까지 한 곳에** — 분기별 PPT에 흩어진 작업사진 341장을 월/공종 필터로 통합 열람
 
 ---
 
@@ -26,8 +28,8 @@
 
 ### P1. 임원 / 본부장 (Executive Viewer)
 - **목표**: 5분 내에 종합 공정률·안전·주요 마일스톤 파악
-- **주요 화면**: 종합 대시보드, 마일스톤
-- **편집 권한**: 없음 (읽기 전용 사용)
+- **주요 화면**: 종합 대시보드, 안전 관리
+- **편집 권한**: 없음 (읽기 전용)
 
 ### P2. 현장 PM / 공종 책임자 (Site Manager)
 - **목표**: 자기 공구의 상세 추이·인력·지적사항 추적
@@ -49,10 +51,10 @@
 ## 3. 사용자 시나리오
 
 ### S1. 월간 임원 보고
-> 본부장이 보고 직전 대시보드를 열어 종합 게이지·S-curve·마일스톤만 빠르게 훑고, 안전 지적사항을 클릭하여 추세를 확인한다. **PPT 재가공 없이 화면을 그대로 공유**한다.
+> 본부장이 보고 직전 대시보드를 열어 종합 KPI 카드 → S-curve → 안전 카드 순으로 빠르게 훑고, 안전 지적사항을 클릭하여 추세를 확인한다. **PPT 재가공 없이 화면을 그대로 공유**한다.
 
 ### S2. 공구별 비교 분석
-> 육상부 PM이 자기 공구 vs 종합 평균을 한 화면에서 비교하고, 편차가 큰 월의 인력 변동을 인력 탭에서 확인한다.
+> 육상부 PM이 자기 공구 vs 종합 평균을 한 화면에서 비교하고, 편차가 큰 월의 인력 변동을 시공/자원관리 탭에서 확인한다.
 
 ### S3. 데이터 갱신 (월말)
 > TF 실무자가 PPT 보고서를 받은 후 **데이터 편집** 탭에서 4월 컬럼을 추가·입력 → JSON 내보내기 → `data.js` 교체 → `git push`. Cloudflare Pages가 1~2분 내 재배포.
@@ -61,64 +63,68 @@
 > 유관 부서 직원이 `kyungtae@poscointl.com`로 접근 신청 메일 발송 → 관리자가 Zero Trust에서 이메일 추가 → 즉시 OTP 로그인 가능.
 
 ### S5. 사진 검색
-> 안전 담당이 "3월 해상부 부두공" 작업사진을 확인하기 위해 **월별 작업사진** 탭에서 월/공종 필터 적용 → 라이트박스로 캡션과 함께 열람.
+> 안전 담당이 "3월 해상부 부두공" 작업사진을 확인하기 위해 **현장 기록** 탭에서 월/공종 필터 적용 → 라이트박스로 캡션과 함께 열람.
+
+### S6. 38개월 추세 분석
+> 본부장이 "최근 1년간 공정 진행이 계획 대비 어땠는가" 를 묻고, S-curve의 누락월(2024-10·12, 2025-01~05)에 대한 사유를 즉석에서 확인한다.
 
 ---
 
 ## 4. 기능 요구사항
 
-### 4.1 화면(탭) 구성
+### 4.1 화면(탭) 구성 — 7개 탭
 
-| # | 탭 | 핵심 컴포넌트 |
-|---|---|---|
-| T1 | **종합 대시보드** | 진행률 게이지, S-curve(계획/실적), KPI 카드, 인력 요약, 안전 요약, 교육 요약 |
-| T2 | **공정 관리** | 공구별(종합/육상/해상/154kV) 월별 공정률 라인차트 + 계획/실적 편차 테이블 |
-| T3 | **시공/자원관리** | 공구별 인력 stacked bar (관리자/협력사) + 비율 표 |
-| T4 | **안전 관리** | 무재해 일수 카드 / Near Miss·재해 요약 / 지적사항 분류(9종) 추이 / 교육(4종) 추이 |
-| T5 | **월별 작업사진** | 월(1·2·3월)·공종 필터 + 썸네일 그리드 + 라이트박스(캡션 포함) |
-| T6 | **마일스톤** | 1Q 실적 일정표(완료/착수) + 차월 계획 일정표 |
-| T7 | **데이터 편집** | 모든 지표 인라인 입력, JSON 내보내기, JSON 불러오기 |
+| # | key | 탭 | 아이콘 | 핵심 컴포넌트 |
+|---|---|---|---|---|
+| T1 | `overview` | **종합 대시보드** | 📊 | KPI 카드 4종, S-curve, 공구별 진행 요약 표, 최근 안전 지적사항 |
+| T2 | `progress` | **공정 관리** | 📈 | 공구 필터 + 월별 계획/실적 라인, 편차 테이블 |
+| T3 | `resource` | **시공/자원관리** | 👷 | 인력 stacked bar (관리자/협력사) + 비율 표 |
+| T4 | `safety` | **안전 관리** | 🛡️ | 무재해 일수, Near Miss/재해, 지적사항 9분류, 교육 4종 |
+| T5 | `photos` | **현장 기록** | 📷 | 월·공종 필터 + 썸네일 그리드 + 라이트박스 |
+| T6 | `editor` | **데이터 편집** | ✏️ | 모든 지표 인라인 입력, JSON 내보내기·불러오기 |
+| T7 | `info` | **프로젝트 정보** | ℹ️ | 프로젝트 메타, AS-IS / TO-BE, 데이터 갭 사유 |
 
 ### 4.2 기능 명세 (FR)
 
-#### FR-1. 종합 대시보드
-- **FR-1.1** 종합 공정률(최신월) 게이지 표시 — 계획/실적 동시 표기
-- **FR-1.2** S-curve 라인차트 — 종합 공구의 월별 계획·실적 비교
-- **FR-1.3** KPI 카드 — 종합 공정률, 누적 인력, 무재해 최대일수, 재해 합계
-- **FR-1.4** 안전·교육 요약은 최신월 값 기준 카드로 표기
+#### FR-1. 종합 대시보드 (T1)
+- **FR-1.1** 상단 KPI 카드 4종 — 종합 공정률(최신월), 누적 투입 인력, 무재해 최대일수, 교육 이수 합계
+- **FR-1.2** S-curve 라인차트 — 종합 공구의 누적 계획 vs 실적
+- **FR-1.3** 공구별 진행 요약 테이블 — 종합/육상/해상/154kV 최신 공정률 + 편차
+- **FR-1.4** 최근 안전 지적사항 — 최신월 9분류 합계 또는 카드형 요약
 
-#### FR-2. 공정 관리
-- **FR-2.1** 공구 선택 토글 (종합/육상부/해상부/154kV) 또는 4공구 동시 비교
+#### FR-2. 공정 관리 (T2)
+- **FR-2.1** 공구 필터 토글 (종합/육상부/해상부/154kV)
 - **FR-2.2** 라인차트: x축=월, y축=공정률(%) — 계획선·실적선 2종
-- **FR-2.3** 편차 테이블: 월별 (실적 − 계획), 음수는 적색 강조
+- **FR-2.3** 상세 데이터 테이블 — 월별 계획/실적/편차, 음수는 적색
+- **FR-2.4** 누락월은 차트에서 자동 갭 처리 (`null` 처리)
 
-#### FR-3. 시공/자원관리
+#### FR-3. 시공/자원관리 (T3)
 - **FR-3.1** Stacked bar — 관리자(상단) + 협력사(하단)
 - **FR-3.2** 월별 관리자/협력사 비율(%) 보조 표시
 
-#### FR-4. 안전 관리
+#### FR-4. 안전 관리 (T4)
 - **FR-4.1** 공구별 무재해 일수 카드(최신월 기준), 미입력은 "—" 표시
 - **FR-4.2** 재해 요약 표 — 공상/일반재해/중대재해/일반NearMiss/중대NearMiss × 공구
 - **FR-4.3** 육상부 지적사항 9분류(추락/전도/낙하·비래/감전/충돌·협착/붕괴·도괴/화재·폭발/질식/기타) 월별 라인차트
 - **FR-4.4** 안전 교육 4종(채용·작업변경/특별/관리감독자/정기) 월별 stacked area
 
-#### FR-5. 월별 작업사진
-- **FR-5.1** 월 필터: 전체 / 1월 / 2월 / 3월
-- **FR-5.2** 공종 필터: 토목/기계/전기/건축/부두공/기타
-- **FR-5.3** 썸네일 그리드 (반응형, 최소 4열)
+#### FR-5. 현장 기록 (T5)
+- **FR-5.1** 월 필터: 전체 + 38개 월 옵션
+- **FR-5.2** 공종 필터: 육상부 / 해상부 / 154kV / 전체
+- **FR-5.3** 썸네일 그리드 (반응형, 1440px 기준 최소 4열)
 - **FR-5.4** 클릭 시 라이트박스 — 원본 + 캡션, ←/→ 키 네비게이션, ESC 닫기
 
-#### FR-6. 마일스톤
-- **FR-6.1** 1Q 실적 — 날짜순 정렬, 공종/공구/제목/상태(착수·완료) 컬럼
-- **FR-6.2** 차월 계획 — 날짜순 정렬, 공종/제목 컬럼
-- **FR-6.3** 상태별 색상 — 완료(녹색), 착수(청색)
+#### FR-6. 데이터 편집 (T6)
+- **FR-6.1** 전 지표 인라인 셀 편집(숫자 검증)
+- **FR-6.2** **JSON 내보내기** — 현재 상태를 `window.DASHBOARD_DATA` 형태 JSON 파일로 다운로드
+- **FR-6.3** **JSON 불러오기** — 파일 업로드 시 즉시 화면 반영(저장은 git push 시점)
+- **FR-6.4** 미저장 변경 시 페이지 이탈 경고
+- **FR-6.5** 편집 내용은 `localStorage` 에 임시 저장 (브라우저 새로고침에도 유지)
 
-#### FR-7. 데이터 편집
-- **FR-7.1** 전 지표 인라인 셀 편집(숫자 검증)
-- **FR-7.2** 행 추가/삭제(마일스톤·차월계획)
-- **FR-7.3** **JSON 내보내기** — 현재 상태를 `window.DASHBOARD_DATA` 형태 JSON 파일로 다운로드
-- **FR-7.4** **JSON 불러오기** — 파일 업로드 시 즉시 화면 반영(저장은 git push 시점)
-- **FR-7.5** 미저장 변경 시 페이지 이탈 경고
+#### FR-7. 프로젝트 정보 (T7)
+- **FR-7.1** 프로젝트 메타(이름·담당·기간·목적)
+- **FR-7.2** AS-IS / TO-BE 카드
+- **FR-7.3** 데이터 갭(누락월) 사유 표
 
 #### FR-8. 접근 제어
 - **FR-8.1** Cloudflare Access 게이트 — 미인증 시 로그인 페이지로 리디렉션
@@ -134,48 +140,59 @@
 ```ts
 {
   project: {
-    name: string,           // "광양 제2 LNG터미널 증설공사"
-    owner: string,          // "에너지건설 TF"
-    report_period: string,  // "2026년 1월 ~ 3월"
-    purpose: string
+    name: string,
+    owner: string,
+    report_period: string,
+    purpose: string,
+    phases: { name: string, start: string, end: string|null, desc: string }[],
+    data_gaps: string[],                          // ["2023-12", ...]
+    data_gap_reason: { [month: string]: string }
   },
 
   progress: {
-    months: string[],       // ["2026-01", "2026-02", "2026-03"]
-    종합:   { plan: number[], actual: number[] },
-    육상부: { plan: number[], actual: number[] },
-    해상부: { plan: number[], actual: number[] },
-    "154kV": { plan: number[], actual: number[] }
+    months: string[],                              // 38개 ("2023-02" ~ "2026-03")
+    종합:   { plan: (number|null)[], actual: (number|null)[] },
+    육상부: { plan: (number|null)[], actual: (number|null)[] },
+    해상부: { plan: (number|null)[], actual: (number|null)[] },
+    "154kV": { plan: (number|null)[], actual: (number|null)[] }
   },
 
   manpower: {
     months: string[],
-    종합/육상부/해상부/154kV: { manager: number[], partner: number[] }
+    종합 / 육상부 / 해상부 / 154kV: {
+      manager: (number|null)[],
+      partner: (number|null)[]
+    }
   },
 
   no_accident_days: {
     months: string[],
-    육상부/해상부/154kV: (number|null)[]   // null = 미입력
+    육상부 / 해상부 / 154kV: (number|null)[]
   },
 
   safety_audit_land: {
     months: string[],
-    추락/전도/낙하·비래/감전/충돌·협착/붕괴·도괴/화재·폭발/질식/기타: number[]
+    추락 / 전도 / "낙하·비래" / 감전 / "충돌·협착" /
+    "붕괴·도괴" / "화재·폭발" / 질식 / 기타: number[]
   },
 
   safety_edu_land: {
     months: string[],
-    채용·작업변경/특별교육/관리감독자/정기교육: number[]
+    "채용·작업변경" / 특별교육 / 관리감독자 / 정기교육: number[]
   },
 
   incident_summary: [
-    { sub: string, 공상: number, 일반재해: number, 중대재해: number,
+    { sub: "육상부"|"해상부"|"154kV",
+      공상: number, 일반재해: number, 중대재해: number,
       일반NearMiss: number, 중대NearMiss: number }
   ],
 
+  phase1_progress: { ... },     // 1차계약 (2023-02~07) 보존용
+  tank6_progress: { ... },      // #6탱크 legacy
+
   milestones: [
     { date: "YYYY-MM-DD", sub: string, 공종: string, title: string,
-      status: "착수" | "완료" }
+      status: "착수"|"진행"|"완료" }
   ],
 
   next_month_plan: [
@@ -185,9 +202,29 @@
 ```
 
 ### 5.2 사진 매니페스트 (`photos.js`)
-- `window.PHOTO_MANIFEST = [{ month, 공종, file, caption }, ...]`
-- 빌드 시 `extract_slides.py` → `build_photo_manifest.py` 파이프라인으로 생성
-- 원본 PPT는 `.gitignore` 처리, 추출된 이미지(`photos/01월/`, `02월/`, `03월/`)만 commit
+```ts
+window.PHOTOS_DATA = {
+  [monthKey: string]: [   // "YYYY-MM" 또는 "01월"/"02월"/"03월"
+    {
+      title: string,
+      category: "육상부"|"해상부"|"154kV",
+      type: "공정사진"|"안전점검"|"공사사진"|...,
+      items: [{ file: "photos/.../xxx.jpeg", caption: string }],
+      slide: number
+    }
+  ]
+}
+```
+
+빌드 시 `extract_slides.py` → `build_photo_manifest.py` 파이프라인으로 생성. 원본 PPT는 `.gitignore` 처리, 추출된 이미지(`photos/<key>/`)만 commit.
+
+### 5.3 데이터 무결성 규칙 (요약)
+- 누락월은 반드시 `null` (차트 갭 자동 처리)
+- 공구 키는 한글 표기 고정 (`종합 / 육상부 / 해상부 / 154kV`)
+- `months[]` 길이 = 같은 섹션 모든 시계열 길이
+- `milestones[].date` ISO 형식 (`YYYY-MM-DD`)
+
+상세 규칙은 [README.md §5.2](./README.md) 참고.
 
 ---
 
@@ -201,7 +238,7 @@
 | 보안 | 전 구간 HTTPS, OTP 인증, 화이트리스트 | Cloudflare Access 정책 |
 | 보안 | `_headers` 로 보안 헤더 설정 | 배포본 검증 |
 | 호환성 | Chrome/Edge ≥ 최근 2버전, Safari ≥ 최근 2버전 | 수동 QA |
-| 반응형 | 1280×800 ~ 1920×1080 데스크톱 우선, 1024px 태블릿 가독 | 수동 QA |
+| 반응형 | 1440px 이상 권장, 1280px까지 가독 확보 | 수동 QA |
 | 접근성 | 키보드 탭 이동, alt 텍스트(사진 캡션) | WCAG 2.1 A 수준 지향 |
 | 유지보수 | 빌드 도구 0개, CDN 의존(Chart.js)만 허용 | `package.json` 부재 유지 |
 
@@ -226,12 +263,13 @@
 ```
 
 ### 7.2 기술 스택
-- **Frontend**: HTML5, CSS3, ES6 JavaScript (프레임워크 없음)
-- **차트**: Chart.js v4 (CDN: `cdn.jsdelivr.net/npm/chart.js@4.4.1`)
+- **Frontend**: HTML5, CSS3 (Variables), ES6 JavaScript (프레임워크 없음)
+- **차트**: Chart.js v4.4.1 (CDN: `cdn.jsdelivr.net/npm/chart.js@4.4.1`)
+- **폰트**: Pretendard + Inter (CDN)
 - **호스팅**: Cloudflare Pages (자동 배포 — main branch)
 - **인증**: Cloudflare Access (Zero Trust, Email OTP)
-- **데이터 추출 도구**: Python 3 (`python-pptx` 등) — 1회성 / 사진 갱신 시
-- **VCS**: Git + GitHub Private Repo
+- **데이터 추출 도구**: Python 3 — 사진/슬라이드 갱신 시
+- **VCS**: Git + GitHub Private Repo (`kyungtae4105-beep/LNG2terminal-dashboard`)
 
 ### 7.3 배포 파이프라인
 1. 로컬에서 데이터/사진 변경
@@ -244,20 +282,33 @@
 ## 8. UX 가이드라인
 
 ### 8.1 디자인 원칙
-- **VS Code-스타일 다크 테마** (배경 `#1e1e1e`, 보조 `#252526`, 강조 흰색)
-- **좌측 Activity Bar + Sidebar + Main** 3분할 레이아웃
-- **타이틀바**는 macOS 신호등 스타일 컨트롤 + 메뉴
-- 차트 색상: 공구별 일관된 팔레트 유지 (육상=청색, 해상=청록, 154kV=주황)
+- **VS Code-스타일 라이트 테마** (배경 `#f8fafc`, 표면 `#ffffff`, 강조 `#2563eb`)
+- **타이틀바(52px) + Activity Bar(48px) + Sidebar(260px) + Editor + Status Bar(32px)** 5분할 레이아웃
+- **타이틀바**는 POSCO INTERNATIONAL CI 로고 + 프로젝트명 + macOS 신호등 컨트롤
 
-### 8.2 인터랙션
-- 탭 전환은 즉시 (페이지 리로드 없음)
+### 8.2 컬러 팔레트 (공구별 차트 색상)
+| 공구 | HEX | 용도 |
+|---|---|---|
+| 육상부 | `#2563eb` | Primary blue |
+| 해상부 | `#0891b2` | Cyan |
+| 154kV | `#ea580c` | Orange |
+| 종합 | `#dc2626` | Red (강조선, 굵기 ↑) |
+
+추가:
+- Success(완료): `#15803d`
+- Danger(편차 음수): `#b91c1c`
+- Warning(주의): `#c2410c`
+- Text muted: `#64748b`
+
+### 8.3 인터랙션
+- 탭 전환은 즉시 (페이지 리로드 없음), 전환 시 기존 차트 `destroy()`
 - 차트 hover 시 툴팁(월·값·공구)
 - 사진 라이트박스: ←/→ 키, ESC 닫기, 배경 클릭 닫기
 - 데이터 편집 셀: Tab/Enter 이동, 잘못된 입력 시 적색 테두리
 
-### 8.3 상태 표시
+### 8.4 상태 표시
 - 데이터 미입력: `—` (em dash)
-- 마일스톤 상태: 완료=녹색 칩, 착수=청색 칩
+- 마일스톤 상태: 완료=녹색 칩, 착수=청색 칩, 진행=회색 칩
 - 편차 음수: 적색, 양수: 회색
 
 ---
@@ -273,8 +324,10 @@
 ### 9.2 월간 사진 갱신 절차
 1. 새 PPT를 로컬에 위치
 2. `python extract_slides.py` 실행 → `slides_data.json` / `ppt_extract/` 생성
-3. `python build_photo_manifest.py` 실행 → `photos/MM월/` + `photos.js` 갱신
+3. `python build_photo_manifest.py` 실행 → `photos/<key>/` + `photos.js` 갱신
 4. git commit & push
+
+> PowerShell 실행 시 `$env:PYTHONIOENCODING="utf-8"` 선행 (cp949 인코딩 에러 방지).
 
 ### 9.3 사용자 관리 (관리자 전용)
 | 작업 | 경로 |
@@ -294,10 +347,12 @@
 - [ ] 사진 라이트박스가 ←/→/ESC 키로 정상 동작
 - [ ] 마일스톤 상태 색상이 정의대로 적용
 - [ ] 미승인 이메일은 접근 차단, 승인 이메일은 OTP 로그인 성공
+- [ ] 누락월(9개)이 차트에서 갭으로 처리되고 사유가 노출됨
 
 ### 10.2 성능 검증
 - [ ] 첫 화면 로딩 ≤ 3초 (Lighthouse Performance ≥ 80)
 - [ ] 사진 탭 스크롤 시 끊김 없음 (lazy-load 동작)
+- [ ] 탭 전환 시 차트 메모리 누수 없음 (`destroyChart` 동작)
 
 ### 10.3 보안 검증
 - [ ] HTTPS 강제 / `_headers` 적용 확인
@@ -312,11 +367,12 @@
 |---|---|---|
 | BL-01 | 사용자 정의 도메인 (예: `lng.posco-international.com`) | Med |
 | BL-02 | PDF 내보내기 (탭 단위 인쇄 최적화) | Med |
-| BL-03 | 4월~ 데이터 누적 시 분기·반기 비교 뷰 | Med |
+| BL-03 | 분기·반기 비교 뷰 (38개월 누적 데이터 활용) | Med |
 | BL-04 | 모바일(스마트폰) 반응형 강화 | Low |
 | BL-05 | 변경 이력 자동 기록(누가 언제 어떤 값을 변경) | Low |
 | BL-06 | 사내 SSO(Azure AD) 연동 검토 | Low |
 | BL-07 | 안전 지표 임계치 경보 (Near Miss 급증 등) | Low |
+| BL-08 | Chart.js / Pretendard self-host (CDN 차단 대비) | Low |
 
 ---
 
@@ -326,6 +382,7 @@
 |---|---|---|---|
 | 0.1 | 2026-03 | TF | 과제정의서 초안 (PPT) |
 | 1.0 | 2026-04-30 | TF | PRD v1 정식화 — 1Q 데이터 적재본 기준 |
+| 1.1 | 2026-05-06 | TF | 38개월 데이터 통합 + 재설계 반영 (탭 7개 정의, 컬러 팔레트 통일, FR-7/FR-6.5/FR-2.4 추가) |
 
 ---
 
