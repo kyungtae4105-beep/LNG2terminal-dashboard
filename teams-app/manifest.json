@@ -1,0 +1,43 @@
+{
+  "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.17/MicrosoftTeams.schema.json",
+  "manifestVersion": "1.17",
+  "version": "1.0.2",
+  "id": "7747b2a0-8571-4fcd-9d65-0e2a2b9163a4",
+  "packageName": "com.poscointernational.lng2.dashboard",
+  "developer": {
+    "name": "POSCO INTERNATIONAL",
+    "websiteUrl": "https://energytf-dashboard.pages.dev/",
+    "privacyUrl": "https://energytf-dashboard.pages.dev/",
+    "termsOfUseUrl": "https://energytf-dashboard.pages.dev/"
+  },
+  "icons": {
+    "color": "color.png",
+    "outline": "outline.png"
+  },
+  "name": {
+    "short": "LNG2 Dashboard",
+    "full": "광양 제2 LNG터미널 Dashboard"
+  },
+  "description": {
+    "short": "광양 제2 LNG터미널 증설공사 주요 지표 대시보드",
+    "full": "광양 제2 LNG터미널 증설공사의 공정·시공·안전 KPI 및 월별 작업사진을 임원진에게 제공하는 대시보드입니다."
+  },
+  "accentColor": "#0F1E3D",
+  "staticTabs": [
+    {
+      "entityId": "lng2-dashboard-main",
+      "name": "Dashboard",
+      "contentUrl": "https://energytf-dashboard.pages.dev/",
+      "websiteUrl": "https://energytf-dashboard.pages.dev/",
+      "scopes": ["personal"]
+    }
+  ],
+  "permissions": ["identity"],
+  "validDomains": [
+    "energytf-dashboard.pages.dev",
+    "cdn.jsdelivr.net",
+    "fonts.googleapis.com",
+    "fonts.gstatic.com",
+    "res.cdn.office.net"
+  ]
+}

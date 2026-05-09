@@ -1,3 +1,8 @@
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: same-origin
+  Content-Security-Policy: frame-ancestors 'self' https://teams.microsoft.com https://*.teams.microsoft.com https://*.cloud.microsoft
+
 /photos/*
   Cache-Control: public, max-age=31536000, immutable
 
@@ -6,6 +11,3 @@
 
 /*.html
   Cache-Control: public, max-age=60
-  X-Frame-Options: DENY
-  X-Content-Type-Options: nosniff
-  Referrer-Policy: same-origin
