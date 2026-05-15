@@ -17,60 +17,60 @@
    Light Premium Theme · Pretendard · 1440px+ optimized
    ============================================================ */
 :root {
-  /* — Surfaces — */
-  --bg: #f5f6f8;
+  /* — Surfaces — Bright & airy */
+  --bg: #f6f8fc;
   --surface: #ffffff;
-  --surface-2: #f1f3f7;
-  --surface-3: #fafbfc;
+  --surface-2: #eef2f8;
+  --surface-3: #f8fafd;
   --surface-elevated: #ffffff;
 
-  /* — Text — */
-  --text: #0a1628;
-  --text-strong: #051026;
-  --text-muted: #5a6677;
-  --text-soft: #94a0ad;
+  /* — Text — Softer, less harsh */
+  --text: #1f2a3d;
+  --text-strong: #14213b;
+  --text-muted: #6b7787;
+  --text-soft: #a3acb9;
 
-  /* — Borders — */
-  --border: #e4e7eb;
-  --border-strong: #cdd2d8;
-  --border-soft: #eef0f3;
+  /* — Borders — Lighter */
+  --border: #e6eaf1;
+  --border-strong: #d3d9e2;
+  --border-soft: #eff2f6;
 
-  /* — Brand / Spec colors — */
-  --primary: #2563eb;       /* 육상부 + UI primary */
-  --primary-hover: #1d4ed8;
-  --primary-dark: #1e40af;
-  --primary-soft: #dbeafe;
-  --primary-tint: #eff6ff;
+  /* — Brand / Single accent strategy — 청량한 단일 블루 + 보조 톤 최소화 — */
+  --primary: #4a7bd1;       /* 메인 블루 — 채도 살짝 ↑ 명도 ↑ */
+  --primary-hover: #3a68bd;
+  --primary-dark: #2c569f;
+  --primary-soft: #dbe6f7;
+  --primary-tint: #eff4fc;
 
-  --cyan: #0891b2;          /* 해상부 */
-  --cyan-soft: #cffafe;
-  --cyan-dark: #0e7490;
+  --cyan: #6ba8c0;          /* 해상부 — 부드러운 청록 */
+  --cyan-soft: #e1edf2;
+  --cyan-dark: #4f8a9f;
 
-  --orange: #ea580c;        /* 154kV */
-  --orange-soft: #ffedd5;
-  --orange-dark: #c2410c;
+  --orange: #d49462;        /* 154kV — 톤 ↓ 명도 ↑ */
+  --orange-soft: #f5e6d4;
+  --orange-dark: #a36b3e;
 
-  --red: #dc2626;           /* 종합 강조 */
-  --red-soft: #fee2e2;
-  --red-dark: #991b1b;
+  --red: #c97070;           /* 강조 — 자극 ↓ */
+  --red-soft: #f5e1e1;
+  --red-dark: #a14d4d;
 
-  /* — Executive accent — */
-  --navy: #0f1e3d;
-  --navy-2: #1e3658;
+  /* — Executive accent — 어두운 네이비 → 가벼운 슬레이트 블루 */
+  --navy: #4a6594;
+  --navy-2: #5e7caf;
   --navy-soft: #e8edf5;
-  --gold: #b8924c;
-  --gold-soft: #faf3e0;
+  --gold: #b09a78;          /* 보조 액센트 — 거의 미사용 */
+  --gold-soft: #f4ede0;
 
   /* — Semantic — */
-  --success: #15803d;
-  --success-soft: #dcfce7;
-  --success-border: #86efac;
-  --danger: #b91c1c;
-  --danger-soft: #fee2e2;
-  --danger-border: #fca5a5;
-  --warning: #c2410c;
-  --warning-soft: #ffedd5;
-  --warning-border: #fdba74;
+  --success: #56a06a;
+  --success-soft: #e1efe4;
+  --success-border: #b7d4be;
+  --danger: #c25656;
+  --danger-soft: #f5e1e1;
+  --danger-border: #e0b6b6;
+  --warning: #c69248;
+  --warning-soft: #f4e6ce;
+  --warning-border: #dec291;
 
   /* — Effects — */
   --shadow-xs: 0 1px 2px rgba(15, 30, 61, 0.04);
@@ -92,7 +92,7 @@ body {
   color: var(--text);
   display: flex;
   flex-direction: column;
-  font-size: 13px;
+  font-size: 15.5px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   letter-spacing: -0.005em;
@@ -102,15 +102,15 @@ body {
    Title Bar — Premium navy gradient with gold accent
    ============================================================ */
 .titlebar {
-  height: 56px;
+  height: 60px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 22px;
-  background: linear-gradient(135deg, #0f1e3d 0%, #1e3658 100%);
+  padding: 0 24px;
+  background: linear-gradient(135deg, #4a6594 0%, #6481b3 100%);
   color: #fff;
-  border-bottom: 1px solid rgba(0,0,0,0.18);
-  box-shadow: 0 1px 0 rgba(255,255,255,0.05) inset, 0 2px 8px rgba(15,30,61,0.06);
+  border-bottom: 1px solid rgba(255,255,255,0.18);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.08) inset, 0 2px 6px rgba(74,101,148,0.10);
   flex-shrink: 0;
   gap: 16px;
   position: relative;
@@ -120,13 +120,12 @@ body {
   content: '';
   position: absolute;
   left: 0; right: 0; bottom: 0;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, var(--gold) 18%, var(--gold) 82%, transparent);
-  opacity: 0.7;
+  height: 1px;
+  background: rgba(255,255,255,0.18);
 }
 .titlebar .brand { display: flex; align-items: center; gap: 14px; }
 .titlebar .brand .logo {
-  height: 28px; width: auto; display: block;
+  height: 30px; width: auto; display: block;
   filter: brightness(0) invert(1);
 }
 .titlebar .brand .divider {
@@ -134,21 +133,21 @@ body {
   background: rgba(255,255,255,0.22);
 }
 .titlebar .menu {
-  display: flex; gap: 4px; font-size: 12px;
-  color: rgba(255,255,255,0.72);
+  display: flex; gap: 4px; font-size: 14px;
+  color: rgba(255,255,255,0.82);
   font-weight: 500;
 }
 .titlebar .menu span {
-  cursor: pointer; padding: 5px 10px;
+  cursor: pointer; padding: 6px 12px;
   border-radius: 5px;
   transition: background 0.15s, color 0.15s;
 }
 .titlebar .menu span:hover {
-  background: rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.14);
   color: #fff;
 }
 .titlebar .title {
-  font-size: 14px;
+  font-size: 17px;
   color: #fff;
   font-weight: 600;
   letter-spacing: -0.01em;
@@ -211,7 +210,7 @@ body {
    Sidebar — Project explorer
    ============================================================ */
 .sidebar {
-  width: 268px;
+  width: 280px;
   background: var(--surface);
   border-right: 1px solid var(--border);
   display: flex; flex-direction: column;
@@ -219,15 +218,15 @@ body {
   overflow: hidden;
 }
 .sidebar-header {
-  height: 52px;
-  padding: 0 18px;
+  height: 56px;
+  padding: 0 20px;
   display: flex; align-items: center; gap: 8px;
-  font-size: 12.5px;
+  font-size: 14.5px;
   color: var(--text);
   letter-spacing: -0.01em;
   font-weight: 700;
   border-bottom: 1px solid var(--border);
-  background: linear-gradient(180deg, var(--surface) 0%, #f7f9fc 100%);
+  background: linear-gradient(180deg, var(--surface) 0%, #f4f7fc 100%);
   position: relative;
 }
 .sidebar-header::after {
@@ -246,9 +245,9 @@ body {
   padding: 10px 8px;
 }
 .menu-item {
-  padding: 9px 14px;
+  padding: 11px 14px;
   margin-bottom: 2px;
-  font-size: 13px;
+  font-size: 14.5px;
   color: var(--text);
   cursor: pointer;
   display: flex; align-items: center; gap: 10px;
@@ -273,10 +272,10 @@ body {
   font-weight: 600;
 }
 .menu-item.active::before { transform: translateY(-50%) scaleY(1); }
-.menu-item .ic { font-size: 15px; width: 18px; text-align: center; }
+.menu-item .ic { font-size: 17px; width: 20px; text-align: center; }
 .menu-group {
-  padding: 16px 14px 6px;
-  font-size: 10.5px;
+  padding: 18px 14px 6px;
+  font-size: 12px;
   color: var(--text-soft);
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -292,20 +291,20 @@ body {
 }
 .tabs {
   background: var(--surface);
-  height: 42px;
+  height: 46px;
   display: flex;
   overflow-x: auto;
   border-bottom: 1px solid var(--border);
   flex-shrink: 0;
-  padding: 0 8px;
+  padding: 0 10px;
   align-items: center;
 }
 .tab {
-  padding: 0 16px; height: 32px;
+  padding: 0 18px; height: 34px;
   display: flex; align-items: center; gap: 8px;
   background: transparent;
   cursor: pointer;
-  font-size: 12.5px;
+  font-size: 14.5px;
   color: var(--text-muted);
   white-space: nowrap;
   border-radius: 6px;
@@ -338,8 +337,8 @@ body {
 .panels { flex: 1; overflow: auto; }
 .panel {
   display: none;
-  padding: 22px 26px;
-  max-width: 1680px;
+  padding: 14px 18px;
+  max-width: 1860px;
   margin: 0 auto;
 }
 .panel.active { display: block; animation: fadeIn 0.25s ease; }
@@ -352,13 +351,13 @@ body {
    Status Bar — Premium navy
    ============================================================ */
 .statusbar {
-  height: 30px;
+  height: 32px;
   background: linear-gradient(90deg, var(--navy) 0%, var(--navy-2) 100%);
-  color: rgba(255,255,255,0.92);
+  color: rgba(255,255,255,0.95);
   display: flex; align-items: center;
-  padding: 0 20px;
-  font-size: 11.5px;
-  gap: 20px;
+  padding: 0 22px;
+  font-size: 13px;
+  gap: 22px;
   flex-shrink: 0;
   font-weight: 500;
   letter-spacing: 0.01em;
@@ -367,7 +366,7 @@ body {
 .statusbar > span { display: flex; align-items: center; gap: 4px; opacity: 0.92; }
 .statusbar > span:first-child::before {
   content: '●';
-  color: var(--gold);
+  color: #8ab2d6;
   font-size: 10px;
   animation: pulse 2.4s ease-in-out infinite;
   margin-right: 2px;
@@ -379,13 +378,13 @@ body {
 .grid {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
-  gap: 18px;
+  gap: 12px;
 }
 .card {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 22px 24px;
+  padding: 16px 18px;
   box-shadow: var(--shadow-card);
   transition: 0.2s ease;
   position: relative;
@@ -395,11 +394,11 @@ body {
   border-color: var(--border-strong);
 }
 .card h3 {
-  font-size: 14px;
+  font-size: 16.5px;
   font-weight: 700;
   color: var(--text-strong);
-  margin-bottom: 16px;
-  padding-bottom: 14px;
+  margin-bottom: 14px;
+  padding-bottom: 12px;
   border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
@@ -415,6 +414,7 @@ body {
   flex-shrink: 0;
 }
 
+.col-2 { grid-column: span 2; }
 .col-3 { grid-column: span 3; }
 .col-4 { grid-column: span 4; }
 .col-5 { grid-column: span 5; }
@@ -429,9 +429,9 @@ body {
    ============================================================ */
 .gauge-wrap { display: flex; flex-direction: column; align-items: center; }
 .gauge-value {
-  font-size: 44px;
+  font-size: 52px;
   font-weight: 800;
-  color: var(--red);
+  color: var(--primary-dark);
   margin-top: -60px;
   z-index: 2;
   position: relative;
@@ -440,27 +440,27 @@ body {
   line-height: 1;
 }
 .gauge-label {
-  font-size: 11.5px;
+  font-size: 14px;
   color: var(--text-muted);
-  margin-top: 4px;
+  margin-top: 6px;
   font-weight: 500;
 }
 .gauge-sub {
   display: flex; justify-content: space-around;
-  width: 100%; margin-top: 18px;
+  width: 100%; margin-top: 20px;
   padding-top: 16px;
   border-top: 1px dashed var(--border);
 }
 .gauge-sub-item { text-align: center; }
 .gauge-sub-item .v {
-  font-size: 19px;
+  font-size: 23px;
   font-weight: 700;
   color: var(--text-strong);
   letter-spacing: -0.015em;
   font-variant-numeric: tabular-nums;
 }
 .gauge-sub-item .l {
-  font-size: 11px;
+  font-size: 13px;
   color: var(--text-muted);
   margin-top: 4px;
   font-weight: 500;
@@ -472,12 +472,12 @@ body {
 .kpi-row {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
-  margin-bottom: 14px;
+  gap: 10px;
+  margin-bottom: 12px;
 }
 .kpi {
   background: var(--surface);
-  padding: 18px 20px;
+  padding: 14px 16px;
   border-radius: var(--radius-sm);
   text-align: left;
   border: 1px solid var(--border);
@@ -496,7 +496,7 @@ body {
   content: '';
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at top right, rgba(37,99,235,0.04), transparent 60%);
+  background: radial-gradient(circle at top right, rgba(74,123,209,0.04), transparent 60%);
   pointer-events: none;
 }
 .kpi:hover {
@@ -504,7 +504,7 @@ body {
   box-shadow: var(--shadow-sm);
 }
 .kpi .v {
-  font-size: 26px;
+  font-size: 30px;
   font-weight: 800;
   color: var(--text-strong);
   letter-spacing: -0.025em;
@@ -512,7 +512,7 @@ body {
   line-height: 1.1;
 }
 .kpi .l {
-  font-size: 11px;
+  font-size: 13.5px;
   color: var(--text-muted);
   margin-top: 6px;
   font-weight: 600;
@@ -520,13 +520,13 @@ body {
   letter-spacing: 0.04em;
 }
 .kpi.green::before { background: var(--success); }
-.kpi.green::after { background: radial-gradient(circle at top right, rgba(21,128,61,0.05), transparent 60%); }
+.kpi.green::after { background: radial-gradient(circle at top right, rgba(86,160,106,0.05), transparent 60%); }
 .kpi.green .v { color: var(--success); }
 .kpi.red::before { background: var(--red); }
-.kpi.red::after { background: radial-gradient(circle at top right, rgba(220,38,38,0.05), transparent 60%); }
+.kpi.red::after { background: radial-gradient(circle at top right, rgba(194,86,86,0.05), transparent 60%); }
 .kpi.red .v { color: var(--red); }
 .kpi.orange::before { background: var(--orange); }
-.kpi.orange::after { background: radial-gradient(circle at top right, rgba(234,88,12,0.05), transparent 60%); }
+.kpi.orange::after { background: radial-gradient(circle at top right, rgba(212,148,98,0.05), transparent 60%); }
 .kpi.orange .v { color: var(--orange-dark); }
 
 /* ============================================================
@@ -535,25 +535,25 @@ body {
 table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 12.5px;
+  font-size: 14.5px;
   font-variant-numeric: tabular-nums;
 }
 table th {
-  background: linear-gradient(180deg, #fafbfc 0%, #f1f3f7 100%);
+  background: linear-gradient(180deg, #fafbfd 0%, #eef2f8 100%);
   color: var(--text-muted);
-  padding: 11px 14px;
+  padding: 12px 14px;
   text-align: left;
   border-bottom: 1px solid var(--border);
   font-weight: 700;
   text-transform: uppercase;
-  font-size: 10.5px;
+  font-size: 12.5px;
   letter-spacing: 0.06em;
   position: sticky;
   top: 0;
   z-index: 1;
 }
 table td {
-  padding: 10px 14px;
+  padding: 11px 14px;
   border-bottom: 1px solid var(--border-soft);
   color: var(--text);
 }
@@ -567,7 +567,7 @@ table tr:last-child td { border-bottom: none; }
   display: inline-block;
   padding: 3px 10px;
   border-radius: 999px;
-  font-size: 10.5px;
+  font-size: 11.5px;
   font-weight: 700;
   letter-spacing: 0.02em;
   text-transform: uppercase;
@@ -579,9 +579,10 @@ table tr:last-child td { border-bottom: none; }
 /* ============================================================
    Charts
    ============================================================ */
-.chart-container { position: relative; height: 260px; }
-.chart-tall { height: 320px; }
-.chart-short { height: 220px; }
+.chart-container { position: relative; height: 220px; }
+.chart-tall { height: 260px; }
+.chart-short { height: 180px; }
+.chart-mini { height: 200px; }
 
 /* ============================================================
    Half gauges
@@ -606,7 +607,7 @@ table tr:last-child td { border-bottom: none; }
 .halfgauge-num {
   position: absolute;
   left: 0; right: 0; bottom: 26px;
-  font-size: 24px;
+  font-size: 28px;
   font-weight: 800;
   color: var(--text-strong);
   line-height: 1;
@@ -616,7 +617,7 @@ table tr:last-child td { border-bottom: none; }
 .halfgauge-lbl {
   position: absolute;
   left: 0; right: 0; bottom: 8px;
-  font-size: 11px;
+  font-size: 13.5px;
   color: var(--text-muted);
   font-weight: 600;
 }
@@ -625,17 +626,17 @@ table tr:last-child td { border-bottom: none; }
    Edu table
    ============================================================ */
 .edu-table {
-  width: 100%; border-collapse: collapse; font-size: 12px;
+  width: 100%; border-collapse: collapse; font-size: 13.5px;
   font-variant-numeric: tabular-nums;
 }
 .edu-table th, .edu-table td {
-  padding: 7px 9px; border: 1px solid var(--border); text-align: right;
+  padding: 8px 10px; border: 1px solid var(--border); text-align: right;
 }
 .edu-table th {
-  background: linear-gradient(180deg, #fafbfc 0%, #f1f3f7 100%);
+  background: linear-gradient(180deg, #fafbfd 0%, #eef2f8 100%);
   color: var(--text); font-weight: 700;
   text-transform: none; letter-spacing: 0;
-  font-size: 11.5px; position: static;
+  font-size: 13px; position: static;
 }
 .edu-table td:first-child, .edu-table th:first-child {
   text-align: left; font-weight: 600;
@@ -669,7 +670,7 @@ table tr:last-child td { border-bottom: none; }
 /* ============================================================
    Info list
    ============================================================ */
-.info-list { list-style: none; font-size: 13px; color: var(--text); }
+.info-list { list-style: none; font-size: 15px; color: var(--text); }
 .info-list li {
   padding: 9px 0;
   border-bottom: 1px dashed var(--border);
@@ -720,7 +721,7 @@ table tr:last-child td { border-bottom: none; }
   background: var(--primary);
   border-color: var(--primary);
   color: #fff;
-  box-shadow: 0 2px 8px rgba(37,99,235,0.25);
+  box-shadow: 0 2px 8px rgba(74,123,209,0.25);
 }
 .photo-section { margin-bottom: 32px; }
 .photo-section h2 {
@@ -803,7 +804,7 @@ table tr:last-child td { border-bottom: none; }
   padding: 8px 11px; font-size: 12.5px; font-family: inherit;
   border-radius: 6px; resize: vertical; min-height: 50px;
   outline: none;
-  box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
+  box-shadow: 0 0 0 3px rgba(74,123,209,0.12);
 }
 .photo-card .caption-actions { margin-top: 8px; display: flex; gap: 6px; }
 .photo-card .caption-actions button {
@@ -820,7 +821,7 @@ table tr:last-child td { border-bottom: none; }
 .photo-card .caption-actions button.cancel:hover { background: var(--surface-3); }
 .photo-card .delete-btn {
   position: absolute; top: 10px; left: 10px;
-  background: rgba(220,38,38,0.92); color: #fff;
+  background: rgba(194,86,86,0.92); color: #fff;
   border: none; width: 30px; height: 30px;
   border-radius: 6px; cursor: pointer;
   font-size: 14px;
@@ -864,7 +865,7 @@ table tr:last-child td { border-bottom: none; }
 }
 .upload-field select:focus, .upload-field input:focus {
   outline: none; border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
+  box-shadow: 0 0 0 3px rgba(74,123,209,0.12);
 }
 .drop-zone {
   border: 2px dashed var(--border-strong);
@@ -910,7 +911,7 @@ table tr:last-child td { border-bottom: none; }
 }
 .upload-queue-item input[type="text"]:focus {
   outline: none; border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
+  box-shadow: 0 0 0 3px rgba(74,123,209,0.12);
 }
 .upload-queue-item .remove-q {
   background: var(--danger-soft); color: var(--danger);
@@ -1080,7 +1081,7 @@ table.editable td input, table.editable td select {
 table.editable td input:focus, table.editable td select:focus {
   outline: none;
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
+  box-shadow: 0 0 0 3px rgba(74,123,209,0.12);
 }
 table.editable td.num input {
   text-align: right;
@@ -1199,7 +1200,7 @@ table.editable td.num input {
 }
 .tab-toolbar button.on {
   background: var(--primary); border-color: var(--primary); color: #fff;
-  box-shadow: 0 2px 8px rgba(37,99,235,0.2);
+  box-shadow: 0 2px 8px rgba(74,123,209,0.2);
 }
 .tab-toolbar button.primary {
   background: var(--primary); border-color: var(--primary); color: #fff;
@@ -1244,8 +1245,8 @@ table.editable td.num input {
    Responsive
    ============================================================ */
 @media (max-width: 1280px) {
-  .col-3, .col-4, .col-5, .col-6, .col-7, .col-8, .col-9 { grid-column: span 12; }
-  .sidebar { width: 232px; }
+  .col-2, .col-3, .col-4, .col-5, .col-6, .col-7, .col-8, .col-9 { grid-column: span 12; }
+  .sidebar { width: 240px; }
   .kpi-row { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 980px) {
@@ -1286,7 +1287,7 @@ table.editable td.num input {
   letter-spacing: 0.04em;
 }
 .edu-kpi-v {
-  font-size: 28px;
+  font-size: 30px;
   font-weight: 800;
   color: var(--c, var(--primary));
   margin-top: 4px;
@@ -1480,7 +1481,7 @@ table.editable td.num input {
   <!-- Sidebar (Explorer) -->
   <div class="sidebar">
     <div class="sidebar-header">광양 제2 LNG터미널 증설공사</div>
-    <div style="padding: 6px 12px; background: linear-gradient(90deg,#f0f9ff,#fefce8); border-bottom:1px solid var(--border); font-size:11px; color:var(--text-muted); line-height:1.4;">
+    <div style="padding: 8px 12px; background: linear-gradient(90deg,#eef3fa,#f5f1e8); border-bottom:1px solid var(--border); font-size:12px; color:var(--text-muted); line-height:1.45;">
       📅 <b style="color:var(--primary-dark);">2023.02 ~ 2026.03</b> (38개월)<br>
       <span style="color:var(--text-soft);">1차계약(~23.07) · 본계약(23.08~)</span>
     </div>
@@ -1624,9 +1625,10 @@ document.querySelectorAll('.menu-item').forEach(el => {
 //============================================================
 // Chart.js defaults
 //============================================================
-Chart.defaults.color = '#475569';
-Chart.defaults.borderColor = '#e2e8f0';
+Chart.defaults.color = '#5a6677';
+Chart.defaults.borderColor = '#e6eaf1';
 Chart.defaults.font.family = "'Pretendard','Inter','Malgun Gothic','Segoe UI',sans-serif";
+Chart.defaults.font.size = 13.5;
 
 //============================================================
 // Chart instances cache
@@ -1664,6 +1666,7 @@ function sliceLastN(d, n) {
   return out;
 }
 const D10 = () => sliceLastN(D(), 10);
+const D6 = () => sliceLastN(D(), 6);
 const PANELS = {};
 const PANEL_INIT = {};
 
@@ -1705,11 +1708,11 @@ function avgNum(arr) {
 function safeDiv(a, b) { return b ? a / b : 0; }
 // Color palette for time-series datasets. Cycles for >12 months.
 const MONTH_COLORS = [
-  '#1e3a8a', '#2563eb', '#3b82f6', '#06b6d4', '#10b981',
-  '#22c55e', '#eab308', '#f59e0b', '#f97316', '#ef4444',
-  '#dc2626', '#a21caf'
+  '#2c569f', '#4a7bd1', '#7a9fde', '#6ba8c0', '#92bccd',
+  '#a3b3c4', '#bda790', '#d49462', '#b67d4f', '#c97070',
+  '#a14d4d', '#9a8bb0'
 ];
-const SUB_COLORS = { '종합': '#475569', '육상부': '#2563eb', '해상부': '#10b981', '154kV': '#f59e0b' };
+const SUB_COLORS = { '종합': '#6b7787', '육상부': '#4a7bd1', '해상부': '#6ba8c0', '154kV': '#d49462' };
 function monthColor(i) { return MONTH_COLORS[i % MONTH_COLORS.length]; }
 
 //============================================================
@@ -1935,7 +1938,7 @@ function saveTabEdits(tabKey) {
 // Overview
 //------------------------------------------------------------
 PANELS.overview = () => {
-  const d = D10();
+  const d = D6();
   const lastIdx = lastValidIdx(d.progress.종합.actual);
   const lastMonth = d.progress.months[lastIdx];
   const lastLabel = fmtMonthShort(lastMonth);
@@ -1984,44 +1987,44 @@ PANELS.overview = () => {
     </span>`
   ).join('') : '';
 
-  // 최근 10개월 표시 범위
+  // 최근 6개월 표시 범위
   const firstM = d.progress.months[0] || '';
   const lastM = d.progress.months[d.progress.months.length-1] || '';
   return `
     <div class="grid">
       <!-- 단계/보고기간 안내 -->
-      <div class="card col-12" style="padding:12px 16px;background:linear-gradient(90deg,#f0f9ff 0%,#fefce8 100%);">
+      <div class="card col-12" style="padding:10px 18px;background:linear-gradient(90deg,#f0f5fc 0%,#f6f0e7 100%);">
         <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
-          <div style="font-size:12.5px;color:var(--text);"><b style="color:var(--text-strong);">📋 전체 보고기간:</b> 2023.02 ~ 2026.03 (38개월) <span style="color:var(--text-muted);">· 사진/마일스톤은 전체 표시</span></div>
+          <div style="font-size:14px;color:var(--text);"><b style="color:var(--text-strong);">📋 전체 보고기간:</b> 2023.02 ~ 2026.03 (38개월) <span style="color:var(--text-muted);">· 차트는 최근 6개월 (${fmtMonthShort(firstM)}~${fmtMonthShort(lastM)}) · 사진/마일스톤은 전체</span></div>
           ${phaseInfo ? `<div style="height:18px;width:1px;background:var(--border);"></div>${phaseInfo}` : ''}
         </div>
       </div>
 
-      <!-- HERO ROW: Big gauge + KPI cards -->
+      <!-- HERO ROW: Big gauge + KPI cards + 안전 -->
       <div class="card col-4">
         <h3>전체 공정률 (${lastLabel} 기준)</h3>
         <div class="gauge-wrap">
-          <div style="width: 100%; height: 170px;"><canvas id="ov-gauge"></canvas></div>
+          <div style="width: 100%; height: 150px;"><canvas id="ov-gauge"></canvas></div>
           <div class="gauge-value">${overall.toFixed(2)}%</div>
-          <div class="gauge-label">계획 ${plan.toFixed(2)}% 대비 <b style="color: ${(overall-plan)>=0?'#15803d':'#b91c1c'}">${diffSign}${diff}%p</b></div>
+          <div class="gauge-label">계획 ${plan.toFixed(2)}% 대비 <b style="color: ${(overall-plan)>=0?'var(--success)':'var(--danger)'}">${diffSign}${diff}%p</b></div>
           <div class="gauge-sub">
             <div class="gauge-sub-item"><div class="v">${land.toFixed(1)}%</div><div class="l">육상 / 계획 ${landP.toFixed(1)}</div></div>
             <div class="gauge-sub-item"><div class="v">${sea.toFixed(1)}%</div><div class="l">해상 / 계획 ${seaP.toFixed(1)}</div></div>
             <div class="gauge-sub-item"><div class="v">${(elec == null || elec >= 100) ? '완료' : elec.toFixed(0)+'%'}</div><div class="l">154kV ${(elecP == null || (elec != null && elec >= 100)) ? '' : '/ 계획 '+elecP.toFixed(0)}</div></div>
           </div>
         </div>
-        <div style="margin-top:14px;padding-top:12px;border-top:1px dashed var(--border);">
-          <div style="font-size:11px;color:var(--text-muted);font-weight:600;letter-spacing:0.04em;text-transform:uppercase;margin-bottom:4px;">📈 종합 공정률 추이 (최근 10개월)</div>
-          <div style="height:90px;"><canvas id="ov-gauge-trend"></canvas></div>
+        <div style="margin-top:10px;padding-top:10px;border-top:1px dashed var(--border);">
+          <div style="font-size:12.5px;color:var(--text-muted);font-weight:600;letter-spacing:0.04em;text-transform:uppercase;margin-bottom:4px;">📈 종합 공정률 추이 (최근 6개월)</div>
+          <div style="height:75px;"><canvas id="ov-gauge-trend"></canvas></div>
         </div>
       </div>
       <div class="card col-4">
         <h3>핵심 KPI (${lastLabel})</h3>
         <div class="kpi-row" style="grid-template-columns: repeat(2, 1fr); gap: 10px;">
-          <div class="kpi" style="background:#dbeafe; color:#1e3a8a;"><div class="v">${remainingPct}%</div><div class="l">잔여 공정률</div></div>
-          <div class="kpi" style="background:#dcfce7; color:#15803d;"><div class="v">${totalMM.toLocaleString()}</div><div class="l">누적 인공수 (man-month)</div></div>
-          <div class="kpi" style="background:#fef3c7; color:#92400e;"><div class="v">${peakMonthValue}</div><div class="l">피크 인원 (${peakMonthLabel})</div></div>
-          <div class="kpi" style="background:#fee2e2; color:#991b1b;"><div class="v">${totalAcc + totalNM}</div><div class="l">사고+NM 누적</div></div>
+          <div class="kpi"><div class="v">${remainingPct}%</div><div class="l">잔여 공정률</div></div>
+          <div class="kpi"><div class="v">${totalMM.toLocaleString()}</div><div class="l">누적 인공수 (man-month)</div></div>
+          <div class="kpi"><div class="v">${peakMonthValue}</div><div class="l">피크 인원 (${peakMonthLabel})</div></div>
+          <div class="kpi ${totalAcc + totalNM > 0 ? 'orange' : 'green'}"><div class="v">${totalAcc + totalNM}</div><div class="l">사고+NM 누적</div></div>
         </div>
         <div class="chart-container chart-short"><canvas id="ov-incident"></canvas></div>
       </div>
@@ -2035,58 +2038,49 @@ PANELS.overview = () => {
         <div class="kpi-row" style="margin-top: 4px;">
           <div class="kpi ${totalSerious > 0 ? 'red' : 'green'}"><div class="v">${totalSerious}</div><div class="l">중대재해</div></div>
           <div class="kpi orange"><div class="v">${totalAcc}</div><div class="l">재해 누적</div></div>
-          <div class="kpi" style="background:#cffafe; color:#0e7490;"><div class="v">${totalNM}</div><div class="l">Near Miss</div></div>
+          <div class="kpi"><div class="v">${totalNM}</div><div class="l">Near Miss</div></div>
         </div>
-        <div style="margin-top:12px;padding-top:12px;border-top:1px dashed var(--border);">
-          <div style="font-size:11px;color:var(--text-muted);font-weight:600;letter-spacing:0.04em;text-transform:uppercase;margin-bottom:4px;">🛡️ 무재해 일수 추이 (최근 10개월)</div>
-          <div style="height:90px;"><canvas id="ov-safety-trend"></canvas></div>
+        <div style="margin-top:10px;padding-top:10px;border-top:1px dashed var(--border);">
+          <div style="font-size:12.5px;color:var(--text-muted);font-weight:600;letter-spacing:0.04em;text-transform:uppercase;margin-bottom:4px;">🛡️ 무재해 일수 추이 (최근 6개월)</div>
+          <div style="height:75px;"><canvas id="ov-safety-trend"></canvas></div>
         </div>
       </div>
 
-      <!-- SECOND ROW: S-Curve + 공구별 추이 -->
-      <div class="card col-6">
+      <!-- SECOND ROW: 3 charts -->
+      <div class="card col-4">
         <h3>📈 종합 S-Curve (Plan vs Actual)</h3>
-        <div class="chart-container chart-tall"><canvas id="ov-progress"></canvas></div>
+        <div class="chart-container chart-mini"><canvas id="ov-progress"></canvas></div>
       </div>
-      <div class="card col-6">
-        <h3>📊 월별 계획 대비 실적 편차 (%p)</h3>
-        <div class="chart-container chart-tall"><canvas id="ov-deviation"></canvas></div>
+      <div class="card col-4">
+        <h3>📊 월별 편차 (%p)</h3>
+        <div class="chart-container chart-mini"><canvas id="ov-deviation"></canvas></div>
       </div>
-
-      <!-- THIRD ROW: 공구별 + 인력 -->
-      <div class="card col-6">
-        <h3>🏗️ 공구별 월별 공정률 (Plan vs Actual)</h3>
-        <div class="chart-container chart-tall"><canvas id="ov-subprog"></canvas></div>
-      </div>
-      <div class="card col-6">
-        <h3>👷 월별 인력 투입 (공구별 적층)</h3>
-        <div class="chart-container chart-tall"><canvas id="ov-manpower"></canvas></div>
+      <div class="card col-4">
+        <h3>🏗️ 공구별 공정률 (Plan vs Actual)</h3>
+        <div class="chart-container chart-mini"><canvas id="ov-subprog"></canvas></div>
       </div>
 
-      <!-- FOURTH ROW: 무재해 + 누적 인력 -->
-      <div class="card col-6">
+      <!-- THIRD ROW: 3 charts -->
+      <div class="card col-4">
+        <h3>👷 월별 인력 투입 (공구별)</h3>
+        <div class="chart-container chart-mini"><canvas id="ov-manpower"></canvas></div>
+      </div>
+      <div class="card col-4">
         <h3>🛡️ 무재해 일수 추이 (월별)</h3>
-        <div class="chart-container"><canvas id="ov-noacc"></canvas></div>
+        <div class="chart-container chart-mini"><canvas id="ov-noacc"></canvas></div>
       </div>
-      <div class="card col-6">
-        <h3>📈 누적 인공수 추이 (man-month)</h3>
-        <div class="chart-container"><canvas id="ov-cummp"></canvas></div>
+      <div class="card col-4">
+        <h3>📈 누적 인공수 (man-month)</h3>
+        <div class="chart-container chart-mini"><canvas id="ov-cummp"></canvas></div>
       </div>
-
-      <!-- FIFTH ROW: 안전 점검 + 안전 교육 -->
-      <div class="card col-6">
-        <h3>📋 육상부 안전점검 지적 분류 (월별)</h3>
-        <div class="chart-container"><canvas id="ov-audit"></canvas></div>
-      </div>
-      <div class="card col-6">
-        <h3>🎓 육상부 안전교육 누적 인원 (표)</h3>
-        <div id="ov-edu-table" style="max-height: 300px; overflow: auto;"></div>
-      </div>
+    </div>
+    <div style="margin-top:10px;font-size:12.5px;color:var(--text-muted);text-align:right;">
+      · 안전점검·안전교육 상세는 <b style="color:var(--primary-dark);">🛡️ 안전 관리</b> 탭에서 확인
     </div>
   `;
 };
 PANEL_INIT.overview = () => {
-  const d = D10();
+  const d = D6();
   const lastIdx = lastValidIdx(d.progress.종합.actual);
   const overall = d.progress.종합.actual[lastIdx] ?? 0;
   const months = d.progress.months;
@@ -2095,7 +2089,7 @@ PANEL_INIT.overview = () => {
   destroyChart('ov-gauge');
   charts['ov-gauge'] = new Chart(document.getElementById('ov-gauge'), {
     type: 'doughnut',
-    data: { datasets: [{ data: [overall, 100-overall], backgroundColor: ['#2563eb', '#e2e8f0'], borderWidth: 0, circumference: 180, rotation: 270, cutout: '75%' }] },
+    data: { datasets: [{ data: [overall, 100-overall], backgroundColor: ['#4a7bd1', '#e6eaf1'], borderWidth: 0, circumference: 180, rotation: 270, cutout: '75%' }] },
     options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { enabled: false } } }
   });
 
@@ -2107,8 +2101,8 @@ PANEL_INIT.overview = () => {
       data: {
         labels: monthsShort,
         datasets: [
-          { type: 'line', label: '계획', data: d.progress.종합.plan, borderColor: '#94a3b8', borderDash: [4,3], borderWidth: 1.5, pointRadius: 0, tension: 0.3, fill: false },
-          { type: 'line', label: '실적', data: d.progress.종합.actual, borderColor: '#dc2626', backgroundColor: 'rgba(220,38,38,0.08)', borderWidth: 2.5, pointRadius: 2.5, pointBackgroundColor: '#dc2626', tension: 0.35, fill: true }
+          { type: 'line', label: '계획', data: d.progress.종합.plan, borderColor: '#a3acb9', borderDash: [4,3], borderWidth: 1.5, pointRadius: 0, tension: 0.3, fill: false },
+          { type: 'line', label: '실적', data: d.progress.종합.actual, borderColor: '#2c569f', backgroundColor: 'rgba(74,123,209,0.10)', borderWidth: 2.5, pointRadius: 2.5, pointBackgroundColor: '#2c569f', tension: 0.35, fill: true }
         ]
       },
       options: {
@@ -2116,7 +2110,7 @@ PANEL_INIT.overview = () => {
         plugins: { legend: { display: false }, tooltip: { mode: 'index', intersect: false, callbacks: { label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y?.toFixed(2)}%` } } },
         scales: {
           y: { display: false, min: Math.max(0, Math.min(...d.progress.종합.actual.filter(v => v != null)) - 5), max: 102 },
-          x: { ticks: { font: { size: 9 }, maxRotation: 0, autoSkip: true, maxTicksLimit: 5 }, grid: { display: false } }
+          x: { ticks: { font: { size: 10 }, maxRotation: 0, autoSkip: true, maxTicksLimit: 6 }, grid: { display: false } }
         }
       }
     });
@@ -2131,17 +2125,17 @@ PANEL_INIT.overview = () => {
       data: {
         labels: monthsShort,
         datasets: [
-          { label: '육상', data: d.no_accident_days.육상부, borderColor: '#2563eb', backgroundColor: 'rgba(37,99,235,0.06)', borderWidth: 2, pointRadius: 0, tension: 0.35, fill: false },
-          { label: '해상', data: d.no_accident_days.해상부, borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.06)', borderWidth: 2, pointRadius: 0, tension: 0.35, fill: false },
-          { label: '154kV', data: d.no_accident_days["154kV"], borderColor: '#f59e0b', backgroundColor: 'rgba(245,158,11,0.06)', borderWidth: 2, pointRadius: 0, tension: 0.35, fill: false }
+          { label: '육상', data: d.no_accident_days.육상부, borderColor: '#4a7bd1', backgroundColor: 'rgba(74,123,209,0.06)', borderWidth: 2, pointRadius: 0, tension: 0.35, fill: false },
+          { label: '해상', data: d.no_accident_days.해상부, borderColor: '#6ba8c0', backgroundColor: 'rgba(107,168,192,0.06)', borderWidth: 2, pointRadius: 0, tension: 0.35, fill: false },
+          { label: '154kV', data: d.no_accident_days["154kV"], borderColor: '#d49462', backgroundColor: 'rgba(212,148,98,0.06)', borderWidth: 2, pointRadius: 0, tension: 0.35, fill: false }
         ]
       },
       options: {
         responsive: true, maintainAspectRatio: false,
-        plugins: { legend: { display: true, position: 'bottom', labels: { boxWidth: 8, font: { size: 9 }, padding: 4 } }, tooltip: { mode: 'index', intersect: false } },
+        plugins: { legend: { display: true, position: 'bottom', labels: { boxWidth: 8, font: { size: 10 }, padding: 4 } }, tooltip: { mode: 'index', intersect: false } },
         scales: {
           y: { display: false, beginAtZero: true },
-          x: { ticks: { font: { size: 9 }, maxRotation: 0, autoSkip: true, maxTicksLimit: 5 }, grid: { display: false } }
+          x: { ticks: { font: { size: 10 }, maxRotation: 0, autoSkip: true, maxTicksLimit: 6 }, grid: { display: false } }
         }
       }
     });
@@ -2153,15 +2147,15 @@ PANEL_INIT.overview = () => {
     data: {
       labels: monthsShort,
       datasets: [
-        { type: 'bar', label: '계획 (Plan)', data: d.progress.종합.plan, backgroundColor: '#cbd5e1', borderRadius: 4, order: 3 },
-        { type: 'bar', label: '실적 (Actual)', data: d.progress.종합.actual, backgroundColor: '#2563eb', borderRadius: 4, order: 2 },
-        { type: 'line', label: '실적 추세', data: d.progress.종합.actual, borderColor: '#dc2626', backgroundColor: '#dc262622', tension: 0.4, borderWidth: 5, pointRadius: 5, pointBackgroundColor: '#dc2626', pointBorderColor: '#dc2626', order: 1, fill: false }
+        { type: 'bar', label: '계획', data: d.progress.종합.plan, backgroundColor: '#d3d9e2', borderRadius: 4, order: 3 },
+        { type: 'bar', label: '실적', data: d.progress.종합.actual, backgroundColor: '#4a7bd1', borderRadius: 4, order: 2 },
+        { type: 'line', label: '실적 추세', data: d.progress.종합.actual, borderColor: '#2c569f', backgroundColor: 'rgba(74,123,209,0.15)', tension: 0.4, borderWidth: 3, pointRadius: 3, pointBackgroundColor: '#2c569f', pointBorderColor: '#2c569f', order: 1, fill: false }
       ]
     },
     options: {
       responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 11 } } }, tooltip: { mode: 'index', intersect: false } },
-      scales: { y: { min: 50, max: 102, ticks: { callback: v => v + '%' } }, x: { grid: { display: false } } }
+      plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 11 }, padding: 6 } }, tooltip: { mode: 'index', intersect: false } },
+      scales: { y: { min: 50, max: 102, ticks: { callback: v => v + '%', font: { size: 11 } } }, x: { ticks: { font: { size: 10 } }, grid: { display: false } } }
     }
   });
 
@@ -2185,8 +2179,8 @@ PANEL_INIT.overview = () => {
     },
     options: {
       responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 11 } } } },
-      scales: { y: { title: { display: true, text: '편차(%p)' }, grid: { color: 'rgba(0,0,0,0.05)' } }, x: { grid: { display: false } } }
+      plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 11 }, padding: 6 } } },
+      scales: { y: { title: { display: true, text: '편차(%p)', font: { size: 11 } }, ticks: { font: { size: 11 } }, grid: { color: 'rgba(0,0,0,0.05)' } }, x: { ticks: { font: { size: 10 } }, grid: { display: false } } }
     }
   });
 
@@ -2197,17 +2191,17 @@ PANEL_INIT.overview = () => {
     data: {
       labels: inc.map(r => r.sub),
       datasets: [
-        { label: '공상', data: inc.map(r => r.공상), backgroundColor: '#ffd54f' },
-        { label: '일반재해', data: inc.map(r => r.일반재해), backgroundColor: '#fb923c' },
-        { label: '중대재해', data: inc.map(r => r.중대재해), backgroundColor: '#dc2626' },
-        { label: '일반NM', data: inc.map(r => r.일반NearMiss), backgroundColor: '#06b6d4' },
-        { label: '중대NM', data: inc.map(r => r.중대NearMiss), backgroundColor: '#a855f7' }
+        { label: '공상', data: inc.map(r => r.공상), backgroundColor: '#c9b06a' },
+        { label: '일반재해', data: inc.map(r => r.일반재해), backgroundColor: '#d49462' },
+        { label: '중대재해', data: inc.map(r => r.중대재해), backgroundColor: '#c25656' },
+        { label: '일반NM', data: inc.map(r => r.일반NearMiss), backgroundColor: '#6ba8c0' },
+        { label: '중대NM', data: inc.map(r => r.중대NearMiss), backgroundColor: '#9a8bb0' }
       ]
     },
     options: {
       responsive: true, maintainAspectRatio: false, indexAxis: 'y',
-      plugins: { legend: { position: 'bottom', labels: { boxWidth: 9, font: { size: 10 } } } },
-      scales: { x: { stacked: true }, y: { stacked: true, grid: { display: false } } }
+      plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 11 }, padding: 6 } } },
+      scales: { x: { stacked: true, ticks: { font: { size: 11 } } }, y: { stacked: true, ticks: { font: { size: 11 } }, grid: { display: false } } }
     }
   });
 
@@ -2216,18 +2210,18 @@ PANEL_INIT.overview = () => {
     data: {
       labels: monthsShort,
       datasets: [
-        { type: 'line', label: '육상 계획', data: d.progress.육상부.plan, borderColor: '#2563eb', borderDash: [6,4], borderWidth: 2, pointRadius: 3, pointBackgroundColor: '#2563eb' },
-        { type: 'line', label: '육상 실적', data: d.progress.육상부.actual, borderColor: '#2563eb', borderWidth: 3, pointRadius: 4, pointBackgroundColor: '#2563eb' },
-        { type: 'line', label: '해상 계획', data: d.progress.해상부.plan, borderColor: '#10b981', borderDash: [6,4], borderWidth: 2, pointRadius: 3, pointBackgroundColor: '#10b981' },
-        { type: 'line', label: '해상 실적', data: d.progress.해상부.actual, borderColor: '#10b981', borderWidth: 3, pointRadius: 4, pointBackgroundColor: '#10b981' },
-        { type: 'line', label: '154kV 계획', data: d.progress["154kV"].plan, borderColor: '#f59e0b', borderDash: [6,4], borderWidth: 2, pointRadius: 3, pointBackgroundColor: '#f59e0b' },
-        { type: 'line', label: '154kV 실적', data: d.progress["154kV"].actual, borderColor: '#f59e0b', borderWidth: 3, pointRadius: 4, pointBackgroundColor: '#f59e0b' }
+        { type: 'line', label: '육상 계획', data: d.progress.육상부.plan, borderColor: '#4a7bd1', borderDash: [6,4], borderWidth: 1.5, pointRadius: 2, pointBackgroundColor: '#4a7bd1' },
+        { type: 'line', label: '육상 실적', data: d.progress.육상부.actual, borderColor: '#4a7bd1', borderWidth: 2.5, pointRadius: 3, pointBackgroundColor: '#4a7bd1' },
+        { type: 'line', label: '해상 계획', data: d.progress.해상부.plan, borderColor: '#6ba8c0', borderDash: [6,4], borderWidth: 1.5, pointRadius: 2, pointBackgroundColor: '#6ba8c0' },
+        { type: 'line', label: '해상 실적', data: d.progress.해상부.actual, borderColor: '#6ba8c0', borderWidth: 2.5, pointRadius: 3, pointBackgroundColor: '#6ba8c0' },
+        { type: 'line', label: '154kV 계획', data: d.progress["154kV"].plan, borderColor: '#d49462', borderDash: [6,4], borderWidth: 1.5, pointRadius: 2, pointBackgroundColor: '#d49462' },
+        { type: 'line', label: '154kV 실적', data: d.progress["154kV"].actual, borderColor: '#d49462', borderWidth: 2.5, pointRadius: 3, pointBackgroundColor: '#d49462' }
       ]
     },
     options: {
       responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } }, tooltip: { mode: 'index', intersect: false } },
-      scales: { y: { min: 50, max: 102, ticks: { callback: v => v + '%' } }, x: { grid: { display: false } } }
+      plugins: { legend: { position: 'bottom', labels: { boxWidth: 8, font: { size: 10 }, padding: 4 } }, tooltip: { mode: 'index', intersect: false } },
+      scales: { y: { min: 50, max: 102, ticks: { callback: v => v + '%', font: { size: 11 } } }, x: { ticks: { font: { size: 10 } }, grid: { display: false } } }
     }
   });
 
@@ -2241,19 +2235,19 @@ PANEL_INIT.overview = () => {
     data: {
       labels: monthsShort,
       datasets: [
-        { label: '육상부', data: totalLand, backgroundColor: '#2563eb', stack: 'a', borderRadius: 3 },
-        { label: '해상부', data: totalSea, backgroundColor: '#10b981', stack: 'a', borderRadius: 3 },
-        { label: '154kV', data: total154, backgroundColor: '#f59e0b', stack: 'a', borderRadius: 3 },
-        { type: 'line', label: '종합 관리자', data: d.manpower.종합.manager, borderColor: '#ef4444', borderWidth: 3, yAxisID: 'y1', pointRadius: 4, pointBackgroundColor: '#ef4444', tension: 0.3 }
+        { label: '육상부', data: totalLand, backgroundColor: '#4a7bd1', stack: 'a', borderRadius: 3 },
+        { label: '해상부', data: totalSea, backgroundColor: '#6ba8c0', stack: 'a', borderRadius: 3 },
+        { label: '154kV', data: total154, backgroundColor: '#d49462', stack: 'a', borderRadius: 3 },
+        { type: 'line', label: '종합 관리자', data: d.manpower.종합.manager, borderColor: '#c25656', borderWidth: 2, yAxisID: 'y1', pointRadius: 3, pointBackgroundColor: '#c25656', tension: 0.3 }
       ]
     },
     options: {
       responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } }, tooltip: { mode: 'index', intersect: false } },
+      plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 }, padding: 4 } }, tooltip: { mode: 'index', intersect: false } },
       scales: {
-        y: { stacked: true, beginAtZero: true, title: { display: true, text: '총 인원(명)' } },
-        y1: { position: 'right', beginAtZero: true, suggestedMax: 100, title: { display: true, text: '관리자(명)' }, grid: { display: false } },
-        x: { stacked: true, grid: { display: false } }
+        y: { stacked: true, beginAtZero: true, title: { display: true, text: '인원(명)', font: { size: 11 } }, ticks: { font: { size: 11 } } },
+        y1: { position: 'right', beginAtZero: true, suggestedMax: 100, title: { display: true, text: '관리자', font: { size: 11 } }, ticks: { font: { size: 11 } }, grid: { display: false } },
+        x: { stacked: true, ticks: { font: { size: 10 } }, grid: { display: false } }
       }
     }
   });
@@ -2265,15 +2259,15 @@ PANEL_INIT.overview = () => {
     data: {
       labels: monthsShort,
       datasets: [
-        { label: '육상부', data: d.no_accident_days.육상부, borderColor: '#2563eb', backgroundColor: '#2563eb22', borderWidth: 3, pointRadius: 4, pointBackgroundColor: '#2563eb', tension: 0.2, fill: false },
-        { label: '해상부', data: d.no_accident_days.해상부, borderColor: '#10b981', backgroundColor: '#10b98122', borderWidth: 3, pointRadius: 4, pointBackgroundColor: '#10b981', tension: 0.2, fill: false },
-        { label: '154kV', data: d.no_accident_days["154kV"], borderColor: '#f59e0b', backgroundColor: '#f59e0b22', borderWidth: 3, pointRadius: 4, pointBackgroundColor: '#f59e0b', tension: 0.2, fill: false }
+        { label: '육상부', data: d.no_accident_days.육상부, borderColor: '#4a7bd1', backgroundColor: 'rgba(74,123,209,0.13)', borderWidth: 2.5, pointRadius: 3, pointBackgroundColor: '#4a7bd1', tension: 0.2, fill: false },
+        { label: '해상부', data: d.no_accident_days.해상부, borderColor: '#6ba8c0', backgroundColor: 'rgba(107,168,192,0.13)', borderWidth: 2.5, pointRadius: 3, pointBackgroundColor: '#6ba8c0', tension: 0.2, fill: false },
+        { label: '154kV', data: d.no_accident_days["154kV"], borderColor: '#d49462', backgroundColor: 'rgba(212,148,98,0.13)', borderWidth: 2.5, pointRadius: 3, pointBackgroundColor: '#d49462', tension: 0.2, fill: false }
       ]
     },
     options: {
       responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } }, tooltip: { mode: 'index', intersect: false } },
-      scales: { y: { beginAtZero: true, title: { display: true, text: '일' } }, x: { grid: { display: false } } }
+      plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 11 }, padding: 6 } }, tooltip: { mode: 'index', intersect: false } },
+      scales: { y: { beginAtZero: true, title: { display: true, text: '일', font: { size: 11 } }, ticks: { font: { size: 11 } } }, x: { ticks: { font: { size: 10 } }, grid: { display: false } } }
     }
   });
 
@@ -2289,89 +2283,19 @@ PANEL_INIT.overview = () => {
     data: {
       labels: monthsShort,
       datasets: [
-        { label: '육상부', data: cumLand, borderColor: '#2563eb', backgroundColor: '#2563eb33', fill: true, tension: 0.3, pointRadius: 3, borderWidth: 2 },
-        { label: '해상부', data: cumSea, borderColor: '#10b981', backgroundColor: '#10b98133', fill: true, tension: 0.3, pointRadius: 3, borderWidth: 2 },
-        { label: '154kV', data: cum154, borderColor: '#f59e0b', backgroundColor: '#f59e0b33', fill: true, tension: 0.3, pointRadius: 3, borderWidth: 2 }
+        { label: '육상부', data: cumLand, borderColor: '#4a7bd1', backgroundColor: 'rgba(74,123,209,0.20)', fill: true, tension: 0.3, pointRadius: 2.5, borderWidth: 2 },
+        { label: '해상부', data: cumSea, borderColor: '#6ba8c0', backgroundColor: 'rgba(107,168,192,0.20)', fill: true, tension: 0.3, pointRadius: 2.5, borderWidth: 2 },
+        { label: '154kV', data: cum154, borderColor: '#d49462', backgroundColor: 'rgba(212,148,98,0.20)', fill: true, tension: 0.3, pointRadius: 2.5, borderWidth: 2 }
       ]
     },
     options: {
       responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } }, tooltip: { mode: 'index', intersect: false } },
-      scales: { y: { stacked: true, beginAtZero: true, title: { display: true, text: 'man-month' } }, x: { grid: { display: false } } }
+      plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 11 }, padding: 6 } }, tooltip: { mode: 'index', intersect: false } },
+      scales: { y: { stacked: true, beginAtZero: true, title: { display: true, text: 'man-month', font: { size: 11 } }, ticks: { font: { size: 11 } } }, x: { ticks: { font: { size: 10 } }, grid: { display: false } } }
     }
   });
 
-  destroyChart('ov-audit');
-  const cats = ['추락','전도','낙하/비래','감전','충돌/협착','붕괴/도괴','화재/폭발','기타'];
-  // Show one dataset per month (auto-color), filter empty months
-  const auditMonths = d.safety_audit_land.months.map((m,i) => ({m, i})).filter(({i}) => cats.some(c => d.safety_audit_land[c][i] != null));
-  charts['ov-audit'] = new Chart(document.getElementById('ov-audit'), {
-    type: 'bar',
-    data: {
-      labels: cats,
-      datasets: auditMonths.map(({m, i}, k) => ({
-        label: fmtMonthShort(m),
-        data: cats.map(c => d.safety_audit_land[c][i]),
-        backgroundColor: monthColor(k),
-        borderRadius: 3,
-      }))
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } } },
-      scales: { y: { beginAtZero: true }, x: { grid: { display: false } } }
-    }
-  });
-
-  // 안전교육 누적 인원 — 한눈에 (KPI 카드 4종 + 데이터 보유월만 컴팩트 표)
-  const eduRoot = document.getElementById('ov-edu-table');
-  if (eduRoot) {
-    const eduCats = ['채용/작업변경', '특별교육', '관리감독자', '정기교육'];
-    const eduColors = ['#2563eb', '#0891b2', '#ea580c', '#15803d'];
-    // 데이터가 있는 월 인덱스만 추출
-    const validIdx = [];
-    d.safety_edu_land.months.forEach((m, i) => {
-      if (eduCats.some(c => d.safety_edu_land[c][i] != null)) validIdx.push(i);
-    });
-    const lastI = validIdx[validIdx.length - 1];
-    const prevI = validIdx[validIdx.length - 2];
-
-    // 1) KPI 카드 4종 — 최신 누계 + 전월 대비 증감
-    let h = '<div class="edu-kpi-row">';
-    eduCats.forEach((c, ci) => {
-      const cur  = (lastI != null) ? (d.safety_edu_land[c][lastI] ?? 0) : 0;
-      const prev = (prevI != null) ? (d.safety_edu_land[c][prevI] ?? 0) : 0;
-      const delta = cur - prev;
-      const sign = delta > 0 ? '▲ +' : (delta < 0 ? '▼ ' : '· ');
-      const cls  = delta > 0 ? 'pos' : (delta < 0 ? 'neg' : '');
-      h += `<div class="edu-kpi" style="--c:${eduColors[ci]}">
-        <div class="edu-kpi-l">${c}</div>
-        <div class="edu-kpi-v">${cur.toLocaleString()}</div>
-        <div class="edu-kpi-d ${cls}">${sign}${Math.abs(delta).toLocaleString()}<span class="muted">전월비</span></div>
-      </div>`;
-    });
-    h += '</div>';
-
-    // 2) 컴팩트 표 — 데이터 보유월만 표시
-    if (validIdx.length > 0) {
-      h += '<table class="edu-table compact"><thead><tr><th>교육</th>';
-      validIdx.forEach(i => { h += `<th>${fmtMonthCompact(d.safety_edu_land.months[i])}</th>`; });
-      h += '<th class="total-col">누계</th></tr></thead><tbody>';
-      eduCats.forEach((c, ci) => {
-        h += `<tr><td style="border-left:3px solid ${eduColors[ci]};padding-left:10px"><b>${c}</b></td>`;
-        validIdx.forEach(i => {
-          const v = d.safety_edu_land[c][i];
-          h += `<td>${v != null ? v.toLocaleString() : '<span class="empty-cell">-</span>'}</td>`;
-        });
-        const tot = (lastI != null) ? (d.safety_edu_land[c][lastI] ?? 0) : 0;
-        h += `<td class="total-col">${tot.toLocaleString()}</td></tr>`;
-      });
-      h += '</tbody></table>';
-    } else {
-      h += '<div class="ms-empty">데이터가 입력된 월이 없습니다.</div>';
-    }
-    eduRoot.innerHTML = h;
-  }
+  // 안전점검·안전교육 상세는 'safety' 패널로 이관 (Overview 컴팩트화)
 
   // Half-circle gauges (무재해 일수)
   // Use a target reference (max of values * 1.2 as default) so the arc shows progress relatively
@@ -2394,9 +2318,9 @@ PANEL_INIT.overview = () => {
       options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { enabled: false } } }
     });
   };
-  renderHalfGauge('hg-land', d.no_accident_days.육상부[lastIdx], '#2563eb');
-  renderHalfGauge('hg-sea', d.no_accident_days.해상부[lastIdx], '#10b981');
-  renderHalfGauge('hg-elec', d.no_accident_days["154kV"][lastIdx], '#f59e0b');
+  renderHalfGauge('hg-land', d.no_accident_days.육상부[lastIdx], '#4a7bd1');
+  renderHalfGauge('hg-sea', d.no_accident_days.해상부[lastIdx], '#6ba8c0');
+  renderHalfGauge('hg-elec', d.no_accident_days["154kV"][lastIdx], '#d49462');
 };
 
 //------------------------------------------------------------
@@ -2425,21 +2349,21 @@ PANELS.progress = () => {
     </div>
     <div class="card col-3">
       <h3>육상부</h3>
-      <div class="kpi" style="background:#dbeafe; color:#1e3a8a; height: 90px;">
+      <div class="kpi" style="background:#eaf0f7; color:#2c569f; height: 90px;">
         <div class="v" style="font-size: 32px;">${(d.progress.육상부.actual[lastIdx] ?? 0).toFixed(2)}%</div>
         <div class="l">계획 ${(d.progress.육상부.plan[lastIdx] ?? 0).toFixed(2)}% / 편차 ${(d.progress.육상부.actual[lastIdx]-d.progress.육상부.plan[lastIdx]).toFixed(2)}%p</div>
       </div>
     </div>
     <div class="card col-3">
       <h3>해상부</h3>
-      <div class="kpi" style="background:#dcfce7; color:#15803d; height: 90px;">
+      <div class="kpi" style="background:#d9e8ee; color:#2f6f88; height: 90px;">
         <div class="v" style="font-size: 32px;">${(d.progress.해상부.actual[lastIdx] ?? 0).toFixed(2)}%</div>
         <div class="l">계획 ${(d.progress.해상부.plan[lastIdx] ?? 0).toFixed(2)}% / 편차 ${(d.progress.해상부.actual[lastIdx]-d.progress.해상부.plan[lastIdx]).toFixed(2)}%p</div>
       </div>
     </div>
     <div class="card col-3">
       <h3>154kV</h3>
-      <div class="kpi" style="background:#fef3c7; color:#92400e; height: 90px;">
+      <div class="kpi" style="background:#ece1cc; color:#8c5526; height: 90px;">
         <div class="v" style="font-size: 32px;">${(d.progress["154kV"].actual[lastIdx] == null || d.progress["154kV"].actual[lastIdx] >= 100) ? '완료' : d.progress["154kV"].actual[lastIdx].toFixed(0)+'%'}</div>
         <div class="l">${(d.progress["154kV"].actual[lastIdx] == null || d.progress["154kV"].actual[lastIdx] >= 100) ? '공사 완료' : '계획 '+d.progress["154kV"].plan[lastIdx].toFixed(0)+'%'}</div>
       </div>
@@ -2483,14 +2407,14 @@ PANEL_INIT.progress = () => {
     data: {
       labels: monthsShort,
       datasets: [
-        { type: 'line', label: '종합 계획', data: d.progress.종합.plan, borderColor: '#dc2626', borderDash: [4,3], borderWidth: 3, pointRadius: 4, pointBackgroundColor: '#dc2626' },
-        { type: 'line', label: '종합 실적', data: d.progress.종합.actual, borderColor: '#dc2626', borderWidth: 5, pointRadius: 6, pointBackgroundColor: '#dc2626', backgroundColor: '#dc262622', fill: false },
-        { type: 'line', label: '육상 계획', data: d.progress.육상부.plan, borderColor: '#2563eb', borderDash: [6,4], borderWidth: 2, pointRadius: 3, pointBackgroundColor: '#2563eb' },
-        { type: 'line', label: '육상 실적', data: d.progress.육상부.actual, borderColor: '#2563eb', borderWidth: 3, pointRadius: 4, pointBackgroundColor: '#2563eb' },
-        { type: 'line', label: '해상 계획', data: d.progress.해상부.plan, borderColor: '#10b981', borderDash: [6,4], borderWidth: 2, pointRadius: 3, pointBackgroundColor: '#10b981' },
-        { type: 'line', label: '해상 실적', data: d.progress.해상부.actual, borderColor: '#10b981', borderWidth: 3, pointRadius: 4, pointBackgroundColor: '#10b981' },
-        { type: 'line', label: '154kV 계획', data: d.progress["154kV"].plan, borderColor: '#f59e0b', borderDash: [6,4], borderWidth: 2, pointRadius: 3, pointBackgroundColor: '#f59e0b' },
-        { type: 'line', label: '154kV 실적', data: d.progress["154kV"].actual, borderColor: '#f59e0b', borderWidth: 3, pointRadius: 4, pointBackgroundColor: '#f59e0b' }
+        { type: 'line', label: '종합 계획', data: d.progress.종합.plan, borderColor: '#5a6677', borderDash: [4,3], borderWidth: 2.5, pointRadius: 3, pointBackgroundColor: '#5a6677' },
+        { type: 'line', label: '종합 실적', data: d.progress.종합.actual, borderColor: '#2c569f', borderWidth: 4, pointRadius: 5, pointBackgroundColor: '#2c569f', backgroundColor: 'rgba(36,74,130,0.10)', fill: false },
+        { type: 'line', label: '육상 계획', data: d.progress.육상부.plan, borderColor: '#4a7bd1', borderDash: [6,4], borderWidth: 2, pointRadius: 3, pointBackgroundColor: '#4a7bd1' },
+        { type: 'line', label: '육상 실적', data: d.progress.육상부.actual, borderColor: '#4a7bd1', borderWidth: 3, pointRadius: 4, pointBackgroundColor: '#4a7bd1' },
+        { type: 'line', label: '해상 계획', data: d.progress.해상부.plan, borderColor: '#6ba8c0', borderDash: [6,4], borderWidth: 2, pointRadius: 3, pointBackgroundColor: '#6ba8c0' },
+        { type: 'line', label: '해상 실적', data: d.progress.해상부.actual, borderColor: '#6ba8c0', borderWidth: 3, pointRadius: 4, pointBackgroundColor: '#6ba8c0' },
+        { type: 'line', label: '154kV 계획', data: d.progress["154kV"].plan, borderColor: '#d49462', borderDash: [6,4], borderWidth: 2, pointRadius: 3, pointBackgroundColor: '#d49462' },
+        { type: 'line', label: '154kV 실적', data: d.progress["154kV"].actual, borderColor: '#d49462', borderWidth: 3, pointRadius: 4, pointBackgroundColor: '#d49462' }
       ]
     },
     options: {
@@ -2624,28 +2548,28 @@ PANELS.resource = () => {
     <!-- KPI Cards -->
     <div class="card col-3">
       <h3>현재 인원 (${fmtMonthShort(lastMonth)})</h3>
-      <div class="kpi" style="background:#dbeafe; color:#1e3a8a; height: 90px;">
+      <div class="kpi" style="background:#eaf0f7; color:#2c569f; height: 90px;">
         <div class="v" style="font-size: 32px;">${totalCur.toLocaleString()}</div>
         <div class="l">명 (관리자 ${totalMgr} + 협력 ${totalPtn})</div>
       </div>
     </div>
     <div class="card col-3">
       <h3>피크 인원</h3>
-      <div class="kpi" style="background:#fef3c7; color:#92400e; height: 90px;">
+      <div class="kpi" style="background:#e6ecf3; color:#2f4870; height: 90px;">
         <div class="v" style="font-size: 32px;">${monthlyTotals[peakIdx]}</div>
         <div class="l">${fmtMonthShort(d.manpower.months[peakIdx])} 기준</div>
       </div>
     </div>
     <div class="card col-3">
       <h3>누적 man-month</h3>
-      <div class="kpi" style="background:#dcfce7; color:#15803d; height: 90px;">
+      <div class="kpi" style="background:#f1f3f7; color:#3a4a63; height: 90px;">
         <div class="v" style="font-size: 32px;">${cumulMM.toLocaleString()}</div>
         <div class="l">${d.manpower.months.length}개월 누계</div>
       </div>
     </div>
     <div class="card col-3">
       <h3>관리자 비율</h3>
-      <div class="kpi" style="background:#fee2e2; color:#991b1b; height: 90px;">
+      <div class="kpi" style="background:#f3dada; color:#a14d4d; height: 90px;">
         <div class="v" style="font-size: 32px;">${totalCur > 0 ? (totalMgr / totalCur * 100).toFixed(1) : 0}%</div>
         <div class="l">관리자 / 전체</div>
       </div>
@@ -2701,12 +2625,12 @@ PANEL_INIT.resource = () => {
     data: {
       labels: monthsShort,
       datasets: [
-        { label: '육상-관리', data: d.manpower.육상부.manager, backgroundColor: '#1e3a8a', stack: 'land' },
-        { label: '육상-협력', data: d.manpower.육상부.partner, backgroundColor: '#3b82f6', stack: 'land' },
-        { label: '해상-관리', data: d.manpower.해상부.manager, backgroundColor: '#047857', stack: 'sea' },
-        { label: '해상-협력', data: d.manpower.해상부.partner, backgroundColor: '#34d399', stack: 'sea' },
-        { label: '154kV-관리', data: d.manpower["154kV"].manager, backgroundColor: '#b45309', stack: 'kv' },
-        { label: '154kV-협력', data: d.manpower["154kV"].partner, backgroundColor: '#fbbf24', stack: 'kv' }
+        { label: '육상-관리', data: d.manpower.육상부.manager, backgroundColor: '#2c569f', stack: 'land' },
+        { label: '육상-협력', data: d.manpower.육상부.partner, backgroundColor: '#5a85c4', stack: 'land' },
+        { label: '해상-관리', data: d.manpower.해상부.manager, backgroundColor: '#2f6f88', stack: 'sea' },
+        { label: '해상-협력', data: d.manpower.해상부.partner, backgroundColor: '#6da5b8', stack: 'sea' },
+        { label: '154kV-관리', data: d.manpower["154kV"].manager, backgroundColor: '#8c5526', stack: 'kv' },
+        { label: '154kV-협력', data: d.manpower["154kV"].partner, backgroundColor: '#c79666', stack: 'kv' }
       ]
     },
     options: {
@@ -2723,7 +2647,7 @@ PANEL_INIT.resource = () => {
     type: 'doughnut',
     data: {
       labels: ['관리자', '협력사'],
-      datasets: [{ data: [totalMgr, totalPtn], backgroundColor: ['#ef4444', '#2563eb'], borderWidth: 0 }]
+      datasets: [{ data: [totalMgr, totalPtn], backgroundColor: ['#c25656', '#4a7bd1'], borderWidth: 0 }]
     },
     options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
   });
@@ -2743,9 +2667,9 @@ PANEL_INIT.resource = () => {
     data: {
       labels: monthsShort,
       datasets: [
-        { label: '육상부', data: cumLand, borderColor: '#2563eb', backgroundColor: '#2563eb55', fill: true, tension: 0.3, pointRadius: 3 },
-        { label: '해상부', data: cumSea, borderColor: '#10b981', backgroundColor: '#10b98155', fill: true, tension: 0.3, pointRadius: 3 },
-        { label: '154kV', data: cum154, borderColor: '#f59e0b', backgroundColor: '#f59e0b55', fill: true, tension: 0.3, pointRadius: 3 }
+        { label: '육상부', data: cumLand, borderColor: '#4a7bd1', backgroundColor: 'rgba(74,123,209,0.30)', fill: true, tension: 0.3, pointRadius: 3 },
+        { label: '해상부', data: cumSea, borderColor: '#6ba8c0', backgroundColor: 'rgba(107,168,192,0.30)', fill: true, tension: 0.3, pointRadius: 3 },
+        { label: '154kV', data: cum154, borderColor: '#d49462', backgroundColor: 'rgba(212,148,98,0.30)', fill: true, tension: 0.3, pointRadius: 3 }
       ]
     },
     options: {
@@ -2768,7 +2692,7 @@ PANEL_INIT.resource = () => {
     data: {
       labels: monthsShort,
       datasets: [
-        { label: '관리자 비율 (%)', data: ratios, borderColor: '#ef4444', backgroundColor: '#ef444433', fill: true, tension: 0.3, pointRadius: 5, pointBackgroundColor: '#ef4444', borderWidth: 3 }
+        { label: '관리자 비율 (%)', data: ratios, borderColor: '#c25656', backgroundColor: 'rgba(194,86,86,0.20)', fill: true, tension: 0.3, pointRadius: 4, pointBackgroundColor: '#c25656', borderWidth: 2.5 }
       ]
     },
     options: {
@@ -2906,7 +2830,7 @@ PANELS.safety = () => {
       </div>
       <div class="card col-3">
         <h3>154kV 무재해 일수</h3>
-        <div class="kpi" style="background:${d.no_accident_days["154kV"][lastIdx] ? '#dcfce7' : '#dbeafe'}; color:${d.no_accident_days["154kV"][lastIdx] ? '#15803d' : '#1e40af'}; height: 110px; display: flex; flex-direction: column; justify-content: center;">
+        <div class="kpi" style="background:${d.no_accident_days["154kV"][lastIdx] ? '#dde7df' : '#eaf0f7'}; color:${d.no_accident_days["154kV"][lastIdx] ? '#3d7a4a' : '#2c569f'}; height: 110px; display: flex; flex-direction: column; justify-content: center;">
           <div class="v" style="font-size: 40px;">${d.no_accident_days["154kV"][lastIdx] ?? '완료'}</div>
           <div class="l">${d.no_accident_days["154kV"][lastIdx] ? "일 ('24.12.1 ~ )" : "공사 완료"}</div>
         </div>
@@ -2929,21 +2853,21 @@ PANELS.safety = () => {
       </div>
       <div class="card col-3">
         <h3>Near Miss</h3>
-        <div class="kpi" style="background:#cffafe; color:#0e7490; height: 90px;">
+        <div class="kpi" style="background:#d9e8ee; color:#2f6f88; height: 90px;">
           <div class="v" style="font-size: 28px;">${totalNM}</div>
           <div class="l">건 (일반 ${inc.reduce((s,r) => s + r.일반NearMiss, 0)} / 중대 ${inc.reduce((s,r) => s + r.중대NearMiss, 0)})</div>
         </div>
       </div>
       <div class="card col-3">
         <h3>안전교육 누적</h3>
-        <div class="kpi" style="background:#f0f9ff; color:#0369a1; height: 90px;">
+        <div class="kpi" style="background:#eef3fa; color:#2c569f; height: 90px;">
           <div class="v" style="font-size: 28px;">${(d.safety_edu_land.정기교육[lastIdx] ?? 0).toLocaleString()}</div>
           <div class="l">정기교육 누계 (명)</div>
         </div>
       </div>
       <div class="card col-3">
         <h3>안전점검 지적</h3>
-        <div class="kpi" style="background:#fef3c7; color:#92400e; height: 90px;">
+        <div class="kpi" style="background:#ece1cc; color:#8c5526; height: 90px;">
           <div class="v" style="font-size: 28px;">${['추락','전도','낙하/비래','감전','충돌/협착','붕괴/도괴','화재/폭발','질식','기타'].reduce((s,c) => s + (d.safety_audit_land[c][lastIdx] ?? 0), 0)}</div>
           <div class="l">건 (${fmtMonthShort(d.safety_audit_land.months[lastIdx])} 합계)</div>
         </div>
@@ -2992,9 +2916,9 @@ PANEL_INIT.safety = () => {
     data: {
       labels: monthsShort,
       datasets: [
-        { label: '육상부', data: d.no_accident_days.육상부, borderColor: '#2563eb', backgroundColor: '#2563eb22', borderWidth: 3, pointRadius: 4, pointBackgroundColor: '#2563eb', tension: 0.2 },
-        { label: '해상부', data: d.no_accident_days.해상부, borderColor: '#10b981', backgroundColor: '#10b98122', borderWidth: 3, pointRadius: 4, pointBackgroundColor: '#10b981', tension: 0.2 },
-        { label: '154kV', data: d.no_accident_days["154kV"], borderColor: '#f59e0b', backgroundColor: '#f59e0b22', borderWidth: 3, pointRadius: 4, pointBackgroundColor: '#f59e0b', tension: 0.2 }
+        { label: '육상부', data: d.no_accident_days.육상부, borderColor: '#4a7bd1', backgroundColor: 'rgba(74,123,209,0.13)', borderWidth: 2.5, pointRadius: 3.5, pointBackgroundColor: '#4a7bd1', tension: 0.2 },
+        { label: '해상부', data: d.no_accident_days.해상부, borderColor: '#6ba8c0', backgroundColor: 'rgba(107,168,192,0.13)', borderWidth: 2.5, pointRadius: 3.5, pointBackgroundColor: '#6ba8c0', tension: 0.2 },
+        { label: '154kV', data: d.no_accident_days["154kV"], borderColor: '#d49462', backgroundColor: 'rgba(212,148,98,0.13)', borderWidth: 2.5, pointRadius: 3.5, pointBackgroundColor: '#d49462', tension: 0.2 }
       ]
     },
     options: {
@@ -3055,7 +2979,7 @@ PANEL_INIT.safety = () => {
 
   destroyChart('sf-edu');
   const eduCats = ['채용/작업변경', '특별교육', '관리감독자', '정기교육'];
-  const eduColors = ['#007acc','#10b981','#ffd54f','#f43f5e'];
+  const eduColors = ['#4a7bd1','#6ba8c0','#a89464','#c25656'];
   charts['sf-edu'] = new Chart(document.getElementById('sf-edu'), {
     type: 'line',
     data: {
@@ -3080,11 +3004,11 @@ PANEL_INIT.safety = () => {
     data: {
       labels: inc.map(r => r.sub),
       datasets: [
-        { label: '공상', data: inc.map(r => r.공상), backgroundColor: '#ffd54f' },
-        { label: '일반재해', data: inc.map(r => r.일반재해), backgroundColor: '#fb923c' },
-        { label: '중대재해', data: inc.map(r => r.중대재해), backgroundColor: '#dc2626' },
-        { label: '일반NM', data: inc.map(r => r.일반NearMiss), backgroundColor: '#06b6d4' },
-        { label: '중대NM', data: inc.map(r => r.중대NearMiss), backgroundColor: '#a855f7' }
+        { label: '공상', data: inc.map(r => r.공상), backgroundColor: '#c2a85a' },
+        { label: '일반재해', data: inc.map(r => r.일반재해), backgroundColor: '#d49462' },
+        { label: '중대재해', data: inc.map(r => r.중대재해), backgroundColor: '#c25656' },
+        { label: '일반NM', data: inc.map(r => r.일반NearMiss), backgroundColor: '#6ba8c0' },
+        { label: '중대NM', data: inc.map(r => r.중대NearMiss), backgroundColor: '#7a6a96' }
       ]
     },
     options: {
@@ -3097,7 +3021,7 @@ PANEL_INIT.safety = () => {
   // Audit lines: each category as a separate line over months (2026-01~)
   destroyChart('sf-audit-lines');
   const lineCats = ['추락','전도','낙하/비래','감전','충돌/협착','붕괴/도괴','화재/폭발','기타'];
-  const lineColors = ['#dc2626','#f97316','#eab308','#06b6d4','#10b981','#a855f7','#ef4444','#64748b'];
+  const lineColors = ['#c25656','#d49462','#a89464','#6ba8c0','#4a7bd1','#7a6a96','#a14d4d','#5a6677'];
   charts['sf-audit-lines'] = new Chart(document.getElementById('sf-audit-lines'), {
     type: 'line',
     data: {
@@ -3674,7 +3598,7 @@ PANELS.milestones = () => {
     <!-- Summary KPI row -->
     <div class="card col-3">
       <h3>총 마일스톤</h3>
-      <div class="kpi" style="background:#dbeafe; color:#1e3a8a; height: 90px;">
+      <div class="kpi" style="background:#eaf0f7; color:#2c569f; height: 90px;">
         <div class="v" style="font-size: 32px;">${all.length}</div>
         <div class="l">건 (${quarters[0] ?? ''} ~ ${quarters[quarters.length-1] ?? ''})</div>
       </div>
@@ -3688,14 +3612,14 @@ PANELS.milestones = () => {
     </div>
     <div class="card col-3">
       <h3>착수</h3>
-      <div class="kpi" style="background:#fef3c7; color:#92400e; height: 90px;">
+      <div class="kpi" style="background:#ece1cc; color:#8c5526; height: 90px;">
         <div class="v" style="font-size: 32px;">${totalStart}</div>
         <div class="l">건 (착수 후 진행 中)</div>
       </div>
     </div>
     <div class="card col-3">
       <h3>최근 분기</h3>
-      <div class="kpi" style="background:#dcfce7; color:#15803d; height: 90px;">
+      <div class="kpi" style="background:#dde7df; color:#3d7a4a; height: 90px;">
         <div class="v" style="font-size: 32px;">${qCounts[quarters[quarters.length-1]] ?? 0}</div>
         <div class="l">${quarters[quarters.length-1] ?? '-'} 신규</div>
       </div>
@@ -3753,9 +3677,9 @@ PANEL_INIT.milestones = () => {
     data: {
       labels: quarters,
       datasets: [
-        { label: '완료', data: doneCounts, backgroundColor: '#15803d', stack: 's', borderRadius: 4 },
-        { label: '착수', data: startCounts, backgroundColor: '#f59e0b', stack: 's', borderRadius: 4 },
-        { type: 'line', label: '누적', data: quarters.map((_, i) => quarters.slice(0, i+1).reduce((s,q,idx) => s + doneCounts[idx] + startCounts[idx], 0)), borderColor: '#dc2626', borderWidth: 3, pointRadius: 5, pointBackgroundColor: '#dc2626', yAxisID: 'y1', tension: 0.3 }
+        { label: '완료', data: doneCounts, backgroundColor: '#3d7a4a', stack: 's', borderRadius: 4 },
+        { label: '착수', data: startCounts, backgroundColor: '#d49462', stack: 's', borderRadius: 4 },
+        { type: 'line', label: '누적', data: quarters.map((_, i) => quarters.slice(0, i+1).reduce((s,q,idx) => s + doneCounts[idx] + startCounts[idx], 0)), borderColor: '#2c569f', borderWidth: 2.5, pointRadius: 4, pointBackgroundColor: '#2c569f', yAxisID: 'y1', tension: 0.3 }
       ]
     },
     options: {
