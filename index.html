@@ -236,15 +236,16 @@ body {
 }
 .sidebar-header {
   height: 56px;
-  padding: 0 20px;
+  padding: 0 14px;
   display: flex; align-items: center; gap: 8px;
-  font-size: 14.5px;
+  font-size: 13px;
   color: var(--text);
-  letter-spacing: -0.01em;
+  letter-spacing: -0.015em;
   font-weight: 700;
   border-bottom: 1px solid var(--border);
   background: linear-gradient(180deg, var(--surface) 0%, #f4f7fc 100%);
   position: relative;
+  white-space: nowrap;
 }
 .sidebar-header::after {
   content: '●';
@@ -1566,9 +1567,9 @@ table.editable td.num input {
   grid-template-rows: 1.05fr 1fr 1fr;
   gap: 10px;
 }
-/* 마일스톤 컬럼: 2개 서브 (핵심 마일스톤 확장) */
+/* 마일스톤 컬럼: 2개 서브 (핵심 마일스톤 + 특이사항 — 특이사항을 살짝 위로) */
 .panel[data-tab="overview"] .ov-col-ms .ov-group-body {
-  grid-template-rows: 2.4fr 1fr;
+  grid-template-rows: 1.65fr 1fr;
 }
 .panel[data-tab="overview"] .ov-sub {
   display: flex;
@@ -2244,7 +2245,7 @@ table.editable td.num input {
     <img src="assets/posco_intl_logo.png" alt="POSCO INTERNATIONAL" class="logo">
     <div class="divider"></div>
     <div class="title-block">
-      <div class="title">광양 제2 LNG터미널 증설공사 — 주요 지표 Dashboard</div>
+      <div class="title">광양 제2 LNG터미널 증설공사 Dashboard</div>
       <div class="subtitle">
         <span>📋 보고기간: 2023.02 ~ 2026.03 (38개월)</span>
         <span class="dot">·</span>
@@ -2259,7 +2260,7 @@ table.editable td.num input {
 
   <!-- Sidebar (Explorer) -->
   <div class="sidebar">
-    <div class="sidebar-header">LNG2 증설공사</div>
+    <div class="sidebar-header">광양 LNG 제2 터미널 증설공사</div>
     <div class="sidebar-content">
       <div class="menu-group">📋 종합</div>
       <div class="menu-item active" data-tab="overview"><span class="ic">📊</span>종합 대시보드</div>
