@@ -1,0 +1,15 @@
+# ============================================================
+# Cloudflare Pages — Redirects
+# ------------------------------------------------------------
+# 형식: <source> <destination> <status>
+# 참고: https://developers.cloudflare.com/pages/configuration/redirects/
+# ============================================================
+
+# ----- /logout → Cloudflare Access 로그아웃 -----
+# Cloudflare Access 세션(쿠키)을 종료시키는 표준 엔드포인트.
+# 정적 사이트라 빌드 시점 치환이 없으므로 운영 팀 도메인(energytf)을
+# 그대로 하드코딩한다.
+#
+# ⚠️ 팀 도메인이 변경되면 아래 한 줄의 "energytf" 부분만 교체하면 된다.
+#    (참고: docs/ACCESS_CONSOLE_SETUP.md 의 ① 단계 — 발급 도메인)
+/logout  https://energytf.cloudflareaccess.com/cdn-cgi/access/logout  302
