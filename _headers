@@ -1,10 +1,36 @@
+# ============================================================
+# Cloudflare Pages — HTTP Response Headers
+# ------------------------------------------------------------
+# 형식: 경로 패턴 다음 줄에 "  Header-Name: value" (2칸 들여쓰기)
+# 참고: https://developers.cloudflare.com/pages/configuration/headers/
+#
+# 변경 이력 (요약):
+#   - frame-ancestors 에 *.office.com / *.skype.com 추가
+#     (Teams 데스크탑/웹/모바일 iframe 호환)
+#   - X-Frame-Options 는 의도적으로 설정하지 않는다.
+#     (Teams 임베드 차단 방지. CSP frame-ancestors 가 상위 정책으로 동작)
+#   - 보안 헤더 (X-Content-Type-Options, Referrer-Policy 등) 정리
+#
+# 쿠키 관련 메모 (Cloudflare Access 측 설정):
+#   Access 가 발급하는 CF_Authorization 쿠키는 Teams iframe 안에서도
+#   동작해야 하므로 Access Application 설정에서
+#     - Cookie SameSite = None
+#     - Always Use HTTPS = On
+#     - HTTP Only = 해제   (Teams iframe 호환을 위해 권장)
+#   로 두어야 한다. (본 _headers 에서는 쿠키를 직접 발급하지 않음.)
+# ============================================================
+
 /*
   X-Content-Type-Options: nosniff
-  Referrer-Policy: same-origin
-  Content-Security-Policy: frame-ancestors 'self' https://teams.microsoft.com https://*.teams.microsoft.com https://*.cloud.microsoft
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(), microphone=(), camera=()
+  Content-Security-Policy: frame-ancestors 'self' https://teams.microsoft.com https://*.teams.microsoft.com https://*.skype.com https://*.office.com https://*.cloud.microsoft
 
 /photos/*
   Cache-Control: public, max-age=31536000, immutable
+
+/assets/*
+  Cache-Control: public, max-age=86400
 
 /*.js
   Cache-Control: public, max-age=300
