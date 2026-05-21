@@ -1588,29 +1588,29 @@ table.editable td.num input {
   flex: 1;
 }
 .panel[data-tab="overview"] .ov-group-title {
-  font-size: 17.5px;
+  font-size: 21px;
   font-weight: 700;
   color: var(--text-strong);
-  margin-bottom: 10px;
-  padding-bottom: 9px;
+  margin-bottom: 12px;
+  padding-bottom: 11px;
   border-bottom: 1.5px solid var(--border-strong);
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   flex-shrink: 0;
   letter-spacing: -0.015em;
 }
 .panel[data-tab="overview"] .ov-group-title::before {
   content: '';
-  width: 4px;
-  height: 17px;
+  width: 5px;
+  height: 21px;
   background: var(--primary);
   border-radius: 2px;
   flex-shrink: 0;
 }
 .panel[data-tab="overview"] .ov-group-title .ov-mini {
   margin-left: auto;
-  font-size: 12px;
+  font-size: 14px;
   color: var(--text-muted);
   font-weight: 500;
   letter-spacing: 0;
@@ -1619,8 +1619,8 @@ table.editable td.num input {
   flex: 1;
   min-height: 0;
   display: grid;
-  grid-template-rows: 1.05fr 1fr 1fr;
-  gap: 10px;
+  grid-template-rows: 1.1fr 1fr;
+  gap: 14px;
 }
 /* 마일스톤 컬럼: 2개 서브 (핵심 마일스톤 + 특이사항 — 특이사항을 살짝 위로) */
 .panel[data-tab="overview"] .ov-col-ms .ov-group-body {
@@ -1637,20 +1637,20 @@ table.editable td.num input {
   border-top: 1px dashed var(--border);
 }
 .panel[data-tab="overview"] .ov-sub-title {
-  font-size: 14px;
+  font-size: 17px;
   font-weight: 700;
   color: var(--text-muted);
-  margin-bottom: 7px;
+  margin-bottom: 10px;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   flex-shrink: 0;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.03em;
 }
 .panel[data-tab="overview"] .ov-sub-title .ov-mini {
   margin-left: auto;
-  font-size: 12px;
+  font-size: 14px;
   color: var(--text-soft);
   font-weight: 500;
   text-transform: none;
@@ -1700,7 +1700,7 @@ table.editable td.num input {
 .ov-gauge-value {
   position: absolute;
   bottom: 6%;
-  font-size: 38px;
+  font-size: 56px;
   font-weight: 800;
   color: var(--primary-dark);
   letter-spacing: -0.025em;
@@ -1709,11 +1709,11 @@ table.editable td.num input {
   pointer-events: none;
 }
 .ov-gauge-label {
-  font-size: 13.5px;
+  font-size: 16px;
   color: var(--text-muted);
   font-weight: 600;
   text-align: center;
-  margin-top: 2px;
+  margin-top: 4px;
   flex-shrink: 0;
 }
 .ov-gauge-label b.pos { color: var(--success); }
@@ -1721,29 +1721,29 @@ table.editable td.num input {
 .ov-gauge-sub {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 6px;
+  gap: 8px;
   width: 100%;
-  margin-top: 6px;
-  padding-top: 8px;
+  margin-top: 8px;
+  padding-top: 10px;
   border-top: 1px dashed var(--border);
   flex-shrink: 0;
 }
 .ov-gauge-sub-item {
   text-align: center;
-  padding: 4px 2px;
+  padding: 6px 2px;
 }
 .ov-gauge-sub-item .v {
-  font-size: 18px;
+  font-size: 24px;
   font-weight: 800;
   color: var(--text-strong);
   font-variant-numeric: tabular-nums;
   line-height: 1.1;
 }
 .ov-gauge-sub-item .l {
-  font-size: 11.5px;
+  font-size: 13.5px;
   color: var(--text-muted);
   font-weight: 600;
-  margin-top: 2px;
+  margin-top: 3px;
   line-height: 1.25;
 }
 
@@ -1754,16 +1754,16 @@ table.editable td.num input {
   margin-bottom: 7px;
   flex-shrink: 0;
 }
-.ov-sub-ms .ov-ms-list { gap: 8px; }
-.ov-sub-ms .ov-ms-item { padding: 11px 13px 12px; }
-.ov-sub-ms .ov-ms-item-title { font-size: 15px; }
+.ov-sub-ms .ov-ms-list { gap: 9px; }
+.ov-sub-ms .ov-ms-item { padding: 13px 15px 14px; }
+.ov-sub-ms .ov-ms-item-title { font-size: 17px; }
 .ov-ms-tab {
   flex: 1;
-  padding: 9px 12px;
+  padding: 11px 14px;
   border: 1px solid var(--border);
   background: var(--surface-2);
   color: var(--text-muted);
-  font-size: 14px;
+  font-size: 15.5px;
   font-weight: 700;
   border-radius: var(--radius-sm);
   text-align: center;
@@ -1804,8 +1804,8 @@ table.editable td.num input {
   margin-bottom: 3px;
 }
 .ov-ms-item-cat {
-  font-size: 11px;
-  padding: 2px 8px;
+  font-size: 12.5px;
+  padding: 3px 10px;
   background: var(--primary-soft);
   color: var(--primary-dark);
   border-radius: 999px;
@@ -1816,25 +1816,25 @@ table.editable td.num input {
 .ov-ms-item.warn .ov-ms-item-cat { background: var(--warning-soft); color: var(--warning); }
 .ov-ms-item.risk .ov-ms-item-cat { background: var(--danger-soft); color: var(--danger); }
 .ov-ms-item-date {
-  font-size: 11.5px;
+  font-size: 13px;
   color: var(--text-soft);
   font-weight: 600;
   font-variant-numeric: tabular-nums;
   margin-left: auto;
 }
 .ov-ms-item-title {
-  font-size: 14.5px;
+  font-size: 16.5px;
   color: var(--text-strong);
   font-weight: 600;
   line-height: 1.4;
 }
 .ov-ms-item-meta {
-  font-size: 11.5px;
+  font-size: 13px;
   color: var(--text-muted);
-  margin-top: 4px;
+  margin-top: 5px;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 7px;
 }
 .ov-ms-empty {
   padding: 14px 8px;
@@ -1928,13 +1928,13 @@ table.editable td.num input {
 }
 .ov-action {
   display: flex;
-  gap: 10px;
-  padding: 10px 12px;
+  gap: 11px;
+  padding: 12px 14px;
   background: var(--surface-3);
   border: 1px solid var(--border-soft);
   border-left: 4px solid var(--text-soft);
   border-radius: var(--radius-sm);
-  font-size: 14px;
+  font-size: 16px;
   color: var(--text);
   align-items: flex-start;
 }
@@ -1944,9 +1944,9 @@ table.editable td.num input {
 .ov-action.low { border-left-color: var(--success); }
 .ov-action-prio {
   display: inline-block;
-  width: 18px;
+  width: 20px;
   text-align: center;
-  font-size: 14px;
+  font-size: 16px;
   flex-shrink: 0;
   line-height: 1.3;
 }
@@ -1985,7 +1985,7 @@ table.editable td.num input {
   flex-shrink: 0;
 }
 .ov-sc .sc-l {
-  font-size: 14.5px;
+  font-size: 17px;
   color: var(--text-strong);
   font-weight: 700;
   letter-spacing: -0.005em;
@@ -1994,8 +1994,8 @@ table.editable td.num input {
   text-overflow: ellipsis;
 }
 .ov-sc .sc-badge {
-  font-size: 11.5px;
-  padding: 3px 9px;
+  font-size: 13px;
+  padding: 4px 11px;
   background: var(--success);
   color: #fff;
   border-radius: 999px;
@@ -2017,18 +2017,18 @@ table.editable td.num input {
   min-height: 0;
 }
 .ov-sc .sc-v {
-  font-size: 40px;
+  font-size: 52px;
   font-weight: 800;
   color: var(--text-strong);
   font-variant-numeric: tabular-nums;
   line-height: 1;
   letter-spacing: -0.025em;
 }
-.ov-sc.complete .sc-v { font-size: 28px; color: var(--primary-dark); }
+.ov-sc.complete .sc-v { font-size: 34px; color: var(--primary-dark); }
 .ov-sc .sc-unit {
-  font-size: 12px;
+  font-size: 14px;
   color: var(--text-muted);
-  margin-top: 4px;
+  margin-top: 5px;
   font-weight: 500;
   letter-spacing: 0.01em;
 }
@@ -2049,9 +2049,9 @@ table.editable td.num input {
 }
 .ov-sc.complete .sc-progress-bar { background: var(--success); }
 .ov-sc .sc-goal {
-  font-size: 11.5px;
+  font-size: 13.5px;
   color: var(--text-muted);
-  margin-top: 6px;
+  margin-top: 7px;
   font-weight: 600;
   text-align: center;
   letter-spacing: 0.005em;
@@ -2070,30 +2070,30 @@ table.editable td.num input {
   display: grid;
   grid-template-columns: auto 1fr auto;
   align-items: center;
-  gap: 8px;
-  padding: 8px 11px;
+  gap: 10px;
+  padding: 11px 14px;
   border-radius: var(--radius-sm);
   border: 1px solid var(--border);
   background: var(--surface);
 }
 .ov-pill .pi {
-  width: 24px;
-  height: 24px;
+  width: 30px;
+  height: 30px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
+  font-size: 17px;
   background: var(--surface-2);
   border-radius: 50%;
   border: 1px solid var(--border-soft);
 }
 .ov-pill .pl {
-  font-size: 12.5px;
+  font-size: 14.5px;
   color: var(--text-muted);
   font-weight: 600;
 }
 .ov-pill .pv {
-  font-size: 18px;
+  font-size: 22px;
   font-weight: 800;
   font-variant-numeric: tabular-nums;
   color: var(--text-strong);
@@ -2727,7 +2727,7 @@ function renderInlineEditTables(tabKey) {
     // 재해 / Near Miss
     const tgtD = document.getElementById('ed-incident-inline');
     if (tgtD) {
-      let h = '<thead><tr><th>공정구역</th><th>공상</th><th>일반재해</th><th>중대재해</th><th>일반NM</th><th>중대NM</th></tr></thead><tbody>';
+      let h = '<thead><tr><th>공정구역</th><th>공상</th><th>일반재해</th><th>중대재해</th><th>일반 Near Miss</th><th>중대 Near Miss</th></tr></thead><tbody>';
       d.incident_summary.forEach((r, i) => {
         h += `<tr><td><b>${r.sub}</b></td>`;
         ['공상','일반재해','중대재해','일반NearMiss','중대NearMiss'].forEach(k => {
@@ -3036,12 +3036,6 @@ PANELS.overview = () => {
               <div class="ov-sub-body"><div class="ov-chart"><canvas id="ov-scurve"></canvas></div></div>
             </div>
 
-            <!-- 서브3: 공정구역별 공정률 -->
-            <div class="ov-sub">
-              <div class="ov-sub-title">🏗️ 공정구역별 공정률 <span class="ov-mini">Plan vs Actual</span></div>
-              <div class="ov-sub-body"><div class="ov-chart"><canvas id="ov-subprog"></canvas></div></div>
-            </div>
-
           </div>
         </div>
       </div>
@@ -3112,16 +3106,10 @@ PANELS.overview = () => {
               </div>
             </div>
 
-            <!-- 서브2: 공정구역별 NM 분포 -->
+            <!-- 서브2: 공정구역별 Near Miss 분포 -->
             <div class="ov-sub">
-              <div class="ov-sub-title">📊 공정구역별 NM 분포</div>
+              <div class="ov-sub-title">📊 공정구역별 Near Miss 분포</div>
               <div class="ov-sub-body"><div class="ov-chart"><canvas id="ov-incident"></canvas></div></div>
-            </div>
-
-            <!-- 서브3: 무재해 일수 추이 -->
-            <div class="ov-sub">
-              <div class="ov-sub-title">📈 무재해 일수 추이 <span class="ov-mini">최근 6개월</span></div>
-              <div class="ov-sub-body"><div class="ov-chart"><canvas id="ov-noacc"></canvas></div></div>
             </div>
 
           </div>
@@ -3170,36 +3158,15 @@ PANEL_INIT.overview = () => {
     },
     options: {
       responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { position: 'bottom', labels: { boxWidth: 8, font: { size: 10 }, padding: 4 } }, tooltip: { mode: 'index', intersect: false } },
+      plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 13 }, padding: 7 } }, tooltip: { mode: 'index', intersect: false } },
       scales: {
-        y: { min: 50, max: 102, ticks: { callback: v => v + '%', font: { size: 10 } }, grid: { color: 'rgba(0,0,0,0.04)' } },
-        x: { ticks: { font: { size: 10 } }, grid: { display: false } }
+        y: { min: 50, max: 102, ticks: { callback: v => v + '%', font: { size: 13 } }, grid: { color: 'rgba(0,0,0,0.04)' } },
+        x: { ticks: { font: { size: 13 } }, grid: { display: false } }
       }
     }
   });
 
-  // === 공정구역별 공정률 (Plan vs Actual) ===
-  destroyChart('ov-subprog');
-  charts['ov-subprog'] = new Chart(document.getElementById('ov-subprog'), {
-    data: {
-      labels: monthsShort,
-      datasets: [
-        { type: 'line', label: '육상 계획', data: d.progress.육상부.plan, borderColor: '#4a7bd1', borderDash: [5,3], borderWidth: 1.2, pointRadius: 0 },
-        { type: 'line', label: '육상 실적', data: d.progress.육상부.actual, borderColor: '#4a7bd1', borderWidth: 2.2, pointRadius: 2.5, pointBackgroundColor: '#4a7bd1', tension: 0.25 },
-        { type: 'line', label: '해상 계획', data: d.progress.해상부.plan, borderColor: '#6ba8c0', borderDash: [5,3], borderWidth: 1.2, pointRadius: 0 },
-        { type: 'line', label: '해상 실적', data: d.progress.해상부.actual, borderColor: '#6ba8c0', borderWidth: 2.2, pointRadius: 2.5, pointBackgroundColor: '#6ba8c0', tension: 0.25 },
-        { type: 'line', label: '154kV 계획', data: d.progress["154kV"].plan, borderColor: '#d49462', borderDash: [5,3], borderWidth: 1.2, pointRadius: 0 },
-        { type: 'line', label: '154kV 실적', data: d.progress["154kV"].actual, borderColor: '#d49462', borderWidth: 2.2, pointRadius: 2.5, pointBackgroundColor: '#d49462', tension: 0.25 }
-      ]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { position: 'bottom', labels: { boxWidth: 7, font: { size: 9.5 }, padding: 3 } }, tooltip: { mode: 'index', intersect: false } },
-      scales: { y: { min: 50, max: 102, ticks: { callback: v => v + '%', font: { size: 10 } }, grid: { color: 'rgba(0,0,0,0.04)' } }, x: { ticks: { font: { size: 10 } }, grid: { display: false } } }
-    }
-  });
-
-  // === 공정구역별 NM 분포 (가로 누적 바차트) ===
+  // === 공정구역별 Near Miss 분포 (가로 누적 바차트) ===
   destroyChart('ov-incident');
   const inc = d.incident_summary;
   charts['ov-incident'] = new Chart(document.getElementById('ov-incident'), {
@@ -3207,39 +3174,20 @@ PANEL_INIT.overview = () => {
     data: {
       labels: inc.map(r => r.sub),
       datasets: [
-        { label: '일반 NM', data: inc.map(r => r.일반NearMiss), backgroundColor: '#6ba8c0' },
-        { label: '중대 NM', data: inc.map(r => r.중대NearMiss), backgroundColor: '#4a6594' }
+        { label: '일반 Near Miss', data: inc.map(r => r.일반NearMiss), backgroundColor: '#6ba8c0' },
+        { label: '중대 Near Miss', data: inc.map(r => r.중대NearMiss), backgroundColor: '#4a6594' }
       ]
     },
     options: {
       responsive: true, maintainAspectRatio: false, indexAxis: 'y',
       plugins: {
-        legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 11.5 }, padding: 8 } },
+        legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 13.5 }, padding: 10 } },
         tooltip: { mode: 'index', intersect: false }
       },
       scales: {
-        x: { stacked: true, ticks: { font: { size: 11 }, precision: 0 }, grid: { color: 'rgba(0,0,0,0.04)' } },
-        y: { stacked: true, ticks: { font: { size: 12, weight: '600' } }, grid: { display: false } }
+        x: { stacked: true, ticks: { font: { size: 13 }, precision: 0 }, grid: { color: 'rgba(0,0,0,0.04)' } },
+        y: { stacked: true, ticks: { font: { size: 15, weight: '600' } }, grid: { display: false } }
       }
-    }
-  });
-
-  // === 무재해 일수 추이 ===
-  destroyChart('ov-noacc');
-  charts['ov-noacc'] = new Chart(document.getElementById('ov-noacc'), {
-    type: 'line',
-    data: {
-      labels: monthsShort,
-      datasets: [
-        { label: '육상부', data: d.no_accident_days.육상부, borderColor: '#4a7bd1', backgroundColor: 'rgba(74,123,209,0.10)', borderWidth: 2, pointRadius: 2, pointBackgroundColor: '#4a7bd1', tension: 0.25, fill: false },
-        { label: '해상부', data: d.no_accident_days.해상부, borderColor: '#6ba8c0', backgroundColor: 'rgba(107,168,192,0.10)', borderWidth: 2, pointRadius: 2, pointBackgroundColor: '#6ba8c0', tension: 0.25, fill: false },
-        { label: '154kV', data: d.no_accident_days["154kV"], borderColor: '#d49462', backgroundColor: 'rgba(212,148,98,0.10)', borderWidth: 2, pointRadius: 2, pointBackgroundColor: '#d49462', tension: 0.25, fill: false }
-      ]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { position: 'bottom', labels: { boxWidth: 8, font: { size: 9.5 }, padding: 3 } }, tooltip: { mode: 'index', intersect: false } },
-      scales: { y: { beginAtZero: true, ticks: { font: { size: 10 } }, grid: { color: 'rgba(0,0,0,0.04)' } }, x: { ticks: { font: { size: 10 } }, grid: { display: false } } }
     }
   });
 
@@ -3943,8 +3891,8 @@ PANEL_INIT.safety = () => {
         { label: '공상', data: inc.map(r => r.공상), backgroundColor: '#c2a85a' },
         { label: '일반재해', data: inc.map(r => r.일반재해), backgroundColor: '#d49462' },
         { label: '중대재해', data: inc.map(r => r.중대재해), backgroundColor: '#c25656' },
-        { label: '일반NM', data: inc.map(r => r.일반NearMiss), backgroundColor: '#6ba8c0' },
-        { label: '중대NM', data: inc.map(r => r.중대NearMiss), backgroundColor: '#7a6a96' }
+        { label: '일반 Near Miss', data: inc.map(r => r.일반NearMiss), backgroundColor: '#6ba8c0' },
+        { label: '중대 Near Miss', data: inc.map(r => r.중대NearMiss), backgroundColor: '#7a6a96' }
       ]
     },
     options: {
@@ -5048,7 +4996,7 @@ function renderEditorTables() {
   }
 
   // Incident (그대로 — 5건의 단일 행 표)
-  let h = '<thead><tr><th>공정구역</th><th>공상</th><th>일반재해</th><th>중대재해</th><th>일반NM</th><th>중대NM</th></tr></thead><tbody>';
+  let h = '<thead><tr><th>공정구역</th><th>공상</th><th>일반재해</th><th>중대재해</th><th>일반 Near Miss</th><th>중대 Near Miss</th></tr></thead><tbody>';
   d.incident_summary.forEach((r, i) => {
     h += `<tr><td><b>${r.sub}</b></td>`;
     ['공상','일반재해','중대재해','일반NearMiss','중대NearMiss'].forEach(k => {
