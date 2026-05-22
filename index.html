@@ -21,6 +21,10 @@
 <script src="data.js"></script>
 <script src="photos.js"></script>
 <script src="schedule_data.js"></script>
+<script src="panorama_data.js"></script>
+<script src="progress_status_data.js"></script>
+<script src="events_data.js"></script>
+<script src="quality_data.js"></script>
 <script src="assets/data-source.js"></script>
 <script src="assets/auth-bar.js" defer></script>
 <style>
@@ -1621,12 +1625,12 @@ table.editable td.num input {
   flex: 1;
   min-height: 0;
   display: grid;
-  grid-template-rows: 1.1fr 1fr;
+  /* 살짝 균형: 위 서브 0.95fr, 아래 서브 1.05fr — 위쪽을 살짝만 줄여서 둘 다 한 화면에 보이도록 */
+  grid-template-rows: 0.95fr 1.05fr;
   gap: 14px;
 }
-/* 마일스톤 컬럼: 2개 서브 (좌·우 컬럼과 동일 비율로 통일 — 특이사항을 위로 정렬) */
 .panel[data-tab="overview"] .ov-col-ms .ov-group-body {
-  grid-template-rows: 1.1fr 1fr;
+  grid-template-rows: 0.95fr 1.05fr;
 }
 /* 마일스톤 리스트는 max-height + overflow로 길어지면 스크롤 */
 .panel[data-tab="overview"] .ov-sub-ms .ov-ms-list {
@@ -1852,6 +1856,288 @@ table.editable td.num input {
   border: 1px dashed var(--border-strong);
   border-radius: var(--radius-sm);
 }
+
+/* ============================================================
+   시공 지연 모니터 — 재디자인 (좌측 컬럼)
+   ============================================================ */
+.ov-delay-host {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow-y: auto;
+}
+.dm-headline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  border-radius: var(--radius);
+  border: 1px solid;
+  gap: 14px;
+  flex-shrink: 0;
+}
+.dm-headline-label {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+.dm-headline-sub {
+  font-size: 11px;
+  color: var(--text-soft);
+  font-weight: 500;
+  text-transform: none;
+  margin-left: 4px;
+}
+.dm-headline-value {
+  font-size: 38px;
+  font-weight: 800;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  margin-top: 4px;
+}
+.dm-headline-unit { font-size: 18px; font-weight: 700; margin-left: 2px; }
+.dm-headline-right {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-align: right;
+  border-left: 1px dashed rgba(20,30,60,0.12);
+  padding-left: 14px;
+}
+.dm-headline-pair {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  justify-content: flex-end;
+}
+.dm-pair-l { font-size: 11.5px; color: var(--text-muted); font-weight: 600; min-width: 42px; text-align: left; }
+.dm-pair-v { font-size: 15px; font-weight: 700; color: var(--text-strong); font-variant-numeric: tabular-nums; }
+.dm-pair-v.muted { color: var(--text-soft); font-weight: 600; }
+.dm-pair-u { font-size: 11px; font-weight: 600; margin-left: 1px; }
+
+.dm-fields {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  flex-shrink: 0;
+}
+.dm-field {
+  background: #fafbfd;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px 9px;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.dm-field-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+.dm-field-name { font-size: 12.5px; font-weight: 700; color: var(--text-strong); white-space: nowrap; }
+.dm-field-name-en { display: none; }
+.dm-field-gap { font-size: 12.5px; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.dm-bar-frame { position: relative; height: 7px; background: #e9eef5; border-radius: 4px; overflow: visible; }
+.dm-bar-fill { height: 100%; border-radius: 4px; transition: width .25s; }
+.dm-bar-target { position: absolute; top: -2px; width: 2px; height: 11px; background: #28323e; opacity: .55; }
+.dm-field-foot { display: flex; justify-content: space-between; font-size: 10.5px; color: var(--text-muted); margin-top: 4px; font-variant-numeric: tabular-nums; gap: 4px; }
+.dm-field-foot > span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.dm-top { flex: 1; min-height: 0; display: flex; flex-direction: column; padding-top: 4px; }
+.dm-top-title { font-size: 13.5px; font-weight: 700; color: var(--text-strong); margin-bottom: 6px; }
+.dm-top-row {
+  display: grid;
+  grid-template-columns: 1fr 90px 64px;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 4px;
+  border-bottom: 1px solid var(--border-soft);
+  font-size: 12.5px;
+}
+.dm-top-row:last-child { border-bottom: none; }
+.dm-top-name {
+  color: var(--text-strong);
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.dm-top-bar { height: 8px; background: #f1e3e3; border-radius: 4px; overflow: hidden; }
+.dm-top-bar-fill { height: 100%; background: linear-gradient(90deg, #d49462, #c25656); }
+.dm-top-gap { font-size: 13px; font-weight: 700; color: var(--danger); text-align: right; font-variant-numeric: tabular-nums; }
+.dm-top-empty {
+  padding: 12px;
+  text-align: center;
+  font-size: 12.5px;
+  color: var(--success);
+  background: var(--success-soft);
+  border: 1px dashed var(--success-border);
+  border-radius: var(--radius-sm);
+}
+
+/* ============================================================
+   현장 전경 타임라인 갤러리
+   ============================================================ */
+.ov-pano-wrap {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: stretch;
+  gap: 6px;
+}
+.ov-pano-track {
+  flex: 1;
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 2px 4px 8px;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+}
+.ov-pano-track::-webkit-scrollbar { height: 8px; }
+.ov-pano-track::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 4px; }
+.ov-pano-card {
+  /* 한 화면에 사진 1장이 거의 꽉 차도록 카드 폭 확대 */
+  flex: 0 0 min(94%, 520px);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  cursor: pointer;
+  scroll-snap-align: center;
+  display: flex;
+  flex-direction: column;
+  transition: transform .15s, box-shadow .15s, border-color .15s;
+  box-shadow: var(--shadow-sm);
+}
+.ov-pano-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--primary);
+}
+.ov-pano-img-wrap {
+  aspect-ratio: 4 / 3;
+  background: #1a2331;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ov-pano-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.ov-pano-cap { padding: 8px 10px; border-top: 1px solid var(--border-soft); }
+.ov-pano-ym {
+  font-size: 13.5px;
+  font-weight: 800;
+  color: var(--primary-dark);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+.ov-pano-cap-text {
+  font-size: 11.5px;
+  color: var(--text-muted);
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ov-pano-nav {
+  flex: 0 0 32px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font-size: 22px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  transition: background .15s, color .15s, border-color .15s;
+}
+.ov-pano-nav:hover {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+}
+
+/* 라이트박스 */
+.ov-pano-lightbox {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 22, 36, 0.88);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 40px;
+}
+.ov-pano-lightbox .lb-close,
+.ov-pano-lightbox .lb-nav {
+  position: absolute;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.25);
+  color: #fff;
+  font-size: 28px;
+  width: 48px;
+  height: 48px;
+  border-radius: 999px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .15s;
+}
+.ov-pano-lightbox .lb-close { top: 24px; right: 24px; font-size: 24px; }
+.ov-pano-lightbox .lb-nav { top: 50%; transform: translateY(-50%); }
+.ov-pano-lightbox .lb-prev { left: 24px; }
+.ov-pano-lightbox .lb-next { right: 24px; }
+.ov-pano-lightbox .lb-close:hover,
+.ov-pano-lightbox .lb-nav:hover { background: rgba(255,255,255,0.22); }
+.ov-pano-lightbox .lb-stage {
+  max-width: 88vw;
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+.ov-pano-lightbox .lb-stage img {
+  max-width: 100%;
+  max-height: 78vh;
+  object-fit: contain;
+  border-radius: 6px;
+  box-shadow: 0 16px 50px rgba(0,0,0,0.4);
+}
+.ov-pano-lightbox .lb-caption {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 8px;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  color: #fff;
+}
+.ov-pano-lightbox .lb-ym { font-size: 18px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.ov-pano-lightbox .lb-text { font-size: 14px; color: rgba(255,255,255,0.9); }
+.ov-pano-lightbox .lb-counter { font-size: 12px; color: rgba(255,255,255,0.65); margin-left: auto; padding-left: 14px; border-left: 1px solid rgba(255,255,255,0.2); }
 
 /* Mini timeline */
 .ov-timeline {
@@ -2337,6 +2623,7 @@ table.editable td.num input {
       <div class="menu-item" data-tab="orders"><span class="ic">📦</span>기자재 발주현황</div>
       <div class="menu-item" data-tab="resource"><span class="ic">👷</span>시공/자원관리</div>
       <div class="menu-item" data-tab="safety"><span class="ic">🛡️</span>안전 관리</div>
+      <div class="menu-item" data-tab="quality"><span class="ic">🔍</span>품질 이행관리</div>
 
       <div class="menu-group">📷 현장 기록</div>
       <div class="menu-item" data-tab="photos"><span class="ic">📷</span>월별 작업사진</div>
@@ -2392,6 +2679,7 @@ const TAB_DEFS = {
   orders:     { title: '기자재 발주현황',   icon: '📦' },
   resource:   { title: '시공/자원관리',     icon: '👷' },
   safety:     { title: '안전 관리',         icon: '🛡️' },
+  quality:    { title: '품질 이행관리',     icon: '🔍' },
   photos:     { title: '월별 작업사진',     icon: '📷' },
   upload:     { title: '사진 업로드/관리',  icon: '📤' },
   milestones: { title: '마일스톤',          icon: '🎯' },
@@ -2455,7 +2743,10 @@ function renderPanel(key) {
   panel.innerHTML = PANELS[key]();
   wrap.appendChild(panel);
   // Run after DOM insertion
-  setTimeout(() => PANEL_INIT[key] && PANEL_INIT[key](), 30);
+  setTimeout(() => {
+    if (PANEL_INIT[key]) PANEL_INIT[key]();
+    applyScrollLockToPanel(panel);
+  }, 30);
 }
 
 function setStatus(msg) { document.getElementById('status-msg').textContent = msg; }
@@ -2777,6 +3068,7 @@ function saveTabEdits(tabKey) {
     setTimeout(() => {
       if (PANEL_INIT[k]) PANEL_INIT[k]();
       if (wasEditOn) tabEditState[k] = true;
+      applyScrollLockToPanel(panel);
     }, 30);
   }
   showToast('✅ 변경사항이 저장되어 모든 차트에 반영되었습니다');
@@ -3045,10 +3337,10 @@ PANELS.overview = () => {
               </div>
             </div>
 
-            <!-- 서브2: 종합 S-Curve -->
+            <!-- 서브2: 시공 지연 모니터 (재디자인 · 2-1.공정현황 기반) -->
             <div class="ov-sub">
-              <div class="ov-sub-title">📈 종합 S-Curve <span class="ov-mini">Plan vs Actual · 최근 6개월</span></div>
-              <div class="ov-sub-body"><div class="ov-chart"><canvas id="ov-scurve"></canvas></div></div>
+              <div class="ov-sub-title">🚨 시공 지연 모니터 <span id="ov-delay-meta" class="ov-mini"></span></div>
+              <div class="ov-sub-body"><div id="ov-delay-host" class="ov-delay-host"></div></div>
             </div>
 
           </div>
@@ -3121,10 +3413,16 @@ PANELS.overview = () => {
               </div>
             </div>
 
-            <!-- 서브2: 시공 지연 모니터 (EPC) -->
+            <!-- 서브2: 현장 전경 추이 (월별 대표 1장 타임라인) -->
             <div class="ov-sub">
-              <div class="ov-sub-title">🚨 시공 지연 모니터 <span id="ov-design-meta" style="font-weight:400;color:#7a8694;font-size:12px;margin-left:6px;"></span></div>
-              <div class="ov-sub-body"><div id="ov-design-host" style="padding:4px;max-height:420px;overflow-y:auto;"></div></div>
+              <div class="ov-sub-title">📷 현장 전경 추이 <span id="ov-pano-meta" class="ov-mini"></span></div>
+              <div class="ov-sub-body">
+                <div class="ov-pano-wrap">
+                  <button class="ov-pano-nav prev" id="ov-pano-prev" aria-label="이전">‹</button>
+                  <div class="ov-pano-track" id="ov-pano-track"></div>
+                  <button class="ov-pano-nav next" id="ov-pano-next" aria-label="다음">›</button>
+                </div>
+              </div>
             </div>
 
           </div>
@@ -3133,6 +3431,193 @@ PANELS.overview = () => {
     </div>
   `;
 };
+
+// ============================================================================
+// 시공 지연 모니터 — 2-1.공정현황 기반 (가중치 × 진척률 미달 = 지연 영향도)
+// ============================================================================
+function renderDelayMonitor() {
+  const host = document.getElementById('ov-delay-host');
+  const metaEl = document.getElementById('ov-delay-meta');
+  const ps = window.PROGRESS_STATUS_DATA;
+  if (!host) return;
+  if (!ps || !ps.rows || !ps.rows.length) {
+    host.innerHTML = '<div style="padding:18px;text-align:center;color:#7a8694;font-size:13px;">공정현황 데이터가 없습니다 (2-1 시트 추출 필요)</div>';
+    return;
+  }
+  if (metaEl) metaEl.textContent = '2-1 공정현황 · 26.05월 기준';
+
+  const rows = ps.rows;
+  // EPC 3대 영역 합산 (top 행 가중치/실적/계획)
+  const tops = ['ENGINEERING','PROCUREMENT','CONSTRUCTION'].map(name => {
+    const r = rows.find(x => x.name === name && x.kind === 'top');
+    return r ? { name, weight: r.weight||0, actual: r.actual||0, plan: r.plan||0 } : { name, weight:0, actual:0, plan:0 };
+  });
+  const totW = tops.reduce((s,t) => s + t.weight, 0);
+  const totA = tops.reduce((s,t) => s + t.actual, 0);
+  const totP = tops.reduce((s,t) => s + t.plan, 0);
+  const totGapPP = (totA - totP) * 100;
+  const totRatio = totP > 0 ? totA / totP : null;
+
+  // 시공 sub (kind='sub' & top='CONSTRUCTION') 중 가중치 × 미달률 큰 순
+  // '계' 는 합계 행이므로 제외 (weight ~ 100%)
+  const consSubs = rows.filter(r => r.top === 'CONSTRUCTION' && r.kind === 'sub' && r.weight != null && r.actual != null && r.plan != null && r.name.trim() !== '계');
+  const enriched = consSubs.map(r => {
+    const gap_pp = (r.actual - r.plan) * 100;  // %p 기여도
+    const ratio = r.plan > 0 ? r.actual / r.plan : (r.actual === 0 ? null : 1);
+    return { name: r.name.replace(/^[IVX]+\.\s*/, ''), weight: r.weight*100, gap_pp, ratio };
+  });
+  const delayed = enriched.filter(r => r.gap_pp < -0.001).sort((a,b) => a.gap_pp - b.gap_pp).slice(0, 5);
+
+  const tone = pp => pp == null ? '#7a8694' : (pp <= -0.5 ? '#c25656' : (pp <= -0.1 ? '#d49462' : '#56a06a'));
+  const totTone = tone(totGapPP);
+  const bandBg = totTone === '#c25656' ? '#fcf0f0' : (totTone === '#d49462' ? '#fdf6ea' : '#f1f7f1');
+
+  // bar scale
+  const maxAbsGap = Math.max(0.5, ...delayed.map(d => Math.abs(d.gap_pp)));
+
+  host.innerHTML = `
+    <div class="dm-headline" style="background:${bandBg};border-color:${totTone};">
+      <div class="dm-headline-left">
+        <div class="dm-headline-label">EPC 종합 GAP <span class="dm-headline-sub">실적 vs 계획</span></div>
+        <div class="dm-headline-value" style="color:${totTone};">
+          ${totGapPP >= 0 ? '+' : ''}${totGapPP.toFixed(2)}<span class="dm-headline-unit">%p</span>
+        </div>
+      </div>
+      <div class="dm-headline-right">
+        <div class="dm-headline-pair">
+          <span class="dm-pair-l">실적</span>
+          <span class="dm-pair-v">${(totA*100).toFixed(2)}<span class="dm-pair-u">%</span></span>
+        </div>
+        <div class="dm-headline-pair">
+          <span class="dm-pair-l">계획</span>
+          <span class="dm-pair-v muted">${(totP*100).toFixed(2)}<span class="dm-pair-u">%</span></span>
+        </div>
+        <div class="dm-headline-pair">
+          <span class="dm-pair-l">달성률</span>
+          <span class="dm-pair-v" style="color:${totTone};">${totRatio != null ? (totRatio*100).toFixed(1) : '–'}<span class="dm-pair-u">%</span></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="dm-fields">
+      ${tops.map(t => {
+        const gap_pp = (t.actual - t.plan) * 100;
+        const ratio = t.plan > 0 ? t.actual / t.plan : 1;
+        const tc = tone(gap_pp);
+        const labelKo = t.name === 'ENGINEERING' ? '설계' : (t.name === 'PROCUREMENT' ? '구매' : '시공');
+        return `
+          <div class="dm-field">
+            <div class="dm-field-head">
+              <span class="dm-field-name">${labelKo} <span class="dm-field-name-en">${t.name.charAt(0)+t.name.slice(1).toLowerCase()}</span></span>
+              <span class="dm-field-gap" style="color:${tc};">${gap_pp >= 0 ? '+' : ''}${gap_pp.toFixed(2)}%p</span>
+            </div>
+            <div class="dm-bar-frame">
+              <div class="dm-bar-fill" style="width:${Math.min(100, ratio*100).toFixed(1)}%;background:${tc};"></div>
+              <div class="dm-bar-target" style="left:100%;"></div>
+            </div>
+            <div class="dm-field-foot">
+              <span>${(t.actual*100).toFixed(2)}% / <span style="color:#9aa6b4;">${(t.plan*100).toFixed(2)}%</span></span>
+              <span>가중치 ${(t.weight*100).toFixed(1)}%</span>
+            </div>
+          </div>`;
+      }).join('')}
+    </div>
+
+    <div class="dm-top">
+      <div class="dm-top-title">⛏ 시공 중분류 — 지연 영향 Top 5</div>
+      ${delayed.length ? delayed.map(d => `
+        <div class="dm-top-row">
+          <div class="dm-top-name" title="${escAttr(d.name)}">${escHtml(d.name)}</div>
+          <div class="dm-top-bar">
+            <div class="dm-top-bar-fill" style="width:${(Math.abs(d.gap_pp)/maxAbsGap*100).toFixed(1)}%;"></div>
+          </div>
+          <div class="dm-top-gap">${d.gap_pp.toFixed(2)}%p</div>
+        </div>`).join('') : '<div class="dm-top-empty">✓ 시공 부문 지연 항목 없음</div>'}
+    </div>
+  `;
+}
+
+// ============================================================================
+// 현장 전경 추이 갤러리 (월별 대표 1장, 좌우 스크롤 타임라인)
+// ============================================================================
+function renderPanoramaGallery() {
+  const track = document.getElementById('ov-pano-track');
+  const metaEl = document.getElementById('ov-pano-meta');
+  const prevBtn = document.getElementById('ov-pano-prev');
+  const nextBtn = document.getElementById('ov-pano-next');
+  if (!track) return;
+  const data = window.PANORAMA_DATA || [];
+  if (!data.length) {
+    track.innerHTML = '<div style="padding:18px;color:#7a8694;font-size:13px;text-align:center;">전경 사진 데이터가 없습니다.</div>';
+    return;
+  }
+  if (metaEl) metaEl.textContent = `${data.length}개월 · ${data[0].ym} ~ ${data[data.length-1].ym}`;
+
+  // 카드 생성
+  track.innerHTML = data.map((p, i) => `
+    <div class="ov-pano-card" data-idx="${i}" data-file="${escAttr(p.file)}" data-cap="${escAttr(p.caption || '')}" data-ym="${p.ym}">
+      <div class="ov-pano-img-wrap">
+        <img src="${escAttr(p.file)}" alt="${escAttr(p.caption || '')}" loading="lazy" decoding="async">
+      </div>
+      <div class="ov-pano-cap">
+        <div class="ov-pano-ym">${p.year}.${String(p.month).padStart(2,'0')}</div>
+        <div class="ov-pano-cap-text" title="${escAttr(p.caption || '')}">${escHtml(p.caption || '')}</div>
+      </div>
+    </div>
+  `).join('');
+
+  // 좌우 스크롤: 카드 폭만큼 (= 한 컷씩 이동)
+  const scrollBy = (dir) => {
+    const card = track.querySelector('.ov-pano-card');
+    const step = card ? card.offsetWidth + 10 : 520;
+    track.scrollBy({ left: dir * step, behavior: 'smooth' });
+  };
+  if (prevBtn) prevBtn.onclick = (e) => { e.preventDefault(); scrollBy(-1); };
+  if (nextBtn) nextBtn.onclick = (e) => { e.preventDefault(); scrollBy(+1); };
+
+  // 카드 클릭 → 라이트박스
+  track.querySelectorAll('.ov-pano-card').forEach(card => {
+    card.onclick = () => openPanoramaLightbox(data, parseInt(card.dataset.idx, 10));
+  });
+
+  // 최신 사진이 보이도록 끝으로 스크롤
+  requestAnimationFrame(() => { track.scrollLeft = track.scrollWidth; });
+}
+
+function openPanoramaLightbox(data, startIdx) {
+  let idx = startIdx;
+  const overlay = document.createElement('div');
+  overlay.className = 'ov-pano-lightbox';
+  const render = () => {
+    const p = data[idx];
+    overlay.innerHTML = `
+      <button class="lb-close" aria-label="닫기">×</button>
+      <button class="lb-nav lb-prev" aria-label="이전">‹</button>
+      <button class="lb-nav lb-next" aria-label="다음">›</button>
+      <div class="lb-stage">
+        <img src="${escAttr(p.file)}" alt="${escAttr(p.caption||'')}">
+        <div class="lb-caption">
+          <div class="lb-ym">${p.year}.${String(p.month).padStart(2,'0')}</div>
+          <div class="lb-text">${escHtml(p.caption||'')}</div>
+          <div class="lb-counter">${idx+1} / ${data.length}</div>
+        </div>
+      </div>`;
+    overlay.querySelector('.lb-close').onclick = close;
+    overlay.querySelector('.lb-prev').onclick = () => { idx = (idx-1+data.length)%data.length; render(); };
+    overlay.querySelector('.lb-next').onclick = () => { idx = (idx+1)%data.length; render(); };
+  };
+  const close = () => { document.removeEventListener('keydown', onKey); overlay.remove(); };
+  const onKey = (e) => {
+    if (e.key === 'Escape') close();
+    else if (e.key === 'ArrowLeft') { idx = (idx-1+data.length)%data.length; render(); }
+    else if (e.key === 'ArrowRight') { idx = (idx+1)%data.length; render(); }
+  };
+  document.addEventListener('keydown', onKey);
+  overlay.onclick = (e) => { if (e.target === overlay) close(); };
+  document.body.appendChild(overlay);
+  render();
+}
+
 PANEL_INIT.overview = () => {
   const d = D6();
   const lastIdx = lastValidIdx(d.progress.종합.actual);
@@ -3160,117 +3645,11 @@ PANEL_INIT.overview = () => {
     options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { enabled: false } } }
   });
 
-  // === 종합 S-Curve: bar + line ===
-  destroyChart('ov-scurve');
-  charts['ov-scurve'] = new Chart(document.getElementById('ov-scurve'), {
-    data: {
-      labels: monthsShort,
-      datasets: [
-        { type: 'bar', label: '월 계획', data: d.progress.종합.plan, backgroundColor: '#dbe6f7', borderRadius: 3, order: 3, yAxisID: 'y' },
-        { type: 'bar', label: '월 실적', data: d.progress.종합.actual, backgroundColor: '#4a7bd1', borderRadius: 3, order: 2, yAxisID: 'y' },
-        { type: 'line', label: '실적 추세', data: d.progress.종합.actual, borderColor: '#2c569f', backgroundColor: 'rgba(44,86,159,0.12)', tension: 0.35, borderWidth: 2.5, pointRadius: 3, pointBackgroundColor: '#2c569f', order: 1, fill: false }
-      ]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 13 }, padding: 7 } }, tooltip: { mode: 'index', intersect: false } },
-      scales: {
-        y: { min: 50, max: 102, ticks: { callback: v => v + '%', font: { size: 13 } }, grid: { color: 'rgba(0,0,0,0.04)' } },
-        x: { ticks: { font: { size: 13 } }, grid: { display: false } }
-      }
-    }
-  });
+  // === 시공 지연 모니터 (재디자인 · 2-1.공정현황 기반) ===
+  renderDelayMonitor();
 
-  // === 시공 지연 모니터 (EPC 5월) — qty_progress 기반, 큰 폰트 + 한눈에 인사이트 ===
-  const ovDesignHost = document.getElementById('ov-design-host');
-  const ovDesignMeta = document.getElementById('ov-design-meta');
-  const qty = window.SCHEDULE_DATA && window.SCHEDULE_DATA.qty_progress;
-  if (qty && qty.rows && qty.rows.length && ovDesignHost) {
-    const epcRow = qty.rows.find(r => r.name === '종합 공정률 (EPC)');
-    const engRow = qty.rows.find(r => r.name === 'ENGINEERING');
-    const procRow = qty.rows.find(r => r.name === 'PROCUREMENT');
-    const consRow = qty.rows.find(r => r.name === 'CONSTRUCTION');
-    const pct = v => v != null ? +(v * 100).toFixed(2) : null;
-    const epcPlan = pct(epcRow && epcRow.plan_may);
-    const epcExp  = pct(epcRow && epcRow.expect_may);
-    const epcGap  = (epcPlan != null && epcExp != null) ? +(epcExp - epcPlan).toFixed(2) : null;
-    const consPlan = pct(consRow && consRow.plan_may);
-    const consExp  = pct(consRow && consRow.expect_may);
-    const consGap  = (consPlan != null && consExp != null) ? +(consExp - consPlan).toFixed(2) : null;
-    const engGap = engRow ? +((engRow.expect_may - engRow.plan_may) * 100).toFixed(2) : null;
-    const procGap = procRow ? +((procRow.expect_may - procRow.plan_may) * 100).toFixed(2) : null;
-    if (ovDesignMeta) ovDesignMeta.textContent = `(${qty.title.replace('5-1. 물량처리계획 (EPC 공정률)','').trim() || '5월 기준'} · 5-1.물량처리계획)`;
-
-    // CONSTRUCTION 하위 sub 중 갭이 큰 Top 3
-    const consSubs = [];
-    const consIdx = qty.rows.indexOf(consRow);
-    if (consIdx >= 0) {
-      for (let i = consIdx + 1; i < qty.rows.length; i++) {
-        const r = qty.rows[i];
-        if (['ENGINEERING','PROCUREMENT','CONSTRUCTION'].includes(r.name)) break;
-        if (r.kind === 'sub' && r.plan_may != null && r.expect_may != null) {
-          const g = (r.expect_may - r.plan_may) * 100;
-          consSubs.push({ name: r.name.replace(/^[IVX]+\.\s*/, ''), planMay: r.plan_may * 100, expMay: r.expect_may * 100, gap: g });
-        }
-      }
-    }
-    const topDelays = consSubs.filter(s => s.gap < 0).sort((a, b) => a.gap - b.gap).slice(0, 3);
-
-    const gapColor = (g) => g == null ? '#7a8694' : (g <= -3 ? '#c14a4a' : (g <= -1 ? '#d49462' : '#3f8a3f'));
-    const epcColor = gapColor(epcGap);
-    const consColor = gapColor(consGap);
-
-    // EPC mini bar (계획 폭 회색 + 실적 폭 색)
-    const epcMaxScale = Math.max(epcPlan || 0, epcExp || 0, 100);
-    const consMaxScale = Math.max(consPlan || 0, consExp || 0, 100);
-
-    ovDesignHost.innerHTML = `
-      <!-- 메인 KPI: 전체 EPC GAP을 큰 숫자로 -->
-      <div style="display:flex;align-items:baseline;justify-content:space-between;padding:10px 14px;background:${epcColor === '#c14a4a' ? '#fcf0f0' : (epcColor === '#d49462' ? '#fef9ee' : '#f0f8f0')};border-radius:6px;margin-bottom:12px;">
-        <div>
-          <div style="font-size:12px;color:#5a6677;font-weight:600;">전체 EPC GAP</div>
-          <div style="font-size:32px;font-weight:700;color:${epcColor};line-height:1.05;">${epcGap != null ? (epcGap >= 0 ? '+' : '') + epcGap.toFixed(2) : '–'}<span style="font-size:18px;">%p</span></div>
-        </div>
-        <div style="text-align:right;">
-          <div style="font-size:11.5px;color:#7a8694;">예상 실적 / 계획</div>
-          <div style="font-size:16px;font-weight:600;color:#28323e;">${epcExp != null ? epcExp.toFixed(2) : '–'}% <span style="color:#9aa6b4;">/ ${epcPlan != null ? epcPlan.toFixed(2) : '–'}%</span></div>
-        </div>
-      </div>
-
-      <!-- EPC 3분야 mini bar (계획 라인 + 실적 막대) -->
-      <div style="margin-bottom:12px;">
-        <div style="font-size:12.5px;color:#28323e;font-weight:700;margin-bottom:8px;">📐 EPC 분야별 진척</div>
-        ${[
-          { label: '시공 (Construction)', plan: consPlan, exp: consExp, gap: consGap, color: consColor },
-          { label: '구매 (Procurement)',   plan: pct(procRow && procRow.plan_may), exp: pct(procRow && procRow.expect_may), gap: procGap, color: gapColor(procGap) },
-          { label: '설계 (Engineering)',   plan: pct(engRow && engRow.plan_may),  exp: pct(engRow && engRow.expect_may), gap: engGap, color: gapColor(engGap) },
-        ].map(r => `
-          <div style="margin-bottom:8px;">
-            <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:3px;">
-              <span style="font-size:12px;color:#28323e;font-weight:600;">${r.label}</span>
-              <span style="font-size:12px;"><b style="color:${r.color};">${r.exp != null ? r.exp.toFixed(2) : '–'}%</b> <span style="color:#9aa6b4;">/ ${r.plan != null ? r.plan.toFixed(2) : '–'}%</span> <span style="color:${r.color};font-weight:600;">(${r.gap != null ? (r.gap >= 0 ? '+' : '') + r.gap.toFixed(2) : '–'}p)</span></span>
-            </div>
-            <div style="position:relative;height:10px;background:#eef0f4;border-radius:5px;overflow:hidden;">
-              <div style="position:absolute;top:0;left:0;height:100%;width:${Math.min(100, r.exp || 0)}%;background:${r.color};"></div>
-              <div style="position:absolute;top:-2px;left:${Math.min(100, r.plan || 0)}%;width:2px;height:14px;background:#28323e;opacity:0.6;"></div>
-            </div>
-          </div>`).join('')}
-      </div>
-
-      <!-- Top 3 지연 공종 -->
-      <div>
-        <div style="font-size:12.5px;color:#28323e;font-weight:700;margin-bottom:6px;">⛏ 시공 하위 — 지연 Top 3</div>
-        ${topDelays.length ? topDelays.map(t => `
-          <div style="display:flex;align-items:center;gap:8px;padding:6px 4px;border-bottom:1px solid #f0f2f6;">
-            <div style="flex:1;font-size:12.5px;color:#28323e;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${escAttr(t.name)}">${escHtml(t.name)}</div>
-            <div style="font-size:11.5px;color:#7a8694;white-space:nowrap;">${t.expMay.toFixed(2)}% / ${t.planMay.toFixed(2)}%</div>
-            <div style="font-size:13px;font-weight:700;color:#c14a4a;min-width:64px;text-align:right;">${t.gap.toFixed(2)}%p</div>
-          </div>`).join('') : '<div style="padding:8px;color:#3f8a3f;font-size:12px;text-align:center;">✓ 시공 부문 지연 항목 없음</div>'}
-      </div>
-    `;
-  } else if (ovDesignHost) {
-    ovDesignHost.innerHTML = '<div style="padding:20px;text-align:center;color:#7a8694;font-size:13px;">시공 진척 데이터가 없습니다 (5-1 시트 추출 필요)</div>';
-  }
+  // === 현장 전경 추이 갤러리 ===
+  renderPanoramaGallery();
 
   // === 마일스톤 탭 토글 ===
   const root = document.querySelector('.panel[data-tab="overview"]');
@@ -3358,6 +3737,27 @@ PANELS.progress = () => `
         <h3 class="pg-title">🗓 Critical Path Gantt <span class="pg-sub">Master Rev.6B · TODAY 표시</span></h3>
         <div class="ec-chart" id="pg-gantt"></div>
       </div>
+
+      <!-- Row 5 (NEW · 2-1 공정현황): EPC 영역별 진척 막대 + 가중치×진척률 트리맵 -->
+      <div class="pg-card col-12">
+        <h3 class="pg-title">📋 2-1 공정현황 · EPC 영역별 + 중분류 진척 <span class="pg-sub">엑셀 2-1 시트 기반 · 26.05월</span></h3>
+        <div id="pg-pstatus-meta" style="font-size:12.5px;color:#7a8694;margin-bottom:10px;"></div>
+        <div class="ec-chart" id="pg-pstatus-bars" style="height:420px;"></div>
+      </div>
+      <div class="pg-card col-12">
+        <h3 class="pg-title">🗺 공종 가중치 × 진척률 트리맵 <span class="pg-sub">📦 박스 크기 = EPC 점유 가중치 · 🎨 색상 = 달성률(계획대비 실적)</span></h3>
+        <div id="pg-treemap-summary" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:14px;"></div>
+        <div id="pg-treemap-legend" style="display:flex;align-items:center;gap:18px;flex-wrap:wrap;padding:10px 14px;background:#f5f8fc;border-radius:8px;margin-bottom:12px;font-size:12.5px;color:#28323e;">
+          <span style="font-weight:700;color:#2c569f;">📊 달성률 범례:</span>
+          <span style="display:inline-flex;align-items:center;gap:6px;"><span style="width:18px;height:14px;background:#c25656;border-radius:3px;"></span>50% 미만 (심각)</span>
+          <span style="display:inline-flex;align-items:center;gap:6px;"><span style="width:18px;height:14px;background:#d49462;border-radius:3px;"></span>50~70% (주의)</span>
+          <span style="display:inline-flex;align-items:center;gap:6px;"><span style="width:18px;height:14px;background:#7ba6c9;border-radius:3px;"></span>70~90% (양호)</span>
+          <span style="display:inline-flex;align-items:center;gap:6px;"><span style="width:18px;height:14px;background:#4a7bd1;border-radius:3px;"></span>90~100% (우수)</span>
+          <span style="display:inline-flex;align-items:center;gap:6px;"><span style="width:18px;height:14px;background:#3f8a3f;border-radius:3px;"></span>100% 이상 (완료)</span>
+          <span style="margin-left:auto;color:#7a8694;">박스 클릭으로 하위 공종 드릴다운</span>
+        </div>
+        <div class="ec-chart" id="pg-pstatus-treemap" style="height:560px;"></div>
+      </div>
     </div>
   </div>
 `;
@@ -3407,20 +3807,35 @@ PANEL_INIT.progress = () => {
   const consArr   = epcSeries.map(r => r.cons && r.cons.actual != null ? +(r.cons.actual * 100).toFixed(2) : null);
   const procArr   = epcSeries.map(r => r.proc && r.proc.actual != null ? +(r.proc.actual * 100).toFixed(2) : null);
   const engArr    = epcSeries.map(r => r.eng && r.eng.actual != null ? +(r.eng.actual * 100).toFixed(2) : null);
+  // 색상 팔레트 (각 시리즈가 itemStyle.color 와 lineStyle.color 모두 동일해야 legend 와 매칭됨)
+  const SC_COLORS = {
+    planNeutral: '#7a8694',    // 종합 계획 (회색)
+    epcActual:   '#2c569f',    // 종합 실적 (진한 네이비)
+    cons:        '#8a6e4b',    // 시공 (브라운)
+    proc:        '#6b5b95',    // 구매 (퍼플)
+    eng:         '#3f8a3f',    // 설계 (그린)
+  };
   const sc = echarts.init(document.getElementById('pg-scurve'));
   sc.setOption({
+    color: [SC_COLORS.planNeutral, SC_COLORS.epcActual, SC_COLORS.cons, SC_COLORS.proc, SC_COLORS.eng],
     grid: { left: 56, right: 28, top: 36, bottom: 64 },
     tooltip: { trigger: 'axis' },
     legend: { bottom: 6, icon: 'roundRect', itemHeight: 10, textStyle: { fontSize: 13 } },
     xAxis: { type: 'category', data: ymLabels, axisLabel: { fontSize: 12, rotate: 30 } },
     yAxis: { type: 'value', min: 0, max: 100, axisLabel: { formatter: '{value}%', fontSize: 12 } },
     series: [
-      { name: '종합 계획',  type: 'line', data: planArr,   smooth: true, symbol: 'circle', symbolSize: 5, lineStyle: { color: PG_COLORS.neutral, type: 'dashed', width: 2 }, itemStyle: { color: PG_COLORS.neutral } },
-      { name: '종합 실적',  type: 'line', data: actualArr, smooth: true, symbol: 'circle', symbolSize: 7, lineStyle: { color: PG_COLORS.primary, width: 3.5 }, itemStyle: { color: PG_COLORS.primary }, areaStyle: { color: 'rgba(44,86,159,0.12)' },
+      { name: '종합 계획',  type: 'line', data: planArr,   smooth: true, symbol: 'circle', symbolSize: 5,
+        color: SC_COLORS.planNeutral, lineStyle: { color: SC_COLORS.planNeutral, type: 'dashed', width: 2 }, itemStyle: { color: SC_COLORS.planNeutral } },
+      { name: '종합 실적',  type: 'line', data: actualArr, smooth: true, symbol: 'circle', symbolSize: 7,
+        color: SC_COLORS.epcActual, lineStyle: { color: SC_COLORS.epcActual, width: 3.5 }, itemStyle: { color: SC_COLORS.epcActual },
+        areaStyle: { color: 'rgba(44,86,159,0.12)' },
         markPoint: { symbol: 'pin', symbolSize: 60, data: [{ value: `${gap >= 0 ? '+' : ''}${gap.toFixed(2)}%p`, xAxis: ymLabels[ymLabels.length-1], yAxis: actualLast, itemStyle: { color: gap < 0 ? PG_COLORS.bad : PG_COLORS.good } }], label: { fontSize: 11, color: '#fff', fontWeight: 700 } } },
-      { name: '시공 실적',  type: 'line', data: consArr, smooth: true, symbol: 'none', lineStyle: { color: '#8a6e4b', width: 2 } },
-      { name: '구매 실적',  type: 'line', data: procArr, smooth: true, symbol: 'none', lineStyle: { color: '#6b5b95', width: 2 } },
-      { name: '설계 실적',  type: 'line', data: engArr,  smooth: true, symbol: 'none', lineStyle: { color: PG_COLORS.good, width: 2 } },
+      { name: '시공 실적',  type: 'line', data: consArr, smooth: true, symbol: 'circle', symbolSize: 4,
+        color: SC_COLORS.cons, lineStyle: { color: SC_COLORS.cons, width: 2.5 }, itemStyle: { color: SC_COLORS.cons } },
+      { name: '구매 실적',  type: 'line', data: procArr, smooth: true, symbol: 'circle', symbolSize: 4,
+        color: SC_COLORS.proc, lineStyle: { color: SC_COLORS.proc, width: 2.5 }, itemStyle: { color: SC_COLORS.proc } },
+      { name: '설계 실적',  type: 'line', data: engArr,  smooth: true, symbol: 'circle', symbolSize: 4,
+        color: SC_COLORS.eng, lineStyle: { color: SC_COLORS.eng, width: 2.5 }, itemStyle: { color: SC_COLORS.eng } },
     ],
   });
 
@@ -3552,11 +3967,212 @@ PANEL_INIT.progress = () => {
   if (ganttSpec.grid) { ganttSpec.grid.left = 190; ganttSpec.grid.top = 16; ganttSpec.grid.bottom = 36; ganttSpec.grid.right = 16; }
   gantt.setOption(ganttSpec);
 
+  // ===== ⑦ 2-1 공정현황: EPC 영역별 + 가중치 × 진척률 트리맵 =====
+  const ps = window.PROGRESS_STATUS_DATA;
+  let psBarChart, psTreeChart;
+  if (ps && ps.rows && ps.rows.length) {
+    const psMeta = document.getElementById('pg-pstatus-meta');
+    if (psMeta) psMeta.textContent = `출처 ${ps.source_file} · ${ps.source_sheet} · ${ps.rows.length}개 행`;
+
+    // (a) EPC 영역별 + 중분류 막대 : 시공 sub들만 (가중치 큰 순) + ENG/PROC top
+    const subRowsCons = ps.rows.filter(r => r.top === 'CONSTRUCTION' && r.kind === 'sub' && r.weight != null);
+    const topRows = ['ENGINEERING','PROCUREMENT','CONSTRUCTION'].map(n => ps.rows.find(r => r.name === n && r.kind === 'top')).filter(Boolean);
+    const subRowsProc = ps.rows.filter(r => r.top === 'PROCUREMENT' && r.kind === 'sub' && r.weight != null);
+
+    // 영역별 막대: 큰 가중치 항목 위주로 정렬
+    const allItems = [];
+    for (const t of topRows) {
+      allItems.push({
+        name: t.name === 'ENGINEERING' ? '설계 (전체)' : (t.name === 'PROCUREMENT' ? '구매 (전체)' : '시공 (전체)'),
+        topKey: t.name, isTop: true,
+        weight: t.weight, plan: t.plan, actual: t.actual, ratio: t.plan > 0 ? t.actual/t.plan : null,
+      });
+      const subs = ps.rows.filter(r => r.top === t.name && r.kind === 'sub' && r.weight != null && r.name.trim() !== '계')
+        .sort((a, b) => (b.weight||0) - (a.weight||0));
+      for (const s of subs) {
+        allItems.push({
+          name: '　└ ' + s.name.replace(/^[IVX]+\.\s*/, ''),
+          topKey: t.name, isTop: false,
+          weight: s.weight, plan: s.plan, actual: s.actual, ratio: s.plan > 0 ? s.actual/s.plan : null,
+        });
+      }
+    }
+    const psLabels = allItems.map(it => it.name);
+    const psPlan = allItems.map(it => +(it.plan*100).toFixed(2));
+    const psAct  = allItems.map(it => +(it.actual*100).toFixed(2));
+    const psBarHost = document.getElementById('pg-pstatus-bars');
+    if (psBarHost) {
+      psBarChart = echarts.init(psBarHost);
+      psBarChart.setOption({
+        grid: { left: 140, right: 70, top: 36, bottom: 50 },
+        tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' },
+          formatter: ps => {
+            const i = ps[0].dataIndex;
+            const it = allItems[i];
+            const gap = ((it.actual - it.plan) * 100).toFixed(2);
+            const gc = gap < 0 ? '#c14a4a' : '#3f8a3f';
+            return `<b>${escHtml(it.name.trim())}</b><br>가중치(EPC): ${(it.weight*100).toFixed(2)}%<br>계획: ${(it.plan*100).toFixed(2)}%<br>실적: ${(it.actual*100).toFixed(2)}%<br>갭: <b style="color:${gc};">${gap >= 0 ? '+' : ''}${gap}%p</b><br>달성률: ${it.ratio != null ? (it.ratio*100).toFixed(1) : '–'}%`;
+          } },
+        legend: { bottom: 4, icon: 'roundRect', itemHeight: 10, textStyle: { fontSize: 13 } },
+        xAxis: { type: 'value', max: data => Math.max(0.5, Math.ceil(data.max * 1.05 * 10) / 10), axisLabel: { formatter: '{value}', fontSize: 11.5 }, name: '% (EPC 환산)', nameTextStyle: { fontSize: 11 } },
+        yAxis: { type: 'category', data: psLabels, axisLabel: { fontSize: 12, formatter: v => v.length > 28 ? v.slice(0, 27)+'…' : v, color: (v, i) => allItems[i] && allItems[i].isTop ? '#28323e' : '#5a6677' },
+          inverse: false },
+        series: [
+          { name: '계획 (Plan)', type: 'bar', data: psPlan, itemStyle: { color: '#cdd5df' }, barGap: '10%',
+            label: { show: false } },
+          { name: '실적 (Actual)', type: 'bar', data: psAct.map((v, i) => ({
+              value: v,
+              itemStyle: { color: (allItems[i].plan > 0 && allItems[i].actual / allItems[i].plan >= 0.97) ? PG_COLORS.good : (allItems[i].plan > 0 && allItems[i].actual / allItems[i].plan < 0.7 ? PG_COLORS.bad : PG_COLORS.primary) }
+            })),
+            label: { show: false } },
+        ],
+      });
+    }
+
+    // (b1) 영역별 요약 카드 (트리맵 상단)
+    const summaryHost = document.getElementById('pg-treemap-summary');
+    if (summaryHost) {
+      summaryHost.innerHTML = topRows.map(t => {
+        const ratio = t.plan > 0 ? t.actual / t.plan : 1;
+        const gap_pp = (t.actual - t.plan) * 100;
+        const labelKo = t.name === 'ENGINEERING' ? '설계' : (t.name === 'PROCUREMENT' ? '구매' : '시공');
+        const icon = t.name === 'ENGINEERING' ? '✏️' : (t.name === 'PROCUREMENT' ? '📦' : '🏗️');
+        const color = _ratioColor(ratio);
+        const subs = ps.rows.filter(r => r.top === t.name && r.kind === 'sub' && r.weight != null && r.weight > 0 && r.name.trim() !== '계');
+        return `
+          <div style="background:#fff;border:1px solid #e6eaf1;border-left:6px solid ${color};border-radius:10px;padding:14px 18px;">
+            <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:8px;">
+              <span style="font-size:18px;font-weight:800;color:#28323e;">${icon} ${labelKo}</span>
+              <span style="font-size:12.5px;color:#9aa6b4;font-weight:500;">${t.name}</span>
+            </div>
+            <div style="display:flex;align-items:baseline;gap:10px;">
+              <span style="font-size:30px;font-weight:800;color:${color};line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-0.02em;">${(ratio*100).toFixed(1)}<span style="font-size:16px;">%</span></span>
+              <span style="font-size:14px;color:#7a8694;font-weight:600;">달성률</span>
+            </div>
+            <div style="display:flex;gap:12px;margin-top:10px;padding-top:10px;border-top:1px dashed #e6eaf1;font-size:13px;color:#7a8694;">
+              <span>가중치 <b style="color:#28323e;font-variant-numeric:tabular-nums;">${(t.weight*100).toFixed(2)}%</b></span>
+              <span style="color:#cdd5df;">·</span>
+              <span>갭 <b style="color:${gap_pp < 0 ? '#c25656' : '#3f8a3f'};font-variant-numeric:tabular-nums;">${gap_pp >= 0 ? '+' : ''}${gap_pp.toFixed(2)}%p</b></span>
+              <span style="margin-left:auto;color:#5a6677;">${subs.length}개 중분류</span>
+            </div>
+          </div>`;
+      }).join('');
+    }
+
+    // (b2) Treemap : 가중치(EPC %) × 진척률
+    const treeData = topRows.map(t => {
+      const subs = ps.rows.filter(r => r.top === t.name && r.kind === 'sub' && r.weight != null && r.weight > 0 && r.name.trim() !== '계');
+      const children = subs.map(s => {
+        const ratio = s.plan > 0 ? s.actual / s.plan : (s.actual > 0 ? 1 : 0);
+        const cleanName = s.name.replace(/^[IVX]+\.\s*/, '');
+        // 더 깊이 (item 단위까지) 펼치기
+        const items = ps.rows.filter(r => r.sub === s.name && r.top === t.name && r.kind === 'item' && r.weight != null && r.weight > 0);
+        const itemChildren = items.map(it => {
+          const r2 = it.plan > 0 ? it.actual / it.plan : (it.actual > 0 ? 1 : 0);
+          return {
+            name: it.name,
+            value: it.weight * 100,
+            itemStyle: { color: _ratioColor(r2) },
+            extra: { ratio: r2, plan: it.plan, actual: it.actual, weight: it.weight }
+          };
+        });
+        return {
+          name: cleanName,
+          value: s.weight * 100,
+          itemStyle: { color: _ratioColor(ratio) },
+          extra: { ratio, plan: s.plan, actual: s.actual, weight: s.weight },
+          children: itemChildren.length ? itemChildren : undefined,
+        };
+      });
+      const topRatio = t.plan > 0 ? t.actual / t.plan : 1;
+      return {
+        name: t.name === 'ENGINEERING' ? '설계' : (t.name === 'PROCUREMENT' ? '구매' : '시공'),
+        value: t.weight * 100,
+        itemStyle: { color: _ratioColor(topRatio) },
+        extra: { ratio: topRatio, plan: t.plan, actual: t.actual, weight: t.weight },
+        children,
+      };
+    });
+    const treeHost = document.getElementById('pg-pstatus-treemap');
+    if (treeHost) {
+      psTreeChart = echarts.init(treeHost);
+      psTreeChart.setOption({
+        tooltip: {
+          formatter: info => {
+            const x = info.data.extra;
+            if (!x) return info.name;
+            const ratioPct = x.ratio != null ? (x.ratio * 100).toFixed(1) : '–';
+            const gap = ((x.actual - x.plan) * 100).toFixed(2);
+            const gc = gap < 0 ? '#c14a4a' : '#3f8a3f';
+            return `<b>${escHtml(info.name)}</b><br>가중치(EPC): <b>${(x.weight*100).toFixed(2)}%</b><br>계획: ${(x.plan*100).toFixed(2)}%<br>실적: ${(x.actual*100).toFixed(2)}%<br>달성률: <b>${ratioPct}%</b><br>갭: <b style="color:${gc};">${gap >= 0 ? '+' : ''}${gap}%p</b>`;
+          },
+        },
+        series: [{
+          type: 'treemap',
+          data: treeData,
+          breadcrumb: { show: true, height: 32, itemStyle: { textStyle: { fontSize: 14, fontWeight: 600 } } },
+          roam: false,
+          nodeClick: 'zoomToNode',
+          leafDepth: 2,
+          label: { show: true, position: 'insideTopLeft', fontSize: 14, fontWeight: 700, padding: [8, 10],
+            formatter: p => {
+              const x = p.data.extra;
+              if (!x) return `{name|${p.name}}`;
+              const ratio = x.ratio != null ? (x.ratio * 100).toFixed(0) + '%' : '';
+              const weight = (x.weight*100).toFixed(2);
+              return `{name|${p.name}}\n{stat|달성률 ${ratio}  ·  가중치 ${weight}%}`;
+            }, rich: {
+              name: { fontSize: 15, color: '#fff', fontWeight: 800, lineHeight: 22, textShadowColor: 'rgba(0,0,0,0.55)', textShadowBlur: 5 },
+              stat: { fontSize: 12.5, color: 'rgba(255,255,255,0.97)', lineHeight: 17, fontWeight: 600, textShadowColor: 'rgba(0,0,0,0.5)', textShadowBlur: 4 },
+            } },
+          upperLabel: { show: true, height: 36, color: '#fff', fontWeight: 800, fontSize: 16,
+            backgroundColor: '#1a2331',
+            padding: [8, 14, 8, 14],
+            borderRadius: 4,
+            formatter: p => {
+              const x = p.data.extra;
+              if (!x) return p.name;
+              const ratio = x.ratio != null ? (x.ratio * 100).toFixed(0) + '%' : '';
+              return `${p.name}   ·   달성률 ${ratio}   ·   가중치 ${(x.weight*100).toFixed(1)}%`;
+            },
+          },
+          itemStyle: { borderColor: '#fff', borderWidth: 2, gapWidth: 3, borderRadius: 4 },
+          emphasis: { itemStyle: { borderColor: '#28323e', borderWidth: 3 } },
+          levels: [
+            // Level 0 (루트 — 보이지 않음): 그저 자식들을 묶음
+            { itemStyle: { borderColor: '#fff', borderWidth: 0, gapWidth: 8 }, upperLabel: { show: false } },
+            // Level 1 (설계/구매/시공): 큰 부모 박스 - 상단 헤더 검정 배경 (40px)
+            { itemStyle: { borderColor: '#fff', borderWidth: 4, gapWidth: 4, borderRadius: 8 },
+              upperLabel: { show: true, height: 40, backgroundColor: '#1a2331', color: '#fff',
+                fontWeight: 800, fontSize: 17, padding: [10, 16, 10, 16], borderRadius: 6 },
+              color: ['#4a7bd1','#a48cc4','#56a06a','#d49462','#c25656','#7ba6c9'] },
+            // Level 2 (중분류): 자식 박스 - 헤더 진한 회색
+            { itemStyle: { borderColor: '#fff', borderWidth: 2, gapWidth: 2, borderRadius: 4 },
+              upperLabel: { show: true, height: 30, backgroundColor: 'rgba(20,30,46,0.78)', color: '#fff',
+                fontWeight: 700, fontSize: 13.5, padding: [6, 10, 6, 10], borderRadius: 4 } },
+            // Level 3 (item):
+            { itemStyle: { borderColor: '#fff', borderWidth: 1.5, gapWidth: 1, borderRadius: 3 } },
+          ],
+        }],
+      });
+    }
+  }
+
   // 반응형
-  const charts_ec = [sc, fChart, heat, contribChart, mpChart, gantt];
+  const charts_ec = [sc, fChart, heat, contribChart, mpChart, gantt, psBarChart, psTreeChart].filter(Boolean);
   const onResize = debounce(() => charts_ec.forEach(c => c && c.resize()), 100);
   window.addEventListener('resize', onResize);
 };
+
+// 달성률 색상 (0~1+): 빨 → 주황 → 청록 → 녹색
+function _ratioColor(r) {
+  if (r == null || isNaN(r)) return '#94a3b8';
+  if (r < 0.5) return '#c25656';
+  if (r < 0.7) return '#d49462';
+  if (r < 0.9) return '#7ba6c9';
+  if (r < 1.0) return '#4a7bd1';
+  return '#3f8a3f';
+}
 
 //--- Helper: WBS Treemap (5-1 qty_progress 활용) ---
 // 색: 갭(예상 - 계획)에 따라 음수면 빨강, 양수면 녹색
@@ -3747,13 +4363,17 @@ PANELS.resource = () => {
       <div class="rs-card col-4"><div id="rs-kpi-manpower"></div></div>
       <div class="rs-card col-4"><div id="rs-kpi-equipment"></div></div>
 
-      <!-- 분야별 공정률 -->
-      <div class="rs-card col-12">
+      <!-- Row 2: 분야별 공정률 + 월별 인력 추이 (반반) -->
+      <div class="rs-card col-6">
         <h3 class="rs-title">📐 분야별 공정률 현황 <span class="rs-sub">5월 계획 vs 예상 실적 누계</span></h3>
         <div class="rs-ec" id="rs-epc" style="height:340px;"></div>
       </div>
+      <div class="rs-card col-6">
+        <h3 class="rs-title">📈 월별 총 인력 투입 추이 <span class="rs-sub">data.js · 공정구역 × 관리/협력</span></h3>
+        <div class="rs-ec" id="rs-mp-trend" style="height:340px;"></div>
+      </div>
 
-      <!-- 5월 인원 도넛 + 장비 Top -->
+      <!-- Row 3: 인원 도넛 + 장비 Top -->
       <div class="rs-card col-6">
         <h3 class="rs-title">👥 공종별 인원 동원 계획 <span class="rs-sub">5월 · 총 13,955 MD · 일평균 638명</span></h3>
         <div class="rs-ec" id="rs-mp-pie" style="height:360px;"></div>
@@ -3763,10 +4383,13 @@ PANELS.resource = () => {
         <div class="rs-ec" id="rs-eq-top" style="height:360px;"></div>
       </div>
 
-      <!-- 시계열: 월별 인력 추이 -->
+      <!-- Row 4 (NEW): 효율성 인사이트 — 시공률 vs 투입인원 상관 + 자동 인사이트 (1:1 반반) -->
       <div class="rs-card col-12">
-        <h3 class="rs-title">📈 월별 총 인력 투입 추이 <span class="rs-sub">data.js · 공정구역 × 관리/협력</span></h3>
-        <div class="rs-ec" id="rs-mp-trend" style="height:300px;"></div>
+        <h3 class="rs-title">💡 효율성 인사이트 <span class="rs-sub">시공률 추세 vs 일평균 인원 · 자동 분석</span></h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:stretch;">
+          <div class="rs-ec" id="rs-efficiency" style="height:340px;"></div>
+          <div id="rs-insights" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:13.5px;color:#2c3a52;line-height:1.55;"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -3903,6 +4526,173 @@ PANEL_INIT.resource = () => {
   });
   window.__rsCharts.push(mpTrend);
 
+  // ===== 효율성 인사이트: 시공률 누계(좌축) vs 월 일평균 인원(우축) =====
+  const effHost = document.getElementById('rs-efficiency');
+  const effInsights = document.getElementById('rs-insights');
+  if (effHost) {
+    // 시공률은 SD.epc_series.rows에서 cons.actual, 인원은 data.js manpower 월별 합
+    const epcRows = (SD.epc_series && SD.epc_series.rows) || [];
+    // 정렬: 동일한 ym 기준
+    const dMonths = d.manpower.months;
+    const sumMpAt = i => subs.reduce((s, k) => s + ((d.manpower[k].manager[i] ?? 0) + (d.manpower[k].partner[i] ?? 0)), 0);
+    const aligned = epcRows.map(r => {
+      const idx = dMonths.indexOf(r.ym);
+      return {
+        ym: r.ym,
+        consPct: r.cons && r.cons.actual != null ? +(r.cons.actual * 100).toFixed(2) : null,
+        epcPct:  r.epc  && r.epc.actual  != null ? +(r.epc.actual  * 100).toFixed(2) : null,
+        mp: idx >= 0 ? sumMpAt(idx) : null,
+      };
+    }).filter(x => x.consPct != null && x.mp != null);
+
+    const xLabels = aligned.map(x => x.ym.slice(2));
+    const consSeries = aligned.map(x => x.consPct);
+    const mpArr = aligned.map(x => x.mp);
+
+    const eff = echarts.init(effHost);
+    eff.setOption({
+      grid: { left: 56, right: 56, top: 36, bottom: 60 },
+      tooltip: { trigger: 'axis', axisPointer: { type: 'cross' },
+        formatter: ps => {
+          const i = ps[0].dataIndex;
+          return `<b>${aligned[i].ym}</b><br>시공 누계: ${aligned[i].consPct}%<br>EPC 누계: ${aligned[i].epcPct ?? '–'}%<br>일평균 인원: ${aligned[i].mp.toLocaleString()}명`;
+        } },
+      legend: { bottom: 4, icon: 'roundRect', itemHeight: 10, textStyle: { fontSize: 13 } },
+      xAxis: { type: 'category', data: xLabels, axisLabel: { fontSize: 11.5, rotate: 30 } },
+      yAxis: [
+        { type: 'value', name: '시공률 (%)', min: 0, max: 100, position: 'left', axisLabel: { formatter: '{value}%', fontSize: 11.5 },
+          nameTextStyle: { fontSize: 11.5, color: '#5a6677' } },
+        { type: 'value', name: '인원 (명)', position: 'right', axisLabel: { formatter: '{value}', fontSize: 11.5 },
+          nameTextStyle: { fontSize: 11.5, color: '#5a6677' } },
+      ],
+      series: [
+        { name: '시공 누계', type: 'line', yAxisIndex: 0, smooth: true, data: consSeries,
+          itemStyle: { color: RS_COLORS.primary }, lineStyle: { color: RS_COLORS.primary, width: 3 },
+          symbol: 'circle', symbolSize: 6, areaStyle: { color: 'rgba(44,86,159,0.10)' } },
+        { name: '일평균 인원', type: 'bar', yAxisIndex: 1, data: mpArr,
+          itemStyle: { color: '#d49462', borderRadius: [3,3,0,0], opacity: 0.85 } },
+      ],
+    });
+    window.__rsCharts.push(eff);
+
+    // ── 자동 인사이트 텍스트 ──
+    const lastAligned = aligned[aligned.length - 1];
+    const prevAligned = aligned[aligned.length - 2];
+    let mpDeltaPct = null;
+    let consDeltaPP = null;
+    if (lastAligned && prevAligned) {
+      mpDeltaPct = prevAligned.mp > 0 ? ((lastAligned.mp - prevAligned.mp) / prevAligned.mp * 100) : null;
+      consDeltaPP = lastAligned.consPct - prevAligned.consPct;
+    }
+    // 상관계수 (Pearson) — 인원 vs 시공률
+    const n = aligned.length;
+    let corr = null;
+    if (n >= 4) {
+      const mx = mpArr.reduce((a,b) => a+b, 0) / n;
+      const my = consSeries.reduce((a,b) => a+b, 0) / n;
+      let num = 0, dx2 = 0, dy2 = 0;
+      for (let i = 0; i < n; i++) {
+        const dx = mpArr[i] - mx;
+        const dy = consSeries[i] - my;
+        num += dx * dy; dx2 += dx*dx; dy2 += dy*dy;
+      }
+      corr = (dx2 > 0 && dy2 > 0) ? num / Math.sqrt(dx2 * dy2) : null;
+    }
+    const bottleneck = qty && qty.rows ? qty.rows
+      .filter(r => r.kind === 'sub' && r.plan_may != null && r.expect_may != null)
+      .map(r => ({ name: r.name, gap: (r.expect_may - r.plan_may) * 100 }))
+      .filter(r => r.gap < 0)
+      .sort((a, b) => a.gap - b.gap)[0] : null;
+
+    const insightCards = [];
+    if (lastAligned && consDeltaPP != null) {
+      const trendIcon = consDeltaPP >= 0 ? '▲' : '▼';
+      const trendColor = consDeltaPP >= 0 ? '#3f8a3f' : '#c14a4a';
+      const trendBg = consDeltaPP >= 0 ? '#e8f3e8' : '#fbe6e6';
+      insightCards.push(`
+        <div style="background:#fff;border:1px solid #e6eaf1;border-left:5px solid ${trendColor};border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:6px;">
+          <div style="font-size:12.5px;font-weight:600;color:#5a6677;letter-spacing:0.02em;">📈 직전 월 대비 시공 진척</div>
+          <div style="display:flex;align-items:baseline;gap:8px;">
+            <span style="font-size:30px;font-weight:800;color:${trendColor};line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-0.02em;">${consDeltaPP >= 0 ? '+' : ''}${consDeltaPP.toFixed(2)}<span style="font-size:16px;">%p</span></span>
+            <span style="font-size:14px;color:${trendColor};font-weight:700;">${trendIcon}</span>
+          </div>
+          <div style="font-size:12.5px;color:#7a8694;padding-top:4px;border-top:1px dashed #e6eaf1;">
+            <span style="font-variant-numeric:tabular-nums;">${prevAligned.ym}</span> → <span style="font-variant-numeric:tabular-nums;">${lastAligned.ym}</span> · 누계 <b style="color:#28323e;">${lastAligned.consPct}%</b>
+          </div>
+        </div>`);
+    }
+    if (mpDeltaPct != null) {
+      const mpIcon = mpDeltaPct >= 0 ? '▲' : '▼';
+      const mpCol  = mpDeltaPct >= 0 ? '#2c569f' : '#7a8694';
+      // 미니바: 직전 → 현재 인원 비율 시각화
+      const mpMax = Math.max(prevAligned.mp, lastAligned.mp);
+      const prevPct = mpMax > 0 ? prevAligned.mp / mpMax * 100 : 0;
+      const currPct = mpMax > 0 ? lastAligned.mp / mpMax * 100 : 0;
+      insightCards.push(`
+        <div style="background:#fff;border:1px solid #e6eaf1;border-left:5px solid ${mpCol};border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:6px;">
+          <div style="font-size:12.5px;font-weight:600;color:#5a6677;letter-spacing:0.02em;">👷 인원 투입 변동 (MoM)</div>
+          <div style="display:flex;align-items:baseline;gap:8px;">
+            <span style="font-size:30px;font-weight:800;color:${mpCol};line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-0.02em;">${mpDeltaPct >= 0 ? '+' : ''}${mpDeltaPct.toFixed(1)}<span style="font-size:16px;">%</span></span>
+            <span style="font-size:14px;color:${mpCol};font-weight:700;">${mpIcon}</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:3px;padding-top:6px;border-top:1px dashed #e6eaf1;">
+            <div style="display:flex;align-items:center;gap:6px;font-size:11.5px;color:#7a8694;">
+              <span style="width:42px;">${prevAligned.ym.slice(2)}</span>
+              <div style="flex:1;height:5px;background:#eef0f4;border-radius:3px;overflow:hidden;"><div style="height:100%;width:${prevPct}%;background:#cdd5df;"></div></div>
+              <span style="width:48px;text-align:right;font-variant-numeric:tabular-nums;color:#28323e;font-weight:600;">${prevAligned.mp.toLocaleString()}</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;font-size:11.5px;color:#7a8694;">
+              <span style="width:42px;">${lastAligned.ym.slice(2)}</span>
+              <div style="flex:1;height:5px;background:#eef0f4;border-radius:3px;overflow:hidden;"><div style="height:100%;width:${currPct}%;background:${mpCol};"></div></div>
+              <span style="width:48px;text-align:right;font-variant-numeric:tabular-nums;color:#28323e;font-weight:700;">${lastAligned.mp.toLocaleString()}</span>
+            </div>
+          </div>
+        </div>`);
+    }
+    if (corr != null) {
+      const absC = Math.abs(corr);
+      const corrCol = absC >= 0.6 ? '#3f8a3f' : (absC >= 0.3 ? '#d49462' : '#7a8694');
+      const corrTxt = absC >= 0.6 ? '강한 상관' : (absC >= 0.3 ? '중간 상관' : '약한 상관');
+      // 게이지: |r| 을 0~1 시각화
+      const gaugePct = Math.min(100, absC * 100);
+      insightCards.push(`
+        <div style="background:#fff;border:1px solid #e6eaf1;border-left:5px solid ${corrCol};border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:6px;">
+          <div style="font-size:12.5px;font-weight:600;color:#5a6677;letter-spacing:0.02em;">🔗 인원·시공률 상관계수</div>
+          <div style="display:flex;align-items:baseline;gap:10px;">
+            <span style="font-size:30px;font-weight:800;color:${corrCol};line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-0.02em;">r = ${corr.toFixed(2)}</span>
+          </div>
+          <div style="padding-top:6px;border-top:1px dashed #e6eaf1;">
+            <div style="position:relative;height:10px;background:linear-gradient(90deg,#eef0f4 0%,#eef0f4 100%);border-radius:5px;overflow:hidden;">
+              <div style="height:100%;width:${gaugePct}%;background:linear-gradient(90deg,#cdd5df,${corrCol});"></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:11px;color:#9aa6b4;margin-top:3px;">
+              <span>0.0</span><span style="color:${corrCol};font-weight:700;">${corrTxt}</span><span>1.0</span>
+            </div>
+          </div>
+        </div>`);
+    }
+    if (bottleneck) {
+      const sev = Math.min(1, Math.abs(bottleneck.gap) / 10);
+      insightCards.push(`
+        <div style="background:#fff;border:1px solid #e6eaf1;border-left:5px solid #c14a4a;border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:6px;">
+          <div style="font-size:12.5px;font-weight:600;color:#5a6677;letter-spacing:0.02em;">🚨 최대 지연 공종 (시공)</div>
+          <div style="display:flex;align-items:baseline;gap:8px;">
+            <span style="font-size:30px;font-weight:800;color:#c14a4a;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-0.02em;">${bottleneck.gap.toFixed(2)}<span style="font-size:16px;">%p</span></span>
+          </div>
+          <div style="font-size:13px;color:#28323e;font-weight:600;padding-top:6px;border-top:1px dashed #e6eaf1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${escAttr(bottleneck.name)}">
+            ${escHtml(bottleneck.name.replace(/^[IVX]+\.\s*/, ''))}
+          </div>
+          <div style="height:5px;background:#f5d9d9;border-radius:3px;overflow:hidden;">
+            <div style="height:100%;width:${(sev*100).toFixed(0)}%;background:linear-gradient(90deg,#d49462,#c14a4a);"></div>
+          </div>
+        </div>`);
+    }
+    if (!insightCards.length) {
+      insightCards.push('<div style="color:#7a8694;font-size:13px;">자동 인사이트를 생성할 데이터가 부족합니다.</div>');
+    }
+    effInsights.innerHTML = insightCards.join('');
+  }
+
   // 반응형
   const onResize = debounce(() => (window.__rsCharts || []).forEach(c => c && c.resize()), 100);
   window.addEventListener('resize', onResize);
@@ -3969,42 +4759,47 @@ PANELS.safety = () => {
         </div>
       </div>
 
-      <!-- Secondary KPIs -->
+      <!-- Secondary KPIs — 라벨 명확화 -->
       <div class="card col-3">
-        <h3>공상 / 재해</h3>
+        <h3>재해 누적 (공상 포함)</h3>
         <div class="kpi orange" style="height: 90px;">
-          <div class="v" style="font-size: 28px;">${inc.reduce((s,r) => s + r.공상, 0)} / ${totalAcc}</div>
-          <div class="l">건 (공상 / 전체 재해)</div>
+          <div class="v" style="font-size: 28px;">${totalAcc}</div>
+          <div class="l">공상 ${inc.reduce((s,r) => s + r.공상, 0)} · 일반 ${inc.reduce((s,r) => s + r.일반재해, 0)} · 중대 ${totalSerious}</div>
         </div>
       </div>
       <div class="card col-3">
-        <h3>Near Miss</h3>
+        <h3>Near Miss 누적</h3>
         <div class="kpi" style="background:#d9e8ee; color:#2f6f88; height: 90px;">
           <div class="v" style="font-size: 28px;">${totalNM}</div>
-          <div class="l">건 (일반 ${inc.reduce((s,r) => s + r.일반NearMiss, 0)} / 중대 ${inc.reduce((s,r) => s + r.중대NearMiss, 0)})</div>
+          <div class="l">일반 ${inc.reduce((s,r) => s + r.일반NearMiss, 0)} · 중대 ${inc.reduce((s,r) => s + r.중대NearMiss, 0)}</div>
         </div>
       </div>
       <div class="card col-3">
         <h3>안전교육 누적</h3>
         <div class="kpi" style="background:#eef3fa; color:#2c569f; height: 90px;">
           <div class="v" style="font-size: 28px;">${(d.safety_edu_land.정기교육[lastIdx] ?? 0).toLocaleString()}</div>
-          <div class="l">정기교육 누계 (명)</div>
+          <div class="l">정기교육 누계 (명, ${fmtMonthShort(d.no_accident_days.months[lastIdx])})</div>
         </div>
       </div>
       <div class="card col-3">
         <h3>안전점검 지적</h3>
         <div class="kpi" style="background:#ece1cc; color:#8c5526; height: 90px;">
           <div class="v" style="font-size: 28px;">${['추락','전도','낙하/비래','감전','충돌/협착','붕괴/도괴','화재/폭발','질식','기타'].reduce((s,c) => s + (d.safety_audit_land[c][lastIdx] ?? 0), 0)}</div>
-          <div class="l">건 (${fmtMonthShort(d.safety_audit_land.months[lastIdx])} 합계)</div>
+          <div class="l">${fmtMonthShort(d.safety_audit_land.months[lastIdx])} 누계 (건)</div>
         </div>
       </div>
 
-      <!-- Charts -->
-      <div class="card col-12">
+      <!-- Charts — Row 1: 무재해일수 + 지적항목별 추이 한 행 -->
+      <div class="card col-6">
         <h3>📈 무재해 일수 추이 (월별)</h3>
         <div class="chart-container chart-tall"><canvas id="sf-noacc"></canvas></div>
       </div>
+      <div class="card col-6">
+        <h3>🗓️ 안전점검 지적 항목별 월간 추이 (라인)</h3>
+        <div class="chart-container chart-tall"><canvas id="sf-audit-lines"></canvas></div>
+      </div>
 
+      <!-- Row 2: 지적 분류(bar) + 합계 추이 -->
       <div class="card col-6">
         <h3>📋 육상부 안전점검 지적 분류 (월별)</h3>
         <div class="chart-container chart-tall"><canvas id="sf-audit"></canvas></div>
@@ -4014,6 +4809,7 @@ PANELS.safety = () => {
         <div class="chart-container chart-tall"><canvas id="sf-audit-trend"></canvas></div>
       </div>
 
+      <!-- Row 3: 안전교육 + 재해 현황 -->
       <div class="card col-6">
         <h3>🎓 안전교육 누적 인원 (육상부)</h3>
         <div class="chart-container chart-tall"><canvas id="sf-edu"></canvas></div>
@@ -4021,11 +4817,6 @@ PANELS.safety = () => {
       <div class="card col-6">
         <h3>⚠️ 공정구역별 재해 / Near Miss 현황 (누적)</h3>
         <div class="chart-container chart-tall"><canvas id="sf-incident"></canvas></div>
-      </div>
-
-      <div class="card col-12">
-        <h3>🗓️ 안전점검 지적 항목별 월간 추이 (라인)</h3>
-        <div class="chart-container chart-tall"><canvas id="sf-audit-lines"></canvas></div>
       </div>
     </div>
   `;
@@ -4071,11 +4862,17 @@ PANEL_INIT.safety = () => {
     options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 11 } } } }, scales: { y: { beginAtZero: true }, x: { grid: { display: false } } } }
   });
 
-  // 안전 차트(지적 합계/안전교육/지적 항목별 추이)는 2026-01부터 표시
-  const safetyStartIdx = months.findIndex(m => m >= '2026-01');
-  const safetyMonths = safetyStartIdx >= 0 ? months.slice(safetyStartIdx) : months;
+  // 안전 차트(지적 합계/안전교육/지적 항목별 추이): 직전 6개월 윈도우
+  // 마지막 데이터 시점 기준 6개월 (현재 데이터는 2026-01~03 만 채워져 있음)
+  const lastSafetyMonth = months[months.length - 1] || '2026-03';
+  // 6개월 전 시작점 계산
+  const [_ly, _lm] = lastSafetyMonth.split('-').map(Number);
+  const startDate = new Date(_ly, _lm - 1 - 5, 1);  // 5개월 전 → 총 6개월
+  const startYm = `${startDate.getFullYear()}-${String(startDate.getMonth()+1).padStart(2,'0')}`;
+  const safetyStartIdx = Math.max(0, months.findIndex(m => m >= startYm));
+  const safetyMonths = months.slice(safetyStartIdx);
   const safetyMonthsShort = safetyMonths.map(fmtMonthCompact);
-  const safetySliceStart = safetyStartIdx >= 0 ? safetyStartIdx : 0;
+  const safetySliceStart = safetyStartIdx;
 
   // Audit trend (sum of all categories per month)
   destroyChart('sf-audit-trend');
@@ -4167,6 +4964,327 @@ PANEL_INIT.safety = () => {
 };
 
 //------------------------------------------------------------
+// Quality (품질 이행관리) — 엑셀 6번 시트 기반
+//------------------------------------------------------------
+PANELS.quality = () => {
+  return `
+    <div id="ql-root" style="padding:18px 22px 28px;background:#f5f8fc;">
+      <style>
+        #ql-root .ql-grid { display:grid; grid-template-columns:repeat(12, 1fr); gap:16px; }
+        #ql-root .ql-card { background:#fff; border:1px solid #e6eaf1; border-radius:10px; padding:18px 22px; box-shadow:0 1px 2px rgba(20,30,60,0.04); }
+        #ql-root .ql-title { font-size:17px; font-weight:700; color:#28323e; margin:0 0 14px; display:flex; align-items:center; gap:8px; letter-spacing:0.01em; }
+        #ql-root .ql-title .ql-sub { font-size:13.5px; font-weight:500; color:#7a8694; margin-left:auto; }
+        #ql-root .ql-kpi { display:flex; flex-direction:column; gap:5px; }
+        #ql-root .ql-kpi .lbl { font-size:14px; color:#5a6677; font-weight:600; }
+        #ql-root .ql-kpi .val { font-size:32px; font-weight:800; line-height:1.05; font-variant-numeric:tabular-nums; }
+        #ql-root .ql-kpi .sub { font-size:13px; color:#7a8694; }
+        #ql-root .ec-chart { width:100%; height:380px; }
+        #ql-root .col-3 { grid-column: span 3; }
+        #ql-root .col-4 { grid-column: span 4; }
+        #ql-root .col-6 { grid-column: span 6; }
+        #ql-root .col-8 { grid-column: span 8; }
+        #ql-root .col-12 { grid-column: span 12; }
+        @media (max-width:1280px) {
+          #ql-root .col-3 { grid-column: span 6; }
+          #ql-root .col-4, #ql-root .col-6, #ql-root .col-8 { grid-column: span 12; }
+        }
+        #ql-root .ql-list-row { display:grid; grid-template-columns:1fr 70px; gap:10px; padding:8px 4px; border-bottom:1px solid #eef0f4; font-size:13px; align-items:center; }
+        #ql-root .ql-list-row:last-child { border-bottom:none; }
+        #ql-root .ql-list-name { color:#28323e; }
+        #ql-root .ql-list-val { text-align:right; font-weight:700; font-variant-numeric:tabular-nums; }
+        #ql-root .ql-text-grid { display:grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        @media (max-width: 1100px) { #ql-root .ql-text-grid { grid-template-columns: 1fr; } }
+        #ql-root .ql-text-card { background:#fafbfd; border:1px solid #e6eaf1; border-radius:8px; padding:14px 16px; }
+        #ql-root .ql-text-card h4 { font-size:14.5px; font-weight:700; color:#2c569f; margin:0 0 8px; }
+        #ql-root .ql-text-item { font-size:13.5px; color:#28323e; padding:5px 0; border-bottom:1px dashed #e6eaf1; }
+        #ql-root .ql-text-item:last-child { border-bottom:none; }
+        #ql-root .ql-text-cat { font-weight:700; color:#5a6677; font-size:12px; }
+      </style>
+      <div style="display:flex;align-items:baseline;gap:14px;margin-bottom:16px;">
+        <h2 style="margin:0;font-size:22px;color:#2c569f;font-weight:700;letter-spacing:0.01em;">🔍 품질 이행관리</h2>
+        <span id="ql-asof" style="font-size:13.5px;color:#7a8694;"></span>
+      </div>
+      <div class="ql-grid">
+        <!-- Row 1: KPI 4 -->
+        <div class="ql-card col-3"><div class="ql-kpi" id="ql-kpi-civil-exec"></div></div>
+        <div class="ql-card col-3"><div class="ql-kpi" id="ql-kpi-civil-pass"></div></div>
+        <div class="ql-card col-3"><div class="ql-kpi" id="ql-kpi-weld-exec"></div></div>
+        <div class="ql-card col-3"><div class="ql-kpi" id="ql-kpi-weld-pass"></div></div>
+
+        <!-- Row 2: 토목/건축 시험 누계 막대 + 영역별 불량률 (반반) -->
+        <div class="ql-card col-6">
+          <h3 class="ql-title">🧪 토목·건축 품질시험 누계 <span class="ql-sub">합격 vs 불합격</span></h3>
+          <div class="ec-chart" id="ql-civil-bars"></div>
+        </div>
+        <div class="ql-card col-6">
+          <h3 class="ql-title">⚠ 불량률 Top 5 <span class="ql-sub">토목·건축 시험</span></h3>
+          <div id="ql-civil-reject" style="height:380px;overflow:auto;"></div>
+        </div>
+
+        <!-- Row 3: 용접 불량률 영역별 비교 + 검사종류별 -->
+        <div class="ql-card col-6">
+          <h3 class="ql-title">🛠 용접 불량률 — 영역별 비교 <span class="ql-sub">TK-207 / TK-208 / 부속배관 / 운영지역</span></h3>
+          <div class="ec-chart" id="ql-weld-region"></div>
+        </div>
+        <div class="ql-card col-6">
+          <h3 class="ql-title">🔬 용접 검사종류별 누계 <span class="ql-sub">RT / MT / PT / VBT / PAUT</span></h3>
+          <div class="ec-chart" id="ql-weld-type"></div>
+        </div>
+
+        <!-- Row 4: 텍스트 영역 (4월 실적 / 5월 계획) -->
+        <div class="ql-card col-12">
+          <h3 class="ql-title">📋 월간 품질관리 이행 실적 및 계획 <span class="ql-sub">엑셀 6.1 절</span></h3>
+          <div id="ql-text" class="ql-text-grid"></div>
+        </div>
+      </div>
+    </div>
+  `;
+};
+
+PANEL_INIT.quality = () => {
+  if (typeof echarts === 'undefined') {
+    document.getElementById('ql-root').innerHTML = '<div style="padding:40px;color:#a14d4d;">ECharts 로딩 실패</div>';
+    return;
+  }
+  const Q = window.QUALITY_DATA;
+  if (!Q) {
+    document.getElementById('ql-root').innerHTML = '<div style="padding:40px;color:#a14d4d;">품질 데이터가 없습니다 (quality_data.js 누락).</div>';
+    return;
+  }
+  const QL_COLORS = { primary: '#2c569f', good: '#3f8a3f', warn: '#d49462', bad: '#c25656', neutral: '#7a8694' };
+  document.getElementById('ql-asof').textContent = `엑셀 출처: ${Q.source_file} · ${Q.source_sheet}`;
+
+  // ── KPI 계산 ──
+  const civilExec = Q.civil_tests.reduce((s, r) => s + (r.cum_exec || 0), 0);
+  const civilOk = Q.civil_tests.reduce((s, r) => s + (r.cum_ok || 0), 0);
+  const civilNg = Q.civil_tests.reduce((s, r) => s + (r.cum_ng || 0), 0);
+  const civilPassRate = civilExec > 0 ? civilOk / civilExec * 100 : 0;
+  // 용접: 누계 수행 합계 (단위 통일 안되므로 단순합)
+  const weldExec = Q.welding.reduce((s, r) => s + (r.cum_exec || 0), 0);
+  const weldOk = Q.welding.reduce((s, r) => s + (r.cum_ok || 0), 0);
+  const weldNg = Q.welding.reduce((s, r) => s + (r.cum_ng || 0), 0);
+  const weldPassRate = weldExec > 0 ? weldOk / weldExec * 100 : 0;
+
+  document.getElementById('ql-kpi-civil-exec').innerHTML = `
+    <span class="lbl">🧪 토목·건축 시험 누계</span>
+    <span class="val" style="color:${QL_COLORS.primary};">${Math.round(civilExec).toLocaleString()}</span>
+    <span class="sub">${Q.civil_tests.length}개 항목 · 단위 혼합(회/M)</span>
+  `;
+  document.getElementById('ql-kpi-civil-pass').innerHTML = `
+    <span class="lbl">✅ 토목·건축 합격률</span>
+    <span class="val" style="color:${civilPassRate >= 95 ? QL_COLORS.good : (civilPassRate >= 90 ? QL_COLORS.warn : QL_COLORS.bad)};">${civilPassRate.toFixed(1)}<span style="font-size:18px;">%</span></span>
+    <span class="sub">합격 ${Math.round(civilOk).toLocaleString()} / 불합격 ${Math.round(civilNg).toLocaleString()}</span>
+  `;
+  document.getElementById('ql-kpi-weld-exec').innerHTML = `
+    <span class="lbl">🛠 용접 검사 누계</span>
+    <span class="val" style="color:${QL_COLORS.primary};">${Math.round(weldExec).toLocaleString()}</span>
+    <span class="sub">${Q.welding.length}개 항목 · TK-207·208 외</span>
+  `;
+  document.getElementById('ql-kpi-weld-pass').innerHTML = `
+    <span class="lbl">✅ 용접 합격률</span>
+    <span class="val" style="color:${weldPassRate >= 95 ? QL_COLORS.good : (weldPassRate >= 90 ? QL_COLORS.warn : QL_COLORS.bad)};">${weldPassRate.toFixed(2)}<span style="font-size:18px;">%</span></span>
+    <span class="sub">합격 ${Math.round(weldOk).toLocaleString()} / 불합격 ${Math.round(weldNg).toLocaleString()}</span>
+  `;
+
+  // ── 토목·건축 누계 막대 ──
+  const civilByGroup = {};
+  for (const r of Q.civil_tests) {
+    const g = r.section || '기타';
+    if (!civilByGroup[g]) civilByGroup[g] = { exec: 0, ok: 0, ng: 0 };
+    civilByGroup[g].exec += (r.cum_exec || 0);
+    civilByGroup[g].ok   += (r.cum_ok || 0);
+    civilByGroup[g].ng   += (r.cum_ng || 0);
+  }
+  const cgLabels = Object.keys(civilByGroup);
+  const cgOk = cgLabels.map(k => Math.round(civilByGroup[k].ok));
+  const cgNg = cgLabels.map(k => Math.round(civilByGroup[k].ng));
+  const civilBars = echarts.init(document.getElementById('ql-civil-bars'));
+  civilBars.setOption({
+    grid: { left: 140, right: 30, top: 30, bottom: 50 },
+    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' },
+      formatter: ps => {
+        const i = ps[0].dataIndex;
+        const e = civilByGroup[cgLabels[i]];
+        const rate = e.exec > 0 ? (e.ok / e.exec * 100).toFixed(2) : '–';
+        return `<b>${cgLabels[i]}</b><br>수행 ${Math.round(e.exec)}<br>합격 ${Math.round(e.ok)}<br>불합격 ${Math.round(e.ng)}<br>합격률 <b>${rate}%</b>`;
+      } },
+    legend: { bottom: 4, icon: 'roundRect', itemHeight: 10, textStyle: { fontSize: 13 } },
+    xAxis: { type: 'value', axisLabel: { fontSize: 11.5 } },
+    yAxis: { type: 'category', data: cgLabels, axisLabel: { fontSize: 13, fontWeight: 600 } },
+    series: [
+      { name: '합격', type: 'bar', stack: 's', data: cgOk, itemStyle: { color: QL_COLORS.good },
+        label: { show: true, position: 'insideRight', fontSize: 11, color: '#fff', fontWeight: 700 } },
+      { name: '불합격', type: 'bar', stack: 's', data: cgNg, itemStyle: { color: QL_COLORS.bad },
+        label: { show: true, position: 'right', fontSize: 11.5, fontWeight: 700, color: QL_COLORS.bad,
+          formatter: p => p.value > 0 ? p.value : '' } },
+    ],
+  });
+
+  // ── 토목·건축 불량률 Top 5 ──
+  const civilReject = Q.civil_tests
+    .filter(r => r.cum_reject_rate != null && r.cum_reject_rate > 0)
+    .sort((a, b) => b.cum_reject_rate - a.cum_reject_rate)
+    .slice(0, 5);
+  const civilRejectHost = document.getElementById('ql-civil-reject');
+  if (civilReject.length === 0) {
+    civilRejectHost.innerHTML = '<div style="padding:20px;text-align:center;color:#3f8a3f;font-size:13.5px;">✓ 불량 항목 없음</div>';
+  } else {
+    civilRejectHost.innerHTML = civilReject.map(r => `
+      <div class="ql-list-row">
+        <div class="ql-list-name" title="${escAttr(r.section + ' · ' + r.item)}">
+          <div style="font-size:11.5px;color:#7a8694;">${escHtml(r.section || '–')}</div>
+          <div>${escHtml(r.item)}</div>
+        </div>
+        <div class="ql-list-val" style="color:${r.cum_reject_rate >= 0.1 ? '#c25656' : '#d49462'};">${(r.cum_reject_rate * 100).toFixed(2)}%</div>
+      </div>
+    `).join('');
+  }
+
+  // ── 용접 영역별 비교 ──
+  const weldByRegion = {};
+  for (const r of Q.welding) {
+    const g = r.region || '기타';
+    if (!weldByRegion[g]) weldByRegion[g] = { exec: 0, ok: 0, ng: 0 };
+    weldByRegion[g].exec += (r.cum_exec || 0);
+    weldByRegion[g].ok   += (r.cum_ok || 0);
+    weldByRegion[g].ng   += (r.cum_ng || 0);
+  }
+  const wrLabels = Object.keys(weldByRegion);
+  const wrRates = wrLabels.map(k => {
+    const e = weldByRegion[k];
+    return e.exec > 0 ? +(e.ng / e.exec * 100).toFixed(2) : 0;
+  });
+  const weldRegion = echarts.init(document.getElementById('ql-weld-region'));
+  weldRegion.setOption({
+    grid: { left: 90, right: 50, top: 30, bottom: 40 },
+    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' },
+      formatter: ps => {
+        const i = ps[0].dataIndex;
+        const e = weldByRegion[wrLabels[i]];
+        return `<b>${wrLabels[i]}</b><br>수행 ${Math.round(e.exec).toLocaleString()}<br>불합격 ${Math.round(e.ng).toLocaleString()}<br>불량률 <b>${wrRates[i]}%</b>`;
+      } },
+    xAxis: { type: 'value', axisLabel: { formatter: '{value}%', fontSize: 11.5 } },
+    yAxis: { type: 'category', data: wrLabels, axisLabel: { fontSize: 13, fontWeight: 600 } },
+    series: [{
+      type: 'bar', data: wrRates.map(v => ({ value: v, itemStyle: { color: v >= 5 ? QL_COLORS.bad : (v >= 2 ? QL_COLORS.warn : QL_COLORS.good), borderRadius: [0,4,4,0] } })),
+      label: { show: true, position: 'right', fontSize: 13, fontWeight: 700, formatter: '{c}%', color: '#28323e' },
+    }],
+  });
+
+  // ── 용접 검사종류별 누계 (수평 막대) ──
+  // 항목명을 정규화: Tank-RT, Nozzle-RT, Tank-PT 등을 일반 종류로 그룹화
+  const weldByType = {};
+  for (const r of Q.welding) {
+    let key = r.item;
+    if (/Tank-RT.*r-ray/i.test(r.item)) key = 'Tank-RT(γ-ray)';
+    else if (/Tank-RT.*X-ray/i.test(r.item)) key = 'Tank-RT(X-ray)';
+    else if (/^Tank-/.test(r.item)) key = r.item;
+    else if (/^Nozzle-/.test(r.item)) key = r.item;
+    else if (/^RT/.test(r.item)) key = 'RT (배관)';
+    else if (/^PT/.test(r.item)) key = 'PT (배관)';
+    if (!weldByType[key]) weldByType[key] = { exec: 0, ok: 0, ng: 0 };
+    weldByType[key].exec += (r.cum_exec || 0);
+    weldByType[key].ok   += (r.cum_ok || 0);
+    weldByType[key].ng   += (r.cum_ng || 0);
+  }
+  const wtPairs = Object.entries(weldByType).sort((a, b) => b[1].exec - a[1].exec).slice(0, 10);
+  const wtLabels = wtPairs.map(([k]) => k);
+  const wtOk = wtPairs.map(([, v]) => Math.round(v.ok));
+  const wtNg = wtPairs.map(([, v]) => Math.round(v.ng));
+  const weldType = echarts.init(document.getElementById('ql-weld-type'));
+  weldType.setOption({
+    grid: { left: 130, right: 30, top: 30, bottom: 50 },
+    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+    legend: { bottom: 4, icon: 'roundRect', itemHeight: 10, textStyle: { fontSize: 13 } },
+    xAxis: { type: 'value', axisLabel: { fontSize: 11.5 } },
+    yAxis: { type: 'category', data: wtLabels, axisLabel: { fontSize: 12.5, fontWeight: 600 } },
+    series: [
+      { name: '합격', type: 'bar', stack: 's', data: wtOk, itemStyle: { color: QL_COLORS.good } },
+      { name: '불합격', type: 'bar', stack: 's', data: wtNg, itemStyle: { color: QL_COLORS.bad },
+        label: { show: true, position: 'right', fontSize: 11.5, fontWeight: 700, color: QL_COLORS.bad,
+          formatter: p => p.value > 0 ? p.value : '' } },
+    ],
+  });
+
+  // ── 텍스트 영역: 4개 그룹 × (실적/계획) 카드 ──
+  const textHost = document.getElementById('ql-text');
+  const items = Q.text_items;
+  // 카테고리 carry-forward
+  const grouped = {};   // cat → [{actual, plan}, ...]
+  let lastCat = null;
+  for (const it of items) {
+    const cat = (it.category || lastCat || '기타').replace(/\\n/g, ' ').trim();
+    if (it.category) lastCat = it.category;
+    if (!grouped[cat]) grouped[cat] = [];
+    grouped[cat].push({
+      actual: it.actual_apr || '',
+      plan:   it.plan_may || '',
+    });
+  }
+  // 그룹별 색·아이콘 (없으면 기본)
+  const groupStyles = {
+    '토목 / 건축': { color: '#4a7bd1', icon: '🏗️' },
+    '기계 (Tank)': { color: '#56a06a', icon: '🛢️' },
+    '기계 (Insulation)': { color: '#a48cc4', icon: '🧊' },
+    '기계 (배관)':   { color: '#d49462', icon: '🔧' },
+  };
+  // 행 렌더: 번호로 시작('1.','2.')하면 강조, '→'/공백으로 시작하면 들여쓰기 — 폰트 크기 ↑
+  const renderTextItem = (txt) => {
+    if (!txt) return '<span style="color:#cdd5df;font-size:14px;">—</span>';
+    const t = txt.trim();
+    const isMain = /^[0-9]+[.)]/.test(t);
+    const isSub = /^[→•·]/.test(t) || /^[ \t]{2,}/.test(txt);
+    if (isMain) {
+      return `<div style="font-weight:700;color:#28323e;font-size:14.5px;padding:5px 0;line-height:1.5;">${escHtml(t)}</div>`;
+    }
+    if (isSub) {
+      const stripped = t.replace(/^[→•·\s]+/, '');
+      return `<div style="font-size:13.5px;color:#5a6677;padding:3px 0 3px 16px;border-left:2px solid #e6eaf1;margin-left:4px;line-height:1.5;">↳ ${escHtml(stripped)}</div>`;
+    }
+    return `<div style="font-size:14px;color:#28323e;padding:4px 0;line-height:1.5;">${escHtml(t)}</div>`;
+  };
+
+  const groupOrder = ['토목 / 건축', '기계 (Tank)', '기계 (Insulation)', '기계 (배관)'];
+  const cats = [...new Set([...groupOrder, ...Object.keys(grouped)])].filter(c => grouped[c]);
+
+  // 2 × 2 그리드로 재배치 (한 그룹당 충분한 폭 확보)
+  textHost.style.display = 'grid';
+  textHost.style.gridTemplateColumns = 'repeat(2, 1fr)';
+  textHost.style.gap = '16px';
+
+  // 행 렌더: 번호로 시작하면 강조, '→'/공백으로 시작하면 들여쓰기 — 폰트 키움
+  // (이전 renderTextItem 재정의는 함수 내부에서 사용했지만, 폰트 변경을 위해 여기서 override)
+
+  textHost.innerHTML = cats.map(cat => {
+    const style = groupStyles[cat] || { color: '#7a8694', icon: '📋' };
+    const rows = grouped[cat] || [];
+    return `
+      <div style="background:#fafbfd;border:1px solid #e6eaf1;border-top:5px solid ${style.color};border-radius:10px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 1px 3px rgba(20,30,60,0.04);">
+        <div style="padding:14px 18px;background:#fff;border-bottom:1px solid #e6eaf1;font-size:17px;font-weight:800;color:${style.color};display:flex;align-items:center;gap:8px;letter-spacing:-0.01em;">
+          <span style="font-size:20px;">${style.icon}</span>
+          <span>${escHtml(cat)}</span>
+          <span style="margin-left:auto;font-size:13px;color:#9aa6b4;font-weight:600;">${rows.length}건</span>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;flex:1;">
+          <div style="padding:14px 16px;border-right:1px dashed #e6eaf1;">
+            <div style="font-size:13px;color:#5a6677;font-weight:800;margin-bottom:10px;letter-spacing:0.04em;padding-bottom:6px;border-bottom:1px solid #eef0f4;">📅 ′26.04 실적</div>
+            ${rows.map(r => renderTextItem(r.actual)).join('') || '<span style="color:#cdd5df;font-size:14px;">—</span>'}
+          </div>
+          <div style="padding:14px 16px;background:rgba(74,123,209,0.04);">
+            <div style="font-size:13px;color:${style.color};font-weight:800;margin-bottom:10px;letter-spacing:0.04em;padding-bottom:6px;border-bottom:1px solid #eef0f4;">🚀 ′26.05 계획</div>
+            ${rows.map(r => renderTextItem(r.plan)).join('') || '<span style="color:#cdd5df;font-size:14px;">—</span>'}
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  // 반응형
+  const charts = [civilBars, weldRegion, weldType];
+  window.addEventListener('resize', debounce(() => charts.forEach(c => c && c.resize()), 100));
+};
+
+//------------------------------------------------------------
 // Photos
 //------------------------------------------------------------
 let currentPhotoFilter = { year: 'all', month: 'all', category: 'all', type: 'all' };
@@ -4195,7 +5313,8 @@ function _quarterOf(key) {
 }
 
 PANELS.photos = () => {
-  const months = Object.keys(window.PHOTOS_DATA).sort();
+  // 최신 → 과거 순으로 정렬
+  const months = Object.keys(window.PHOTOS_DATA).sort().reverse();
   // Group months by year
   const yearGroups = {};
   months.forEach(m => {
@@ -4203,13 +5322,14 @@ PANELS.photos = () => {
     if (!yearGroups[y]) yearGroups[y] = [];
     yearGroups[y].push(m);
   });
-  const years = Object.keys(yearGroups).sort();
+  // 연도도 최신부터
+  const years = Object.keys(yearGroups).sort().reverse();
   // 디폴트 연도가 데이터에 없으면 전체로
   if (currentPhotoFilter.year !== 'all' && !yearGroups[currentPhotoFilter.year]) {
     currentPhotoFilter.year = 'all';
   }
 
-  // 선택된 연도의 월 목록
+  // 선택된 연도의 월 목록 (이미 reverse 된 상태)
   const visibleMonths = currentPhotoFilter.year === 'all'
     ? months
     : (yearGroups[currentPhotoFilter.year] || []);
@@ -4287,7 +5407,8 @@ function renderPhotoGallery() {
   let html = '';
   let allItems = [];
   let count = 0;
-  Object.keys(data).sort().forEach(month => {
+  // 최신 → 과거 순으로 표시 (사용자 요청)
+  Object.keys(data).sort().reverse().forEach(month => {
     // 연도 필터
     if (currentPhotoFilter.year && currentPhotoFilter.year !== 'all') {
       if (_monthYear(month).year !== currentPhotoFilter.year) return;
@@ -4388,7 +5509,9 @@ document.addEventListener('keydown', e => {
 //------------------------------------------------------------
 // Photos persistence (localStorage)
 //------------------------------------------------------------
-const PHOTOS_STORAGE_KEY = 'gwangyang_lng_photos_v2'; // v2: YYYY-MM 키 형식 통일
+const PHOTOS_STORAGE_KEY = 'gwangyang_lng_photos_v3'; // v3: 25.2~26.5월 공사사진대장 추가 (구 v2 캐시 무효화)
+// 구 캐시 자동 정리 (옛 v1/v2 키는 더 이상 사용 안 함)
+try { localStorage.removeItem('gwangyang_lng_photos_v2'); localStorage.removeItem('gwangyang_lng_photos'); } catch(_) {}
 
 function persistPhotosData() {
   try {
@@ -4751,10 +5874,9 @@ PANELS.milestones = () => {
       </div>
     </div>
 
-    <!-- Quarter timeline chart -->
-    <div class="card col-12">
-      <h3>📊 분기별 마일스톤 분포 (완료 / 착수)</h3>
-      <div class="chart-container chart-tall"><canvas id="ms-quarter"></canvas></div>
+    <!-- 주요 Event (엑셀 2-2 시트 기반) — 신규 시각화 -->
+    <div class="card col-12" style="padding:0;background:transparent;border:none;box-shadow:none;">
+      <div id="ms-event-root"></div>
     </div>
 
     <!-- Filter toolbar + table -->
@@ -4789,35 +5911,211 @@ PANELS.milestones = () => {
   </div>
 `;
 };
+// ============================================================
+// 주요 Event 시각화 (엑셀 2-2 시트 기반)
+//   1) KPI 카드 (총/완료/예정/임박)
+//   2) 카테고리별 분포 도넛 + 다가오는 마일스톤 카드
+//   3) Plan(Rev.6) vs Actual 갭 (delivery deviation)
+// ============================================================
+function renderMajorEvents() {
+  const host = document.getElementById('ms-event-root');
+  if (!host) return;
+  const data = window.EVENTS_DATA;
+  if (!data || !data.events || !data.events.length) {
+    host.innerHTML = '<div style="padding:20px;text-align:center;color:#7a8694;">주요 Event 데이터가 없습니다 (2-2 시트 추출 필요).</div>';
+    return;
+  }
+  const events = data.events;
+  const today = new Date();
+  const todayStr = today.toISOString().slice(0, 10);
+
+  // 분류: 완료(actual 존재) / 예정(actual 없음)
+  const done = events.filter(e => e.actual);
+  const pending = events.filter(e => !e.actual);
+  // 임박: rev6 가 향후 60일 이내
+  const inDays = (iso, n) => {
+    if (!iso) return false;
+    const t = new Date(iso).getTime();
+    const diff = (t - today.getTime()) / 86400000;
+    return diff >= 0 && diff <= n;
+  };
+  const soon = pending.filter(e => inDays(e.rev6, 60))
+    .sort((a, b) => (a.rev6 || '').localeCompare(b.rev6 || ''));
+  // 지연 (rev6 < today 이고 actual 없음)
+  const overdue = pending.filter(e => e.rev6 && e.rev6 < todayStr)
+    .sort((a, b) => (a.rev6 || '').localeCompare(b.rev6 || ''));
+
+  // 카테고리별 카운트
+  const catCount = {};
+  events.forEach(e => {
+    const c = e.category || '기타';
+    catCount[c] = (catCount[c] || 0) + 1;
+  });
+  const catEntries = Object.entries(catCount).sort((a, b) => b[1] - a[1]);
+  const catColors = ['#2c569f', '#4a7bd1', '#6ba8c0', '#3f8a3f', '#d49462', '#a48cc4', '#c25656', '#8a6e4b'];
+
+  // Rev.6 vs Actual 편차 (완료된 것만 — 일 단위 차이)
+  const dayDiff = (a, b) => {
+    if (!a || !b) return null;
+    return Math.round((new Date(b) - new Date(a)) / 86400000);
+  };
+  const deviations = done
+    .filter(e => e.rev6 && e.actual)
+    .map(e => ({ ...e, devDays: dayDiff(e.rev6, e.actual) }))
+    .filter(e => e.devDays != null);
+  const onTimeCount = deviations.filter(e => e.devDays <= 0).length;
+  const lateCount = deviations.filter(e => e.devDays > 0).length;
+  const earlyCount = deviations.filter(e => e.devDays < 0).length;
+  // Top 5 큰 지연
+  const worstLate = deviations.filter(e => e.devDays > 0).sort((a, b) => b.devDays - a.devDays).slice(0, 5);
+
+  // ───── HTML 렌더 ─────
+  host.innerHTML = `
+    <style>
+      #ms-event-root .ev-kpi-grid { display:grid; grid-template-columns: repeat(4, 1fr); gap:14px; margin-bottom:14px; }
+      #ms-event-root .ev-main-grid { display:grid; grid-template-columns: 1fr 1fr; gap:14px; margin-bottom:14px; }
+      @media (max-width:1280px) {
+        #ms-event-root .ev-kpi-grid { grid-template-columns: repeat(2, 1fr); }
+        #ms-event-root .ev-main-grid { grid-template-columns: 1fr; }
+      }
+      #ms-event-root .ev-card { background:#fff; border:1px solid #e6eaf1; border-radius:10px; padding:18px 22px; box-shadow:0 1px 2px rgba(20,30,60,0.04); }
+      #ms-event-root .ev-card-title { font-size:17px; font-weight:700; color:#28323e; margin-bottom:14px; display:flex; align-items:center; gap:8px; letter-spacing:0.01em; }
+      #ms-event-root .ev-card-title .ev-sub { font-size:13.5px; font-weight:500; color:#7a8694; margin-left:auto; }
+      #ms-event-root .ev-kpi-lbl { font-size:14px; color:#5a6677; font-weight:600; }
+      #ms-event-root .ev-kpi-val { font-size:34px; font-weight:800; line-height:1.05; font-variant-numeric:tabular-nums; margin-top:4px; letter-spacing:-0.01em; }
+      #ms-event-root .ev-kpi-sub { font-size:13px; color:#7a8694; margin-top:5px; }
+      #ms-event-root .ev-soon-row { display:grid; grid-template-columns:84px 90px 1fr auto; gap:12px; padding:10px 4px; border-bottom:1px solid #eef0f4; align-items:center; font-size:14px; }
+      #ms-event-root .ev-soon-row:last-child { border-bottom:none; }
+      #ms-event-root .ev-soon-date { font-weight:700; color:#2c569f; font-variant-numeric:tabular-nums; font-size:14.5px; }
+      #ms-event-root .ev-soon-cat { display:inline-block; padding:3px 11px; border-radius:12px; font-size:12.5px; font-weight:600; text-align:center; }
+      #ms-event-root .ev-soon-title { color:#28323e; font-size:14px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+      #ms-event-root .ev-soon-d { font-weight:800; font-size:14px; font-variant-numeric:tabular-nums; min-width:60px; text-align:right; }
+    </style>
+
+    <!-- KPI 4개 (동일 폭) -->
+    <div class="ev-kpi-grid">
+      <div class="ev-card">
+        <div class="ev-kpi-lbl">📋 전체 주요 Event</div>
+        <div class="ev-kpi-val" style="color:#2c569f;">${events.length}</div>
+        <div class="ev-kpi-sub">엑셀 2-2 시트 · ${events[0].year || '–'} ~ ${events[events.length-1].year || '–'}</div>
+      </div>
+      <div class="ev-card">
+        <div class="ev-kpi-lbl">✅ 완료</div>
+        <div class="ev-kpi-val" style="color:#3f8a3f;">${done.length}</div>
+        <div class="ev-kpi-sub">${(done.length/events.length*100).toFixed(1)}% · 정시 ${onTimeCount} · 지연 ${lateCount}${earlyCount ? ' · 조기 ' + earlyCount : ''}</div>
+      </div>
+      <div class="ev-card">
+        <div class="ev-kpi-lbl">⏰ 향후 60일 임박</div>
+        <div class="ev-kpi-val" style="color:#d49462;">${soon.length}</div>
+        <div class="ev-kpi-sub">Rev.6 기준 60일 이내 도래</div>
+      </div>
+      <div class="ev-card">
+        <div class="ev-kpi-lbl">${overdue.length ? '🚨 기일 초과 미완료' : '✓ 기일 초과 없음'}</div>
+        <div class="ev-kpi-val" style="color:${overdue.length ? '#c25656' : '#3f8a3f'};">${overdue.length}</div>
+        <div class="ev-kpi-sub">Rev.6 경과 + 실적 미입력</div>
+      </div>
+    </div>
+
+    <!-- 메인 2×2 (동일 폭) -->
+    <div class="ev-main-grid">
+      <div class="ev-card">
+        <div class="ev-card-title">📊 공종별 분포 <span class="ev-sub">${events.length}건 전체</span></div>
+        <div id="ev-cat-donut" style="height:300px;"></div>
+      </div>
+      <div class="ev-card">
+        <div class="ev-card-title">⏰ 다가오는 마일스톤 <span class="ev-sub">향후 60일 · Rev.6 기준</span></div>
+        ${soon.length ? soon.slice(0, 6).map(e => {
+          const dDays = Math.round((new Date(e.rev6).getTime() - today.getTime()) / 86400000);
+          const dColor = dDays <= 7 ? '#c25656' : (dDays <= 30 ? '#d49462' : '#2c569f');
+          const catIdx = catEntries.findIndex(([k]) => k === e.category);
+          const catColor = catColors[(catIdx >= 0 ? catIdx : 7) % catColors.length];
+          return `
+            <div class="ev-soon-row">
+              <span class="ev-soon-date">${e.rev6 ? e.rev6.slice(5) : '–'}</span>
+              <span class="ev-soon-cat" style="background:${catColor}1f;color:${catColor};">${escHtml(e.category || '–')}</span>
+              <span class="ev-soon-title" title="${escAttr(e.title)}">${escHtml(e.title)}</span>
+              <span class="ev-soon-d" style="color:${dColor};">D-${dDays}</span>
+            </div>`;
+        }).join('') : '<div style="padding:20px;text-align:center;color:#3f8a3f;font-size:14px;">✓ 향후 60일 내 임박한 마일스톤 없음</div>'}
+      </div>
+      <div class="ev-card">
+        <div class="ev-card-title">📈 Rev.6 계획 대비 실적 편차 <span class="ev-sub">완료 ${deviations.length}건 분포</span></div>
+        <div id="ev-dev-hist" style="height:300px;"></div>
+      </div>
+      <div class="ev-card">
+        <div class="ev-card-title">🚨 최대 지연 Top 5 <span class="ev-sub">Rev.6 → 실적</span></div>
+        ${worstLate.length ? worstLate.map(e => `
+          <div class="ev-soon-row" style="grid-template-columns:100px 80px 1fr auto;">
+            <span style="font-size:13.5px;color:#7a8694;font-variant-numeric:tabular-nums;font-weight:600;">${e.rev6 ? e.rev6.slice(0,10) : '–'}</span>
+            <span class="ev-soon-cat" style="background:#fbe6e6;color:#c25656;">${escHtml(e.category || '–')}</span>
+            <span class="ev-soon-title" title="${escAttr(e.title)}">${escHtml(e.title)}</span>
+            <span class="ev-soon-d" style="color:#c25656;">+${e.devDays}일</span>
+          </div>`).join('') : '<div style="padding:20px;text-align:center;color:#3f8a3f;font-size:14px;">✓ Rev.6 대비 지연 완료된 마일스톤 없음</div>'}
+      </div>
+    </div>
+  `;
+
+  // ── ECharts: 카테고리 도넛 ──
+  if (typeof echarts !== 'undefined') {
+    const donutHost = document.getElementById('ev-cat-donut');
+    if (donutHost) {
+      const donutChart = echarts.init(donutHost);
+      donutChart.setOption({
+        tooltip: { trigger: 'item', formatter: p => `<b>${p.name}</b><br>${p.value}건 (${p.percent.toFixed(1)}%)` },
+        legend: { right: 6, top: 'middle', orient: 'vertical', icon: 'circle', itemHeight: 10, textStyle: { fontSize: 12 } },
+        series: [{
+          type: 'pie', radius: ['46%', '74%'], center: ['38%', '50%'], avoidLabelOverlap: true,
+          data: catEntries.map(([name, value], i) => ({
+            name, value, itemStyle: { color: catColors[i % catColors.length] }
+          })),
+          label: { show: true, formatter: '{b}\n{c}건', fontSize: 11, fontWeight: 600 },
+          emphasis: { label: { show: true, fontSize: 13, fontWeight: 'bold' } },
+        }],
+      });
+      window.__msCharts = (window.__msCharts || []); window.__msCharts.push(donutChart);
+    }
+
+    // ── ECharts: 편차 히스토그램 ──
+    const histHost = document.getElementById('ev-dev-hist');
+    if (histHost && deviations.length) {
+      // 버킷: ≤-30, -30~-15, -15~-7, -7~0, 0~7, 7~15, 15~30, 30~60, >60
+      const buckets = [
+        { label: '≤ -30일 (조기)', min: -Infinity, max: -30, color: '#56a06a' },
+        { label: '-30~-15일',     min: -30,        max: -15, color: '#7eb78c' },
+        { label: '-15~-7일',      min: -15,        max:  -7, color: '#a5cdae' },
+        { label: '-7~0일 (정시)', min: -7,         max:   0, color: '#cdd5df' },
+        { label: '0~7일',         min: 0,          max:   7, color: '#f0e0c8' },
+        { label: '7~15일',        min: 7,          max:  15, color: '#e8c8a4' },
+        { label: '15~30일',       min: 15,         max:  30, color: '#d49462' },
+        { label: '30~60일',       min: 30,         max:  60, color: '#c97a4a' },
+        { label: '> 60일 (심각)', min: 60,         max: Infinity, color: '#c25656' },
+      ];
+      const counts = buckets.map(b => deviations.filter(e => e.devDays > b.min && e.devDays <= b.max).length);
+      const histChart = echarts.init(histHost);
+      histChart.setOption({
+        grid: { left: 56, right: 24, top: 30, bottom: 70 },
+        tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' },
+          formatter: ps => `${ps[0].axisValue}<br>${ps[0].value}건` },
+        xAxis: { type: 'category', data: buckets.map(b => b.label),
+          axisLabel: { fontSize: 10.5, rotate: 30, interval: 0 } },
+        yAxis: { type: 'value', name: '건수', minInterval: 1, axisLabel: { fontSize: 11.5 } },
+        series: [{
+          type: 'bar', data: counts.map((v, i) => ({ value: v, itemStyle: { color: buckets[i].color, borderRadius: [4,4,0,0] } })),
+          label: { show: true, position: 'top', fontSize: 12, fontWeight: 700, color: '#28323e' },
+          barWidth: '60%',
+        }],
+      });
+      window.__msCharts.push(histChart);
+    }
+  }
+}
+
 PANEL_INIT.milestones = () => {
   const d = D();
   const all = d.milestones || [];
 
-  // Render quarter chart
-  const quarters = Array.from(new Set(all.map(m => _msQuarterOf(m.date)))).sort();
-  const doneCounts = quarters.map(q => all.filter(m => _msQuarterOf(m.date) === q && m.status === '완료').length);
-  const startCounts = quarters.map(q => all.filter(m => _msQuarterOf(m.date) === q && m.status === '착수').length);
-  destroyChart('ms-quarter');
-  charts['ms-quarter'] = new Chart(document.getElementById('ms-quarter'), {
-    type: 'bar',
-    data: {
-      labels: quarters,
-      datasets: [
-        { label: '완료', data: doneCounts, backgroundColor: '#3d7a4a', stack: 's', borderRadius: 4 },
-        { label: '착수', data: startCounts, backgroundColor: '#d49462', stack: 's', borderRadius: 4 },
-        { type: 'line', label: '누적', data: quarters.map((_, i) => quarters.slice(0, i+1).reduce((s,q,idx) => s + doneCounts[idx] + startCounts[idx], 0)), borderColor: '#2c569f', borderWidth: 2.5, pointRadius: 4, pointBackgroundColor: '#2c569f', yAxisID: 'y1', tension: 0.3 }
-      ]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { position: 'bottom' }, tooltip: { mode: 'index', intersect: false } },
-      scales: {
-        y: { stacked: true, beginAtZero: true, title: { display: true, text: '신규 마일스톤(건)' } },
-        y1: { position: 'right', beginAtZero: true, grid: { display: false }, title: { display: true, text: '누적(건)' } },
-        x: { stacked: true, grid: { display: false } }
-      }
-    }
-  });
+  // 주요 Event 시각화 (엑셀 2-2 시트 기반)
+  renderMajorEvents();
 
   // Render filtered table
   const renderMsTable = () => {
@@ -5290,7 +6588,45 @@ function renderPlanTable() {
   document.getElementById('ed-plan').innerHTML = h;
 }
 
-function escAttr(s) { return String(s).replace(/"/g, '&quot;'); }
+function escHtml(s) { return String(s == null ? '' : s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])); }
+function escAttr(s) { return escHtml(s).replace(/"/g, '&quot;'); }
+
+// 전역: 드롭다운/select 클릭 시 페이지(또는 .panels) 스크롤이 위로 튀는 버그 방어.
+// 브라우저 기본 focus scroll-into-view 동작을 무력화하고 직전 스크롤 위치를 복원.
+function lockScrollOnSelect(el) {
+  if (!el || el.__scrollLocked) return;
+  el.__scrollLocked = true;
+  const getScrollers = () => {
+    const list = [];
+    const panels = document.querySelector('.panels');
+    if (panels) list.push(panels);
+    list.push(document.scrollingElement || document.documentElement || document.body);
+    return list;
+  };
+  let savedTops = null;
+  const save = () => { savedTops = getScrollers().map(s => s.scrollTop); };
+  const restore = () => {
+    if (!savedTops) return;
+    getScrollers().forEach((s, i) => { s.scrollTop = savedTops[i]; });
+  };
+  el.addEventListener('mousedown', save, true);
+  el.addEventListener('pointerdown', save, true);
+  el.addEventListener('touchstart', save, true);
+  el.addEventListener('focus', () => {
+    requestAnimationFrame(restore);
+    requestAnimationFrame(() => requestAnimationFrame(restore));
+    setTimeout(restore, 32);
+    setTimeout(restore, 100);
+  }, true);
+  el.addEventListener('change', () => { savedTops = null; });
+  el.addEventListener('blur', () => { savedTops = null; });
+}
+
+// 패널이 새로 렌더링될 때 모든 .sched-dropdown 에 자동 적용
+function applyScrollLockToPanel(panelEl) {
+  if (!panelEl) return;
+  panelEl.querySelectorAll('select.sched-dropdown, select').forEach(lockScrollOnSelect);
+}
 
 function addMilestoneRow() {
   D().milestones.push({ date: '2026-04-01', sub: '육상-기계', 공종: '기계', title: '신규 마일스톤', status: '착수' });
@@ -5337,7 +6673,7 @@ function applyEdits() {
       const panel = document.querySelector(`.panel[data-tab="${k}"]`);
       if (panel) {
         panel.innerHTML = PANELS[k]();
-        setTimeout(() => PANEL_INIT[k](), 30);
+        setTimeout(() => { PANEL_INIT[k](); applyScrollLockToPanel(panel); }, 30);
       }
     }
   }
@@ -5371,7 +6707,7 @@ function importData(ev) {
         const panel = document.querySelector(`.panel[data-tab="${k}"]`);
         if (!panel) continue;
         panel.innerHTML = PANELS[k]();
-        setTimeout(() => PANEL_INIT[k] && PANEL_INIT[k](), 30);
+        setTimeout(() => { if (PANEL_INIT[k]) PANEL_INIT[k](); applyScrollLockToPanel(panel); }, 30);
       }
       showToast('📥 JSON 데이터가 로드되어 적용되었습니다');
     } catch (err) {
@@ -5395,7 +6731,7 @@ function resetData() {
     const panel = document.querySelector(`.panel[data-tab="${k}"]`);
     if (!panel || k === 'editor') continue;
     panel.innerHTML = PANELS[k]();
-    setTimeout(() => PANEL_INIT[k] && PANEL_INIT[k](), 30);
+    setTimeout(() => { if (PANEL_INIT[k]) PANEL_INIT[k](); applyScrollLockToPanel(panel); }, 30);
   }
   showToast('↻ 초기값으로 복원되었습니다');
 }
@@ -5611,7 +6947,10 @@ openTab('overview');
 
   //--- 메인 빌더: 좌측 HTML 트리 + 우측 SVG 간트 ---
   function buildGantt(host, opts) {
-    const { tasks, compareKeys, collapsed, showLinks, onToggle, forceRange, monthHighlight } = opts;
+    const { tasks, compareKeys, collapsed, showLinks, onToggle, forceRange, monthHighlight, labelW, pxPerDay } = opts;
+    // 옵션 오버라이드 가능 (월간공정에서 라벨 좁히고 시간축 늘림)
+    const LABEL_W_LOCAL = labelW != null ? labelW : LABEL_W;
+    const PX_PER_DAY_LOCAL = pxPerDay != null ? pxPerDay : PX_PER_DAY;
     const { rows } = visibleTasks(tasks, collapsed);
     const N = rows.length || 1;
     const r0 = forceRange || rangeOf(tasks, compareKeys);
@@ -5620,12 +6959,12 @@ openTab('overview');
     const lo2 = new Date(lo.getFullYear(), lo.getMonth(), 1);
     const hi2 = new Date(hi.getFullYear(), hi.getMonth() + 1, 0);
     const totalDays = Math.max(30, Math.round((hi2 - lo2) / dayMs));
-    const timelineW = Math.max(900, Math.round(totalDays * PX_PER_DAY));
+    const timelineW = Math.max(900, Math.round(totalDays * PX_PER_DAY_LOCAL));
     const today = new Date();
-    const todayX = today >= lo2 && today <= hi2 ? Math.round((today - lo2) / dayMs * PX_PER_DAY) : null;
+    const todayX = today >= lo2 && today <= hi2 ? Math.round((today - lo2) / dayMs * PX_PER_DAY_LOCAL) : null;
 
     host.innerHTML = `
-      <div class="ms-grid" style="display:grid;grid-template-columns:${LABEL_W}px 1fr;grid-template-rows:${HEADER_H}px 1fr;height:100%;width:100%;background:#fff;">
+      <div class="ms-grid" style="display:grid;grid-template-columns:${LABEL_W_LOCAL}px 1fr;grid-template-rows:${HEADER_H}px 1fr;height:100%;width:100%;background:#fff;">
         <div class="ms-corner" style="border-right:1px solid #cdd5df;border-bottom:1px solid #cdd5df;display:flex;align-items:flex-end;padding:0 12px 8px;font-weight:700;color:#2c569f;font-size:13.5px;background:#f5f8fc;">공  종</div>
         <div class="ms-timeaxis" style="overflow:hidden;border-bottom:1px solid #cdd5df;position:relative;background:#fafbfc;">
           <svg class="ms-time-svg" width="${timelineW}" height="${HEADER_H}" style="display:block;"></svg>
@@ -5647,7 +6986,7 @@ openTab('overview');
     const tparts = [];
     let lastYear = null;
     for (const t of ticks) {
-      const x = Math.round((t - lo2) / dayMs * PX_PER_DAY);
+      const x = Math.round((t - lo2) / dayMs * PX_PER_DAY_LOCAL);
       const m = t.getMonth() + 1;
       const isJan = m === 1;
       tparts.push(`<line x1="${x}" y1="${HEADER_H - 8}" x2="${x}" y2="${HEADER_H}" stroke="${isJan ? '#7a8694' : '#cdd5df'}" stroke-width="${isJan ? 1 : 0.5}"/>`);
@@ -5674,8 +7013,8 @@ openTab('overview');
       for (const m of labels3) {
         const ms = new Date(hy, hm - 1 + m.offs, 1);
         const me = new Date(hy, hm + m.offs, 0);
-        const xs = Math.round((ms - lo2) / dayMs * PX_PER_DAY);
-        const xe = Math.round((me - lo2) / dayMs * PX_PER_DAY) + Math.round(PX_PER_DAY);
+        const xs = Math.round((ms - lo2) / dayMs * PX_PER_DAY_LOCAL);
+        const xe = Math.round((me - lo2) / dayMs * PX_PER_DAY_LOCAL) + Math.round(PX_PER_DAY_LOCAL);
         if (xe < 0 || xs > timelineW) continue;
         headerStrips.push(`<rect x="${xs}" y="0" width="${xe - xs}" height="${HEADER_H - 2}" fill="${m.bg}" opacity="0.55"/>`);
         headerStrips.push(`<text x="${(xs + xe) / 2}" y="13" font-size="11.5" font-weight="700" fill="${m.offs === 0 ? '#a14d4d' : '#5a6677'}" text-anchor="middle" font-family="Segoe UI">${m.label}</text>`);
@@ -5715,20 +7054,20 @@ openTab('overview');
       for (const b of bgs) {
         const ms = new Date(hy, hm - 1 + b.offs, 1);
         const me = new Date(hy, hm + b.offs, 0);
-        const xs = Math.round((ms - lo2) / dayMs * PX_PER_DAY);
-        const xe = Math.round((me - lo2) / dayMs * PX_PER_DAY) + Math.round(PX_PER_DAY);
+        const xs = Math.round((ms - lo2) / dayMs * PX_PER_DAY_LOCAL);
+        const xe = Math.round((me - lo2) / dayMs * PX_PER_DAY_LOCAL) + Math.round(PX_PER_DAY_LOCAL);
         cparts.push(`<rect x="${xs}" y="0" width="${xe - xs}" height="${ROW_H * N}" fill="${b.fill}" opacity="${b.op}"/>`);
       }
       // 월 사이 굵은 세로 구분선
       const sep1 = new Date(hy, hm - 1, 1);
       const sep2 = new Date(hy, hm, 1);
-      cparts.push(`<line x1="${Math.round((sep1 - lo2)/dayMs*PX_PER_DAY)}" y1="0" x2="${Math.round((sep1 - lo2)/dayMs*PX_PER_DAY)}" y2="${ROW_H*N}" stroke="#a14d4d" stroke-width="1.5" stroke-dasharray="3,3" opacity="0.55"/>`);
-      cparts.push(`<line x1="${Math.round((sep2 - lo2)/dayMs*PX_PER_DAY)}" y1="0" x2="${Math.round((sep2 - lo2)/dayMs*PX_PER_DAY)}" y2="${ROW_H*N}" stroke="#a14d4d" stroke-width="1.5" stroke-dasharray="3,3" opacity="0.55"/>`);
+      cparts.push(`<line x1="${Math.round((sep1 - lo2)/dayMs*PX_PER_DAY_LOCAL)}" y1="0" x2="${Math.round((sep1 - lo2)/dayMs*PX_PER_DAY_LOCAL)}" y2="${ROW_H*N}" stroke="#a14d4d" stroke-width="1.5" stroke-dasharray="3,3" opacity="0.55"/>`);
+      cparts.push(`<line x1="${Math.round((sep2 - lo2)/dayMs*PX_PER_DAY_LOCAL)}" y1="0" x2="${Math.round((sep2 - lo2)/dayMs*PX_PER_DAY_LOCAL)}" y2="${ROW_H*N}" stroke="#a14d4d" stroke-width="1.5" stroke-dasharray="3,3" opacity="0.55"/>`);
     }
     // 연도 구분선
     for (const t of ticks) {
       if (t.getMonth() === 0) {
-        const x = Math.round((t - lo2) / dayMs * PX_PER_DAY);
+        const x = Math.round((t - lo2) / dayMs * PX_PER_DAY_LOCAL);
         cparts.push(`<line x1="${x}" y1="0" x2="${x}" y2="${ROW_H*N}" stroke="#e8edf3" stroke-width="0.8"/>`);
       }
     }
@@ -5754,23 +7093,26 @@ openTab('overview');
           const sub = t[ck];
           if (!sub || !sub.start || !sub.end) return;
           const ds = new Date(sub.start), de = new Date(sub.end);
-          const x = Math.round((ds - lo2) / dayMs * PX_PER_DAY);
-          const w = Math.max(2, Math.round((de - ds) / dayMs * PX_PER_DAY) || 2);
+          const x = Math.round((ds - lo2) / dayMs * PX_PER_DAY_LOCAL);
+          const w = Math.max(2, Math.round((de - ds) / dayMs * PX_PER_DAY_LOCAL) || 2);
           const by = y0 + 3 + ki * (barH + 1);
           const c = COMPARE_COLORS[ck] || { fill: '#2c569f', stroke: '#1d3d76' };
-          const tip = `${t.name}\n${c.label}: ${sub.start} ~ ${sub.end} (${sub.duration_days||'?'}일)`;
+          // duration_days 없으면 start~end 차이 계산 (clipping 된 경우에도 정확)
+          const durDays = sub.duration_days != null ? sub.duration_days : Math.max(1, Math.round((de - ds) / dayMs) + 1);
+          const tip = `${t.name}\n${c.label}: ${sub.start} ~ ${sub.end} (${durDays}일)`;
           cparts.push(`<rect class="ms-bar" data-row="${row.idx}" data-ck="${ck}" x="${x}" y="${by}" width="${w}" height="${barH}" fill="${c.fill}" stroke="${c.stroke}" stroke-width="0.5" rx="2" data-tip="${escAttr(tip)}"/>`);
           barInfo.push({ rowIdx: row.idx, vi, ck, x, w, cy: by + barH/2 });
         });
       } else {
         if (!t.start || !t.end) return;
         const ds = new Date(t.start), de = new Date(t.end);
-        const x = Math.round((ds - lo2) / dayMs * PX_PER_DAY);
-        const w = Math.max(2, Math.round((de - ds) / dayMs * PX_PER_DAY) || 2);
+        const x = Math.round((ds - lo2) / dayMs * PX_PER_DAY_LOCAL);
+        const w = Math.max(2, Math.round((de - ds) / dayMs * PX_PER_DAY_LOCAL) || 2);
         const by = y0 + 5;
         const bh = ROW_H - 10;
         const fill = LEVEL_FILLS[Math.min(t.level || 0, LEVEL_FILLS.length - 1)];
-        const tip = `${t.name}\n${t.start} ~ ${t.end} (${t.duration_days||'?'}일)`;
+        const durDays = t.duration_days != null ? t.duration_days : Math.max(1, Math.round((de - ds) / dayMs) + 1);
+        const tip = `${t.name}\n${t.start} ~ ${t.end} (${durDays}일)`;
         cparts.push(`<rect class="ms-bar" data-row="${row.idx}" x="${x}" y="${by}" width="${w}" height="${bh}" fill="${fill}" stroke="#1d3d76" stroke-width="0.5" rx="3" data-tip="${escAttr(tip)}"/>`);
         barInfo.push({ rowIdx: row.idx, vi, x, w, cy: by + bh/2 });
       }
@@ -5834,7 +7176,15 @@ openTab('overview');
     if (!document.getElementById('ms-style')) {
       const s = document.createElement('style');
       s.id = 'ms-style';
-      s.textContent = '.ms-labels::-webkit-scrollbar{display:none;width:0;}.ms-cat-tabs button{padding:5px 12px;border:1px solid #cdd5df;border-radius:20px;background:#fff;cursor:pointer;font-size:12.5px;color:#28323e;transition:all 0.15s;}.ms-cat-tabs button:hover{background:#f0f4fa;border-color:#4a7bd1;}.ms-cat-tabs button.active{background:#2c569f;color:#fff;border-color:#2c569f;font-weight:600;}';
+      s.textContent = `
+        .ms-labels::-webkit-scrollbar{display:none;width:0;}
+        .ms-cat-tabs button{padding:7px 14px;border:1px solid #cdd5df;border-radius:20px;background:#fff;cursor:pointer;font-size:13.5px;color:#28323e;transition:all 0.15s;}
+        .ms-cat-tabs button:hover{background:#f0f4fa;border-color:#4a7bd1;}
+        .ms-cat-tabs button.active{background:#2c569f;color:#fff;border-color:#2c569f;font-weight:600;}
+        .sched-dropdown{padding:10px 44px 10px 14px;border:1.5px solid #b5c0cf;border-radius:7px;background:#fff;font-size:14.5px;font-weight:500;color:#28323e;cursor:pointer;line-height:1.3;font-family:inherit;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232c569f' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");background-repeat:no-repeat;background-position:right 12px center;background-size:18px;transition:border-color .15s, box-shadow .15s, background-color .15s;}
+        .sched-dropdown:hover{border-color:#4a7bd1;background-color:#fafcff;}
+        .sched-dropdown:focus{outline:none;border-color:#2c569f;box-shadow:0 0 0 3px rgba(74,123,209,0.18);}
+      `;
       document.head.appendChild(s);
     }
 
@@ -5870,16 +7220,23 @@ openTab('overview');
       });
     });
 
-    // "오늘" 버튼 핸들러용 메서드
+    // "오늘" 버튼 핸들러용 메서드 (chartBox 와 timeAxis 동시 동기화)
     chartBox._scrollToToday = function() {
       if (todayX != null && chartBox.clientWidth > 0) {
-        chartBox.scrollLeft = Math.max(0, todayX - chartBox.clientWidth / 2);
+        const target = Math.max(0, todayX - chartBox.clientWidth / 2);
+        chartBox.scrollLeft = target;
+        timeAxis.scrollLeft = target;
       }
     };
-    // 초기 가로 스크롤: 오늘 위치를 화면 중앙쯤으로
+    // 초기 가로 스크롤: 오늘 위치를 화면 중앙쯤으로 + timeaxis 동기화
     setTimeout(() => {
       if (todayX !== null && chartBox.clientWidth > 0) {
-        chartBox.scrollLeft = Math.max(0, todayX - chartBox.clientWidth / 3);
+        const target = Math.max(0, todayX - chartBox.clientWidth / 3);
+        chartBox.scrollLeft = target;
+        timeAxis.scrollLeft = target;
+      } else {
+        // 오늘 위치가 범위 밖이어도 둘의 scrollLeft 는 일치시킴
+        timeAxis.scrollLeft = chartBox.scrollLeft;
       }
     }, 50);
   }
@@ -6044,18 +7401,18 @@ openTab('overview');
     return `
       <div class="ms-wrap" style="padding:14px 18px 18px;height:100%;display:flex;flex-direction:column;background:#fafbfc;overflow:hidden;">
         <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:10px;">
-          <label style="font-weight:600;color:#28323e;font-size:14px;">📅 리비전:</label>
-          <select id="ms-rev-select" style="padding:8px 12px;border:1px solid #cdd5df;border-radius:5px;background:#fff;font-size:14px;min-width:300px;cursor:pointer;">${opts.join('')}</select>
-          <button id="ms-today-btn" style="padding:7px 14px;border:1px solid #c97070;border-radius:5px;background:#fef2f2;color:#c97070;font-size:13px;font-weight:600;cursor:pointer;">📍 오늘로</button>
+          <label style="font-weight:600;color:#28323e;font-size:15px;">📅 리비전:</label>
+          <select id="ms-rev-select" class="sched-dropdown" style="min-width:360px;">${opts.join('')}</select>
+          <button id="ms-today-btn" type="button" style="padding:9px 16px;border:1px solid #c97070;border-radius:6px;background:#fef2f2;color:#c97070;font-size:14px;font-weight:600;cursor:pointer;">📍 오늘로</button>
           <span id="ms-meta" style="color:#7a8694;font-size:13px;"></span>
-          <label style="margin-left:auto;font-size:13px;display:flex;gap:6px;align-items:center;cursor:pointer;color:#28323e;">
+          <label style="margin-left:auto;font-size:14px;display:flex;gap:6px;align-items:center;cursor:pointer;color:#28323e;">
             <input type="checkbox" id="ms-show-links" checked> 선후 의존 화살표
           </label>
         </div>
         <div class="ms-cat-tabs" id="ms-cat-tabs" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">${catBtns.join('')}</div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;align-items:center;">
-          <label style="font-size:12px;color:#28323e;font-weight:600;">트리 깊이:</label>
-          <select id="ms-lvl-select" style="padding:5px 9px;border:1px solid #cdd5df;border-radius:5px;background:#fff;font-size:12.5px;cursor:pointer;min-width:200px;">
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px;align-items:center;">
+          <label style="font-size:14px;color:#28323e;font-weight:600;">트리 깊이:</label>
+          <select id="ms-lvl-select" class="sched-dropdown" style="min-width:230px;">
             <option value="expand">전체 펼침 (모든 레벨)</option>
             <option value="1">L1까지 (최상위만)</option>
             <option value="2">L2까지</option>
@@ -6161,6 +7518,20 @@ openTab('overview');
       render();
     }
 
+    // ── 드롭다운 클릭 시 페이지 스크롤 방지 (focus 자동 scrollIntoView 차단)
+    const preventFocusScroll = (el) => {
+      el.addEventListener('mousedown', (e) => {
+        // 현재 스크롤 위치 보존 후, click 처리 후 복원
+        const panels = document.querySelector('.panels');
+        const sy = panels ? panels.scrollTop : 0;
+        // 일부 브라우저에서 focus({preventScroll:true})로 처리
+        try { el.focus({ preventScroll: true }); } catch (_) {}
+        // 한 프레임 뒤 강제 복원 (이중 안전장치)
+        requestAnimationFrame(() => { if (panels) panels.scrollTop = sy; });
+      });
+    };
+    preventFocusScroll(sel);
+
     sel.addEventListener('change', () => { collapsed.clear(); collapsedMap.clear(); render(); });
     linksCb.addEventListener('change', render);
     catTabs.addEventListener('click', e => {
@@ -6172,12 +7543,15 @@ openTab('overview');
       render();
     });
     const lvlSel = document.getElementById('ms-lvl-select');
-    if (lvlSel) lvlSel.addEventListener('change', () => {
-      const v = lvlSel.value;
-      if (v === 'expand') applyExpandAll();
-      else if (v === 'collapse') applyCollapseAll();
-      else applyLevelCollapse(Number(v));
-    });
+    if (lvlSel) {
+      preventFocusScroll(lvlSel);
+      lvlSel.addEventListener('change', () => {
+        const v = lvlSel.value;
+        if (v === 'expand') applyExpandAll();
+        else if (v === 'collapse') applyCollapseAll();
+        else applyLevelCollapse(Number(v));
+      });
+    }
     const todayBtn = document.getElementById('ms-today-btn');
     if (todayBtn) todayBtn.addEventListener('click', () => {
       host.querySelectorAll('.ms-chart').forEach(cb => cb._scrollToToday && cb._scrollToToday());
@@ -6208,22 +7582,22 @@ openTab('overview');
     return `
       <div class="ms-wrap" style="padding:14px 18px 18px;height:100%;display:flex;flex-direction:column;background:#fafbfc;overflow:hidden;">
         <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:8px;">
-          <strong style="color:#2c569f;font-size:15px;">🔗 ${escHtml(ps.title)}</strong>
-          <span style="color:#7a8694;font-size:12.5px;">'전체' 탭은 카테고리별 독립 셀로 분리 · ▾/▸ 클릭으로 트리 접기/펼치기</span>
-          <button id="ps-today-btn" style="margin-left:auto;padding:7px 14px;border:1px solid #c97070;border-radius:5px;background:#fef2f2;color:#c97070;font-size:13px;font-weight:600;cursor:pointer;">📍 오늘로</button>
+          <strong style="color:#2c569f;font-size:16px;">🔗 ${escHtml(ps.title)}</strong>
+          <span style="color:#7a8694;font-size:13px;">'전체' 탭은 카테고리별 독립 셀로 분리 · ▾/▸ 클릭으로 트리 접기/펼치기</span>
+          <button id="ps-today-btn" type="button" style="margin-left:auto;padding:9px 16px;border:1px solid #c97070;border-radius:6px;background:#fef2f2;color:#c97070;font-size:14px;font-weight:600;cursor:pointer;">📍 오늘로</button>
         </div>
         <div class="ms-cat-tabs" id="ps-cat-tabs" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">${catBtns.join('')}</div>
         <div id="ps-legend" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px;align-items:center;"></div>
         <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-bottom:8px;">
-          <label style="font-size:13px;display:flex;gap:6px;align-items:center;cursor:pointer;color:#28323e;">
+          <label style="font-size:14px;display:flex;gap:6px;align-items:center;cursor:pointer;color:#28323e;">
             <input type="checkbox" id="ps-only-dated" checked> 날짜 있는 작업만
           </label>
-          <label style="font-size:13px;display:flex;gap:6px;align-items:center;cursor:pointer;color:#28323e;">
+          <label style="font-size:14px;display:flex;gap:6px;align-items:center;cursor:pointer;color:#28323e;">
             <input type="checkbox" id="ps-show-links" checked> 선후 의존 화살표
           </label>
           <span style="margin:0 4px;color:#cdd5df;">|</span>
-          <label style="font-size:12px;color:#28323e;font-weight:600;">트리 깊이:</label>
-          <select id="ps-lvl-select" style="padding:5px 9px;border:1px solid #cdd5df;border-radius:5px;background:#fff;font-size:12.5px;cursor:pointer;min-width:200px;">
+          <label style="font-size:14px;color:#28323e;font-weight:600;">트리 깊이:</label>
+          <select id="ps-lvl-select" class="sched-dropdown" style="min-width:230px;">
             <option value="expand">전체 펼침 (모든 레벨)</option>
             <option value="1">L1까지 (최상위만)</option>
             <option value="2">L2까지</option>
@@ -6232,7 +7606,7 @@ openTab('overview');
             <option value="5">L5까지</option>
             <option value="collapse">모두 접기 (헤더만)</option>
           </select>
-          <span id="ps-meta" style="color:#7a8694;font-size:12.5px;margin-left:auto;"></span>
+          <span id="ps-meta" style="color:#7a8694;font-size:13px;margin-left:auto;"></span>
         </div>
         <div id="ps-host" style="flex:1;border:1px solid #cdd5df;border-radius:6px;overflow:hidden;background:#fff;min-height:0;"></div>
         <div style="margin-top:8px;font-size:11.5px;color:#7a8694;">※ 의존관계는 동일 부모 아래 형제 작업의 시작일 순으로 추론 · 추출일: ${SD.extracted_at}</div>
@@ -6351,13 +7725,26 @@ openTab('overview');
       collapsed.clear();
       render();
     });
+    // 드롭다운 클릭 시 스크롤 보존
+    const preventFocusScroll = (el) => {
+      if (!el) return;
+      el.addEventListener('mousedown', () => {
+        const panels = document.querySelector('.panels');
+        const sy = panels ? panels.scrollTop : 0;
+        try { el.focus({ preventScroll: true }); } catch (_) {}
+        requestAnimationFrame(() => { if (panels) panels.scrollTop = sy; });
+      });
+    };
     const psLvlSel = document.getElementById('ps-lvl-select');
-    if (psLvlSel) psLvlSel.addEventListener('change', () => {
-      const v = psLvlSel.value;
-      if (v === 'expand') applyExpandAll();
-      else if (v === 'collapse') applyCollapseAll();
-      else applyLevelCollapse(Number(v));
-    });
+    if (psLvlSel) {
+      preventFocusScroll(psLvlSel);
+      psLvlSel.addEventListener('change', () => {
+        const v = psLvlSel.value;
+        if (v === 'expand') applyExpandAll();
+        else if (v === 'collapse') applyCollapseAll();
+        else applyLevelCollapse(Number(v));
+      });
+    }
     const psTodayBtn = document.getElementById('ps-today-btn');
     if (psTodayBtn) psTodayBtn.addEventListener('click', () => {
       host.querySelectorAll('.ms-chart').forEach(cb => cb._scrollToToday && cb._scrollToToday());
@@ -6407,25 +7794,25 @@ openTab('overview');
     return `
       <div class="ms-wrap" style="padding:14px 18px 18px;height:100%;display:flex;flex-direction:column;background:#fafbfc;overflow:hidden;">
         <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:10px;">
-          <strong style="color:#2c569f;font-size:15px;">📆 ${escHtml(mo.title)}</strong>
-          <span style="color:#7a8694;font-size:12.5px;">직전 2개월 / 해당월 / 차후 3개월 (6개월 윈도우) · 계획·변경·실적 3중 비교</span>
+          <strong style="color:#2c569f;font-size:16px;">📆 ${escHtml(mo.title)}</strong>
+          <span style="color:#7a8694;font-size:13px;">직전 1개월 / 해당월 / 차후 1개월 (3개월 윈도우) · 계획·변경·실적 3중 비교</span>
         </div>
         <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:10px;">
-          <label style="font-weight:600;color:#28323e;font-size:14px;">📅 기준월:</label>
-          <select id="mo-base-month" style="padding:8px 12px;border:1px solid #cdd5df;border-radius:5px;background:#fff;font-size:14px;min-width:180px;cursor:pointer;">${monthOpts}</select>
-          <label style="font-weight:600;color:#28323e;font-size:14px;margin-left:8px;">활동 그룹:</label>
-          <select id="mo-group-select" style="padding:8px 12px;border:1px solid #cdd5df;border-radius:5px;background:#fff;font-size:14px;min-width:260px;cursor:pointer;"></select>
+          <label style="font-weight:600;color:#28323e;font-size:15px;">📅 기준월:</label>
+          <select id="mo-base-month" class="sched-dropdown" style="min-width:200px;">${monthOpts}</select>
+          <label style="font-weight:600;color:#28323e;font-size:15px;margin-left:8px;">활동 그룹:</label>
+          <select id="mo-group-select" class="sched-dropdown" style="min-width:280px;"></select>
           <span id="mo-meta" style="color:#7a8694;font-size:13px;"></span>
-          <label style="margin-left:auto;font-size:13px;display:flex;gap:6px;align-items:center;cursor:pointer;color:#28323e;">
-            <input type="checkbox" id="mo-show-links"> 선후 의존 화살표
+          <label style="margin-left:auto;font-size:14px;display:flex;gap:6px;align-items:center;cursor:pointer;color:#28323e;">
+            <input type="checkbox" id="mo-show-links" checked> 선후 의존 화살표
           </label>
-          <button id="mo-expand-all" style="padding:5px 10px;border:1px solid #cdd5df;border-radius:5px;background:#fff;cursor:pointer;font-size:12.5px;">모두 펼침</button>
-          <button id="mo-collapse-all" style="padding:5px 10px;border:1px solid #cdd5df;border-radius:5px;background:#fff;cursor:pointer;font-size:12.5px;">모두 접기</button>
+          <button id="mo-expand-all" type="button" style="padding:7px 13px;border:1px solid #cdd5df;border-radius:6px;background:#fff;cursor:pointer;font-size:13px;">모두 펼침</button>
+          <button id="mo-collapse-all" type="button" style="padding:7px 13px;border:1px solid #cdd5df;border-radius:6px;background:#fff;cursor:pointer;font-size:13px;">모두 접기</button>
         </div>
         <div id="mo-legend" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px;align-items:center;"></div>
-        <div id="mo-window" style="display:flex;gap:8px;align-items:center;margin-bottom:8px;font-size:12.5px;"></div>
+        <div id="mo-window" style="display:flex;gap:8px;align-items:center;margin-bottom:8px;font-size:13px;"></div>
         <div id="mo-host" style="flex:1;border:1px solid #cdd5df;border-radius:6px;overflow:hidden;background:#fff;min-height:0;"></div>
-        <div style="margin-top:8px;font-size:11.5px;color:#7a8694;">※ 6개월 윈도우(직전 2개월·해당월·차후 3개월)에 일정이 겹치는 활동만 표시 · 회색=계획, 주황=변경, 남색=실적</div>
+        <div style="margin-top:8px;font-size:11.5px;color:#7a8694;">※ 3개월 윈도우(직전 1개월·해당월·차후 1개월)에 일정이 겹치는 활동만 표시 · 회색=계획, 주황=변경, 남색=실적</div>
       </div>
     `;
   };
@@ -6445,8 +7832,8 @@ openTab('overview');
     // 기준월에 따라 group 옵션을 동적으로 채움
     function refreshGroupOptions() {
       const baseYm = baseSel.value;
-      const fromYm = shiftMonth(baseYm, -2);
-      const toYm   = shiftMonth(baseYm, +3);
+      const fromYm = shiftMonth(baseYm, -1);
+      const toYm   = shiftMonth(baseYm, +1);
       const filtered = mo.tasks.filter(a => activityInRange(a, fromYm, toYm));
       const groups = new Map();
       for (const t of filtered) {
@@ -6470,8 +7857,8 @@ openTab('overview');
 
     function buildTreeTasks() {
       const baseYm = baseSel.value;
-      const fromYm = shiftMonth(baseYm, -2);
-      const toYm   = shiftMonth(baseYm, +3);
+      const fromYm = shiftMonth(baseYm, -1);
+      const toYm   = shiftMonth(baseYm, +1);
       let activities = mo.tasks.filter(a => activityInRange(a, fromYm, toYm));
       const key = grpSel.value;
       if (key && key !== '__all__') activities = activities.filter(t => `${t.category}|${t.subgroup}` === key);
@@ -6488,9 +7875,16 @@ openTab('overview');
           subIdx.set(sk, tasks.length);
           tasks.push({ level: 1, name: a.subgroup || '(미분류)', parent_idx: catIdx.get(a.category), kind: 'header' });
         }
+        // 활동명이 없으면 subgroup 안에서 순번을 매겨 의미있는 fallback 라벨 생성
+        let actName = (a.activity || '').trim();
+        if (!actName) {
+          const sib = tasks.filter(x => x.parent_idx === subIdx.get(sk)).length + 1;
+          const base = a.subgroup || a.category || '활동';
+          actName = `${base} #${sib}`;
+        }
         tasks.push({
           level: 2,
-          name: a.activity || '(활동명 없음)',
+          name: actName,
           parent_idx: subIdx.get(sk),
           kind: 'task',
           plan: a.plan, change: a.change, actual: a.actual,
@@ -6504,22 +7898,22 @@ openTab('overview');
       const actCount = tasks.filter(t => t.kind === 'task').length;
       const baseYm = baseSel.value;
       meta.textContent = `${fromYm} ~ ${toYm} · ${actCount}개 활동`;
-      // 6개월 윈도우 시각화 (직전2 / 직전1 / 해당월 / +1 / +2 / +3)
+      // 3개월 윈도우 시각화 (직전1 / 해당월 / +1) — 확대된 pill
       const winEl = document.getElementById('mo-window');
       if (winEl) {
-        const pill = (label, ym, accent) => `<span style="display:inline-flex;flex-direction:column;align-items:center;padding:4px 10px;border-radius:6px;background:${accent === 'on' ? '#2c569f' : '#fff'};color:${accent === 'on' ? '#fff' : '#28323e'};border:1px solid ${accent === 'on' ? '#2c569f' : '#cdd5df'};">
-          <span style="font-size:10px;${accent === 'on' ? 'color:#cfd8e8;' : 'color:#7a8694;'}">${label}</span>
-          <span style="font-size:12.5px;font-weight:700;">${ym.replace('-', '년 ')}월</span>
+        const pill = (label, ym, accent) => `<span style="display:inline-flex;flex-direction:column;align-items:center;padding:10px 28px;border-radius:10px;background:${accent === 'on' ? 'linear-gradient(135deg,#2c569f 0%,#4a7bd1 100%)' : '#fff'};color:${accent === 'on' ? '#fff' : '#28323e'};border:1.5px solid ${accent === 'on' ? '#2c569f' : '#cdd5df'};box-shadow:${accent === 'on' ? '0 3px 10px rgba(44,86,159,0.25)' : '0 1px 2px rgba(20,30,60,0.04)'};min-width:130px;">
+          <span style="font-size:13px;font-weight:600;${accent === 'on' ? 'color:#cfd8e8;' : 'color:#7a8694;'};letter-spacing:0.02em;">${label}</span>
+          <span style="font-size:18px;font-weight:800;font-variant-numeric:tabular-nums;margin-top:2px;">${ym.replace('-', '년 ')}월</span>
         </span>`;
         const offsets = [
-          { off: -2, label: '직전 2' },
-          { off: -1, label: '직전 1' },
+          { off: -1, label: '직전월' },
           { off:  0, label: '✦ 해당월' },
-          { off: +1, label: '+1' },
-          { off: +2, label: '+2' },
-          { off: +3, label: '+3' },
+          { off: +1, label: '다음월' },
         ];
-        winEl.innerHTML = offsets.map(o => pill(o.label, shiftMonth(baseYm, o.off), o.off === 0 ? 'on' : 'off')).join('<span style="color:#cdd5df;font-size:10px;">→</span>');
+        winEl.innerHTML = '<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">' +
+          offsets.map(o => pill(o.label, shiftMonth(baseYm, o.off), o.off === 0 ? 'on' : 'off'))
+            .join('<span style="color:#9aa6b4;font-size:18px;font-weight:600;">→</span>') +
+          '</div>';
       }
       // 시간축을 정확히 3개월 윈도우로 강제 + 활동 일정을 윈도우로 클리핑
       const [fy, fm] = fromYm.split('-').map(Number);
@@ -6557,8 +7951,24 @@ openTab('overview');
         showLinks: linksCb.checked, onToggle: render,
         forceRange: { lo: winLo, hi: winHi },
         monthHighlight: baseYm,
+        // 한 화면 표시: 좌측 라벨 좁히고 시간축 PX/day 크게 → 시간축 영역 풍성하게
+        labelW: 220,
+        pxPerDay: 12,
       });
     }
+
+    // 드롭다운 클릭 시 스크롤 보존
+    const preventFocusScroll = (el) => {
+      if (!el) return;
+      el.addEventListener('mousedown', () => {
+        const panels = document.querySelector('.panels');
+        const sy = panels ? panels.scrollTop : 0;
+        try { el.focus({ preventScroll: true }); } catch (_) {}
+        requestAnimationFrame(() => { if (panels) panels.scrollTop = sy; });
+      });
+    };
+    preventFocusScroll(baseSel);
+    preventFocusScroll(grpSel);
 
     refreshGroupOptions();
     baseSel.addEventListener('change', () => { collapsed.clear(); refreshGroupOptions(); render(); });
@@ -6606,14 +8016,69 @@ openTab('overview');
     const od = SD.orders;
     if (!od) return '<div style="padding:24px;color:#a14d4d;">기자재 발주현황 데이터가 없습니다 (schedule_data.js 재생성 필요).</div>';
     return `
-      <div id="ord-root" style="padding:14px 18px 18px;height:100%;overflow:auto;background:#fafbfc;">
-        <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:10px;">
-          <strong style="color:#2c569f;font-size:15px;">📦 ${escHtml(od.title)}</strong>
-          <span style="color:#7a8694;font-size:12.5px;">${escHtml(od.sheet)} · ${(od.lots || []).length}개 LOT</span>
+      <div id="ord-root" style="padding:18px 22px 28px;height:100%;overflow:auto;background:#f5f8fc;">
+        <style>
+          #ord-root .ord-card {
+            background: #fff; border: 1px solid #e6eaf1; border-radius: 10px;
+            padding: 18px 22px; box-shadow: 0 1px 2px rgba(20,30,60,0.04);
+            margin-bottom: 16px;
+          }
+          #ord-root .ord-card-title {
+            font-size: 17px; font-weight: 700; color: #28323e;
+            display: flex; align-items: center; gap: 10px; margin-bottom: 14px;
+            letter-spacing: 0.01em;
+          }
+          #ord-root .ord-card-title .ord-sub {
+            font-size: 13px; font-weight: 500; color: #7a8694; margin-left: 4px;
+          }
+          #ord-root .ord-kpi-row { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; }
+          @media (max-width: 1280px) { #ord-root .ord-kpi-row { grid-template-columns: repeat(3, 1fr); } }
+          #ord-root .ord-kpi {
+            background: #fff; border: 1px solid #e6eaf1; border-radius: 10px;
+            padding: 14px 18px; box-shadow: 0 1px 2px rgba(20,30,60,0.04);
+            display: flex; flex-direction: column; gap: 5px;
+          }
+          #ord-root .ord-kpi-lbl { font-size: 13.5px; color: #5a6677; font-weight: 600; }
+          #ord-root .ord-kpi-val { font-size: 32px; font-weight: 800; line-height: 1.05; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+          #ord-root .ord-kpi-sub { font-size: 12.5px; color: #7a8694; }
+          #ord-root .ord-funnel-grid { display: flex; flex-direction: column; gap: 14px; }
+          #ord-root .ord-card.ord-card-tight { padding: 16px 18px; margin-bottom: 0; }
+          #ord-root .ord-funnel-step-num { font-size: 22px; font-weight: 800; }
+          #ord-root .ord-funnel-step-lbl { font-size: 14px; font-weight: 600; color: #28323e; }
+          #ord-root .ord-funnel-step-pct { font-size: 12.5px; color: #7a8694; margin-top: 2px; }
+          #ord-root .ord-insight {
+            padding: 12px 16px; background: #fef9ee; border-left: 3px solid #d49462;
+            border-radius: 4px; font-size: 14px; color: #4a5666; line-height: 1.7;
+          }
+          #ord-root .ord-disc-row { display: flex; align-items: center; gap: 12px; margin: 8px 0; }
+          #ord-root .ord-disc-name { width: 90px; font-size: 14px; color: #28323e; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+          #ord-root .ord-disc-bar { flex: 1; height: 22px; background: #eef0f4; border-radius: 11px; overflow: hidden; position: relative; }
+          #ord-root .ord-disc-bar-fill { height: 100%; transition: width .3s; border-radius: 11px; }
+          #ord-root .ord-disc-pct { width: 110px; text-align: right; font-size: 14px; font-variant-numeric: tabular-nums; }
+          #ord-root .ord-tag-warn { background: #fbe6e6; color: #c14a4a; padding: 2px 8px; border-radius: 10px; font-size: 11.5px; font-weight: 600; }
+          #ord-root .ord-tag-key { background: #e8efff; color: #2c569f; padding: 2px 8px; border-radius: 10px; font-size: 11.5px; font-weight: 600; }
+          #ord-root .ord-filter-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 12px; }
+          #ord-root .ord-filter-row label { font-size: 14px; color: #28323e; font-weight: 600; }
+          #ord-root .ord-filter-row select,
+          #ord-root .ord-filter-row input[type="search"] {
+            padding: 8px 12px; border: 1px solid #cdd5df; border-radius: 6px;
+            background: #fff; font-size: 14px; color: #28323e; font-family: inherit;
+          }
+          #ord-root .ord-filter-row input[type="search"] { flex: 1; min-width: 240px; }
+          #ord-root .ord-filter-row input[type="search"]:focus,
+          #ord-root .ord-filter-row select:focus {
+            outline: none; border-color: #2c569f; box-shadow: 0 0 0 3px rgba(74,123,209,0.15);
+          }
+        </style>
+        <div style="display:flex;align-items:baseline;gap:14px;margin-bottom:16px;">
+          <h2 style="margin:0;font-size:22px;color:#2c569f;font-weight:700;letter-spacing:0.01em;">📦 ${escHtml(od.title)}</h2>
+          <span style="color:#7a8694;font-size:13.5px;">${escHtml(od.sheet)} · ${(od.lots || []).length}개 LOT</span>
         </div>
         <div id="ord-kpis"></div>
-        <div id="ord-funnel"></div>
-        <div id="ord-discipline"></div>
+        <div id="ord-funnel-disc-row" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+          <div id="ord-funnel"></div>
+          <div id="ord-discipline"></div>
+        </div>
         <div id="ord-gantt"></div>
         <div id="ord-table-section"></div>
       </div>
@@ -6648,19 +8113,19 @@ openTab('overview');
     const vendorTop5 = vendorList.slice(0, 5).reduce((s, [, n]) => s + n, 0);
     const vendorTop5Pct = total ? Math.round(vendorTop5 / total * 100) : 0;
 
-    // ===== 1) KPI 6칸 =====
+    // ===== 1) KPI 6칸 (한 행) =====
     const kpi = (label, val, sub, accent) => `
-      <div style="flex:1;min-width:130px;background:#fff;border:1px solid #cdd5df;border-radius:8px;padding:12px 14px;">
-        <div style="font-size:11.5px;color:#7a8694;margin-bottom:4px;">${label}</div>
-        <div style="font-size:24px;font-weight:700;color:${accent || '#28323e'};line-height:1.1;">${val}</div>
-        <div style="font-size:11px;color:#7a8694;margin-top:4px;">${sub}</div>
+      <div class="ord-kpi">
+        <div class="ord-kpi-lbl">${label}</div>
+        <div class="ord-kpi-val" style="color:${accent || '#28323e'};">${val}</div>
+        <div class="ord-kpi-sub">${sub}</div>
       </div>`;
     const pctDone = total ? (onSiteDone / total * 100).toFixed(1) : '0.0';
     const inProgress = lots.filter(l => l.stage === '제작' || l.stage === 'FOB').length;
     const inProgressPct = total ? (inProgress / total * 100).toFixed(1) : '0.0';
     const pecSummary = Object.entries(pecCounts).map(([k, v]) => `${escHtml(k)} ${v}`).join(' · ');
     document.getElementById('ord-kpis').innerHTML = `
-      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;">
+      <div class="ord-kpi-row" style="margin-bottom:16px;">
         ${kpi('총 발주 LOT', total, pecSummary, '#2c569f')}
         ${kpi('납품 완료율', `${pctDone}%`, `${onSiteDone} / ${total} LOT`, '#3f8a3f')}
         ${kpi('제작/운송 중', inProgress, `${inProgressPct}%`, '#d49462')}
@@ -6690,45 +8155,46 @@ openTab('overview');
     const remainTotal = remainGroups.reduce((s, g) => s + g.count, 0);
 
     const funnelHtml = `
-      <div style="background:#fff;border:1px solid #cdd5df;border-radius:8px;padding:14px 18px;margin-bottom:14px;">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
-          <span style="font-size:13.5px;font-weight:700;color:#2c569f;">발주 진행단계 Funnel</span>
-          <span style="font-size:11.5px;color:#7a8694;">RFQ → P/O → 제작 → On-Site</span>
+      <div class="ord-card" style="margin-bottom:0;height:100%;">
+        <div class="ord-card-title">
+          <span>🚀 발주 진행단계 Funnel</span>
+          <span class="ord-sub">RFQ → P/O → 제작 → On-Site</span>
         </div>
-        <div style="display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap;">
-          <div style="flex:1;min-width:420px;">
-            <div style="display:flex;align-items:center;justify-content:space-between;position:relative;padding:0 8px;">
-              <div style="position:absolute;top:26px;left:36px;right:36px;height:2px;background:#dee3eb;z-index:0;"></div>
-              ${funnelSteps.map((s, i) => {
-                const isLast = i === funnelSteps.length - 1;
-                const isActive = !isLast && funnelCounts[i] > funnelCounts[i + 1];
-                const color = isLast ? '#3f8a3f' : (isActive ? '#d49462' : '#2c569f');
-                return `<div style="display:flex;flex-direction:column;align-items:center;z-index:1;flex:1;">
-                  <div style="width:54px;height:54px;border-radius:50%;background:${color};color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;box-shadow:0 2px 6px rgba(44,86,159,0.15);">${funnelCounts[i]}</div>
-                  <div style="margin-top:6px;font-size:12px;font-weight:600;color:#28323e;text-align:center;">${s.label}</div>
+        <!-- Funnel 단계 표시 -->
+        <div style="display:flex;align-items:center;justify-content:space-between;position:relative;padding:0 4px 14px;border-bottom:1px dashed #e6eaf1;margin-bottom:14px;">
+          <div style="position:absolute;top:28px;left:36px;right:36px;height:2px;background:#dee3eb;z-index:0;"></div>
+          ${funnelSteps.map((s, i) => {
+            const isLast = i === funnelSteps.length - 1;
+            const isActive = !isLast && funnelCounts[i] > funnelCounts[i + 1];
+            const color = isLast ? '#3f8a3f' : (isActive ? '#d49462' : '#2c569f');
+            return `<div style="display:flex;flex-direction:column;align-items:center;z-index:1;flex:1;">
+              <div style="width:58px;height:58px;border-radius:50%;background:${color};color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;box-shadow:0 3px 8px rgba(44,86,159,0.18);">${funnelCounts[i]}</div>
+              <div class="ord-funnel-step-lbl" style="margin-top:6px;text-align:center;font-size:12.5px;">${s.label}</div>
+              <div class="ord-funnel-step-pct" style="font-size:11.5px;">${funnelPcts[i]}%</div>
+            </div>`;
+          }).join('')}
+        </div>
+        <!-- 미입고 분포: 라벨 (왼쪽) + 도넛 (오른쪽) — 폰트 강화 -->
+        <div style="display:flex;gap:20px;align-items:center;">
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:16px;color:#28323e;font-weight:800;margin-bottom:12px;letter-spacing:-0.01em;">📦 미입고 <span style="color:#c25656;">${remainTotal}</span>건 단계 분포</div>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+              ${remainGroups.map(g => {
+                const pct = remainTotal ? (g.count / remainTotal * 100).toFixed(1) : '0.0';
+                return `<div style="display:flex;align-items:center;gap:10px;font-size:15.5px;color:#28323e;">
+                  <span style="width:14px;height:14px;border-radius:3px;background:${g.color};flex-shrink:0;"></span>
+                  <span style="flex:1;font-weight:600;">${g.key}</span>
+                  <b style="font-variant-numeric:tabular-nums;font-size:18px;color:#1f2c3f;min-width:30px;text-align:right;">${g.count}</b>
+                  <span style="color:#7a8694;font-size:13.5px;width:56px;text-align:right;font-variant-numeric:tabular-nums;font-weight:600;">${pct}%</span>
                 </div>`;
               }).join('')}
             </div>
-            <div style="margin-top:14px;font-size:11.5px;color:#7a8694;line-height:1.6;">
-              단계별 누적 통과 LOT: ${funnelSteps.map((s, i) => `<b style="color:#2c569f;">${s.label} ${funnelPcts[i]}%</b>`).join(' · ')}
-            </div>
-            <div style="margin-top:10px;padding:8px 12px;background:#f4f6fa;border-left:3px solid #4a7bd1;border-radius:4px;font-size:11.5px;color:#5a6677;">
-              💡 OnSite 미입고 ${remainTotal}건의 단계 분포가 우측 도넛에 표시됩니다. 하단 분야별 진행률과 함께 보세요.
-            </div>
           </div>
-          <div style="width:260px;min-width:240px;">
-            <div style="font-size:12px;color:#28323e;font-weight:600;margin-bottom:6px;text-align:center;">현재 잔여 ${remainTotal}건의 단계 분포</div>
-            <div style="position:relative;width:200px;height:200px;margin:0 auto;">
-              <canvas id="ord-donut" width="200" height="200"></canvas>
-              <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;">
-                <div style="font-size:26px;font-weight:700;color:#28323e;line-height:1;">${remainTotal}</div>
-                <div style="font-size:11px;color:#7a8694;margin-top:2px;">미입고 LOT</div>
-              </div>
-            </div>
-            <div style="display:flex;flex-direction:column;gap:4px;margin-top:8px;">
-              ${remainGroups.map(g => `<div style="display:flex;align-items:center;gap:6px;font-size:12px;color:#28323e;">
-                <span style="width:10px;height:10px;border-radius:2px;background:${g.color};"></span>${g.key} <b style="margin-left:auto;">${g.count}</b>
-              </div>`).join('')}
+          <div style="position:relative;width:150px;height:150px;flex-shrink:0;">
+            <canvas id="ord-donut" width="150" height="150"></canvas>
+            <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;">
+              <div style="font-size:28px;font-weight:800;color:#28323e;line-height:1;letter-spacing:-0.02em;">${remainTotal}</div>
+              <div style="font-size:12px;color:#7a8694;margin-top:4px;font-weight:600;">미입고</div>
             </div>
           </div>
         </div>
@@ -6736,13 +8202,13 @@ openTab('overview');
     `;
     document.getElementById('ord-funnel').innerHTML = funnelHtml;
 
-    // 도넛 그리기 (Canvas 직접)
+    // 도넛 그리기 (Canvas 직접) — 150x150
     (function drawDonut() {
       const c = document.getElementById('ord-donut');
       if (!c) return;
       const ctx = c.getContext('2d');
-      const cx = 100, cy = 100, rOut = 90, rIn = 56;
-      ctx.clearRect(0, 0, 200, 200);
+      const cx = 75, cy = 75, rOut = 70, rIn = 44;
+      ctx.clearRect(0, 0, 150, 150);
       if (remainTotal === 0) {
         ctx.beginPath(); ctx.arc(cx, cy, rOut, 0, Math.PI * 2); ctx.fillStyle = '#eef0f4'; ctx.fill();
         ctx.beginPath(); ctx.arc(cx, cy, rIn, 0, Math.PI * 2); ctx.fillStyle = '#fff'; ctx.fill();
@@ -6784,14 +8250,14 @@ openTab('overview');
       const isLargest = largest && r.name === largest.name && r.total > 5;
       const barColor = isSlowest ? '#c14a4a' : (r.pct >= 0.9 ? '#3f8a3f' : '#4a7bd1');
       const tag = [];
-      if (isSlowest) tag.push('<span style="background:#fbe6e6;color:#c14a4a;padding:1px 6px;border-radius:8px;font-size:10.5px;font-weight:600;margin-left:6px;">⚠ 최저</span>');
-      if (isLargest) tag.push('<span style="background:#e8efff;color:#2c569f;padding:1px 6px;border-radius:8px;font-size:10.5px;font-weight:600;margin-left:4px;">핵심</span>');
-      return `<div style="display:flex;align-items:center;gap:10px;margin:6px 0;">
-        <div style="width:64px;font-size:12.5px;color:#28323e;font-weight:600;">${escHtml(r.name)}${tag.join('')}</div>
-        <div style="flex:1;height:18px;background:#eef0f4;border-radius:9px;overflow:hidden;position:relative;">
-          <div style="height:100%;width:${pct}%;background:${barColor};transition:width 0.3s;"></div>
+      if (isSlowest) tag.push('<span class="ord-tag-warn">⚠ 최저</span>');
+      if (isLargest) tag.push('<span class="ord-tag-key">핵심</span>');
+      return `<div class="ord-disc-row">
+        <div class="ord-disc-name">${escHtml(r.name)}${tag.join('')}</div>
+        <div class="ord-disc-bar">
+          <div class="ord-disc-bar-fill" style="width:${pct}%;background:${barColor};"></div>
         </div>
-        <div style="width:90px;text-align:right;font-size:12px;"><b style="color:${barColor};">${pct}%</b> <span style="color:#7a8694;">${r.done}/${r.total}</span></div>
+        <div class="ord-disc-pct"><b style="color:${barColor};">${pct}%</b> <span style="color:#7a8694;">${r.done}/${r.total}</span></div>
       </div>`;
     }).join('');
 
@@ -6803,10 +8269,13 @@ openTab('overview');
     }
 
     document.getElementById('ord-discipline').innerHTML = `
-      <div style="background:#fff;border:1px solid #cdd5df;border-radius:8px;padding:14px 18px;margin-bottom:14px;">
-        <div style="font-size:13.5px;font-weight:700;color:#2c569f;margin-bottom:10px;">분야별 진행단계 <span style="font-size:11.5px;font-weight:400;color:#7a8694;margin-left:6px;">(완료율 = OnSite 입고 LOT 비율)</span></div>
+      <div class="ord-card" style="margin-bottom:0;height:100%;">
+        <div class="ord-card-title">
+          <span>📊 분야별 진행단계</span>
+          <span class="ord-sub">완료율 = OnSite 입고 LOT 비율</span>
+        </div>
         ${barHtml}
-        <div style="margin-top:12px;padding:10px 14px;background:#fef9ee;border-left:3px solid #d49462;border-radius:4px;font-size:12.5px;color:#5a6677;line-height:1.6;">
+        <div class="ord-insight" style="margin-top:14px;font-size:12.5px;">
           💡 <b>자동 인사이트:</b> ${insightTxt}
         </div>
       </div>
@@ -6819,32 +8288,34 @@ openTab('overview');
     const disciplines = Array.from(new Set(lots.map(l => l.discipline).filter(Boolean))).sort();
     const pecs = Array.from(new Set(lots.map(l => l.pec).filter(Boolean))).sort();
     document.getElementById('ord-table-section').innerHTML = `
-      <div style="background:#fff;border:1px solid #cdd5df;border-radius:8px;padding:14px 18px;">
-        <div style="font-size:13.5px;font-weight:700;color:#2c569f;margin-bottom:10px;">📋 LOT 상세 (전체 ${total}건)</div>
-        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:10px;">
-          <label style="font-size:13px;color:#28323e;font-weight:600;">분야:</label>
-          <select id="ord-disc" style="padding:6px 10px;border:1px solid #cdd5df;border-radius:5px;background:#fff;font-size:13px;">
+      <div class="ord-card">
+        <div class="ord-card-title">
+          <span>📋 LOT 상세</span>
+          <span class="ord-sub">전체 ${total}건 · 행 클릭 시 RFQ/TBE/PO/Key VP/FOB/On Site 단계별 계획·실적 펼치기</span>
+        </div>
+        <div class="ord-filter-row">
+          <label>분야:</label>
+          <select id="ord-disc">
             <option value="">전체</option>
             ${disciplines.map(d => `<option value="${escAttr(d)}">${escHtml(d)}</option>`).join('')}
           </select>
-          <label style="font-size:13px;color:#28323e;font-weight:600;">구분:</label>
-          <select id="ord-pec" style="padding:6px 10px;border:1px solid #cdd5df;border-radius:5px;background:#fff;font-size:13px;">
+          <label>구분:</label>
+          <select id="ord-pec">
             <option value="">전체</option>
             ${pecs.map(p => `<option value="${escAttr(p)}">${escHtml(p)}</option>`).join('')}
           </select>
-          <label style="font-size:13px;color:#28323e;font-weight:600;">단계:</label>
-          <select id="ord-stage" style="padding:6px 10px;border:1px solid #cdd5df;border-radius:5px;background:#fff;font-size:13px;">
+          <label>단계:</label>
+          <select id="ord-stage">
             <option value="">전체</option>
             ${STAGE_ORDER.map(s => `<option value="${s}">${s}</option>`).join('')}
           </select>
-          <label style="font-size:13px;color:#28323e;font-weight:600;margin-left:6px;display:flex;align-items:center;gap:6px;cursor:pointer;">
+          <label style="margin-left:6px;display:flex;align-items:center;gap:6px;cursor:pointer;font-weight:500;">
             <input type="checkbox" id="ord-delayed-only"> 지연만 보기
           </label>
-          <input id="ord-search" type="search" placeholder="🔍 품목/Vendor/담당자 검색" style="flex:1;min-width:220px;padding:6px 10px;border:1px solid #cdd5df;border-radius:5px;font-size:13px;">
-          <span id="ord-count" style="font-size:12.5px;color:#7a8694;"></span>
+          <input id="ord-search" type="search" placeholder="🔍 품목 / Vendor / 담당자 검색">
+          <span id="ord-count" style="font-size:13px;color:#7a8694;font-weight:500;"></span>
         </div>
-        <div id="ord-host" style="border:1px solid #cdd5df;border-radius:6px;overflow:auto;background:#fff;max-height:600px;"></div>
-        <div style="margin-top:6px;font-size:11.5px;color:#7a8694;">※ 행을 클릭하면 RFQ/TBE/PO/Key VP/FOB/On Site 전체 단계의 계획·실적 일정이 펼쳐집니다.</div>
+        <div id="ord-host" style="border:1px solid #e6eaf1;border-radius:8px;overflow:auto;background:#fff;max-height:640px;"></div>
       </div>
     `;
     initOrdersTable(lots);
@@ -6910,7 +8381,7 @@ openTab('overview');
       const yr = String(m.getFullYear()).slice(2);
       const mo = String(m.getMonth() + 1).padStart(2, '0');
       const label = m.getMonth() === 0 ? `${yr}.${mo}` : mo;
-      svg += `<text x="${x + 3}" y="20" font-size="10.5" fill="#5a6677">${label}</text>`;
+      svg += `<text x="${x + 3}" y="20" font-size="12" fill="#5a6677">${label}</text>`;
     }
     // 행
     visible.forEach((v, i) => {
@@ -6920,7 +8391,7 @@ openTab('overview');
       if (i % 2 === 1) svg += `<rect x="0" y="${y}" width="${svgW}" height="${ROW_H}" fill="#fafbfc"/>`;
       // 라벨
       const label = (l.itemName || '').slice(0, 28);
-      svg += `<text x="10" y="${y + 17}" font-size="11.5" fill="#28323e">${escHtml(label)}</text>`;
+      svg += `<text x="10" y="${y + 17}" font-size="13" fill="#28323e">${escHtml(label)}</text>`;
       // 지연 배지
       if (v.isDelay) {
         const days = Math.round((today - v.plan) / 86400000);
@@ -6963,21 +8434,21 @@ openTab('overview');
     svg += `<text x="${tx}" y="${svgH - 8}" font-size="9.5" fill="#fff" text-anchor="middle" font-weight="700">TODAY</text>`;
     svg += `</svg>`;
 
-    const legendHtml = `<div style="display:flex;gap:14px;align-items:center;margin-top:8px;font-size:11.5px;color:#5a6677;flex-wrap:wrap;">
-      <span style="display:inline-flex;align-items:center;gap:5px;"><span style="width:14px;height:8px;background:#cdd5df;border-radius:2px;"></span>Plan</span>
-      <span style="display:inline-flex;align-items:center;gap:5px;"><span style="width:14px;height:8px;background:#3f8a3f;border-radius:2px;"></span>Actual (완료)</span>
-      <span style="display:inline-flex;align-items:center;gap:5px;"><span style="width:14px;height:8px;background:#d49462;border-radius:2px;"></span>지연 (P_OnSite 경과+미입고)</span>
-      <span style="display:inline-flex;align-items:center;gap:5px;"><span style="width:2px;height:12px;background:#c14a4a;"></span>TODAY 라인</span>
+    const legendHtml = `<div style="display:flex;gap:18px;align-items:center;margin-top:10px;font-size:13px;color:#5a6677;flex-wrap:wrap;">
+      <span style="display:inline-flex;align-items:center;gap:6px;"><span style="width:16px;height:10px;background:#cdd5df;border-radius:2px;"></span>Plan</span>
+      <span style="display:inline-flex;align-items:center;gap:6px;"><span style="width:16px;height:10px;background:#3f8a3f;border-radius:2px;"></span>Actual (완료)</span>
+      <span style="display:inline-flex;align-items:center;gap:6px;"><span style="width:16px;height:10px;background:#d49462;border-radius:2px;"></span>지연 (P_OnSite 경과+미입고)</span>
+      <span style="display:inline-flex;align-items:center;gap:6px;"><span style="width:2px;height:14px;background:#c14a4a;"></span>TODAY 라인</span>
     </div>`;
 
     host.innerHTML = `
-      <div style="background:#fff;border:1px solid #cdd5df;border-radius:8px;padding:14px 18px;margin-bottom:14px;">
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
-          <span style="font-size:13.5px;font-weight:700;color:#2c569f;">On-Site 납기 Gantt — Plan vs Actual</span>
-          <span style="font-size:11.5px;color:#7a8694;">${visible.length} / ${items.length} 표시</span>
-          <button id="ord-gantt-toggle" style="margin-left:auto;padding:4px 10px;border:1px solid #cdd5df;background:#fff;border-radius:5px;font-size:12px;cursor:pointer;">${showAll ? '상위 18개만' : `전체 ${items.length}건 보기`}</button>
+      <div class="ord-card">
+        <div class="ord-card-title">
+          <span>📅 On-Site 납기 Gantt — Plan vs Actual</span>
+          <span class="ord-sub">${visible.length} / ${items.length} 표시</span>
+          <button id="ord-gantt-toggle" type="button" style="margin-left:auto;padding:7px 14px;border:1px solid #cdd5df;background:#fff;border-radius:6px;font-size:13px;cursor:pointer;font-weight:500;">${showAll ? '상위 18개만' : `전체 ${items.length}건 보기`}</button>
         </div>
-        <div style="overflow-x:auto;border:1px solid #eef0f4;border-radius:6px;background:#fff;">${svg}</div>
+        <div style="overflow-x:auto;border:1px solid #eef0f4;border-radius:8px;background:#fff;">${svg}</div>
         ${legendHtml}
       </div>
     `;

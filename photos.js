@@ -1941,6 +1941,134 @@ window.PHOTOS_DATA = {
           "caption": "작업환경측정 (’25.06.19)"
         }
       ]
+    },
+    {
+      "title": "공사 사진 (토목) — 2025.06",
+      "category": "육상부",
+      "type": "공사사진",
+      "items": [
+        {
+          "file": "photos/2025-06/cnstr_토목_ee2d05be39ef.png",
+          "caption": "#8탱크 Step 2 수직 그라우트 (25/05/07)"
+        },
+        {
+          "file": "photos/2025-06/cnstr_토목_c70911c29fe9.jpg",
+          "caption": "#8탱크 Step 3 수평 강연선 인장 (25/05/15)"
+        },
+        {
+          "file": "photos/2025-06/cnstr_토목_b6d3c1b44483.jpg",
+          "caption": "K.O Drum Pit Wall 면처리,외부방수 (25/05/10)"
+        },
+        {
+          "file": "photos/2025-06/cnstr_토목_66e2a134e811.jpg",
+          "caption": "Ground Flare 기초 철근조립 (25/05/07)"
+        },
+        {
+          "file": "photos/2025-06/cnstr_토목_78ca85b19036.jpg",
+          "caption": "Ground Flare 기초 타설 (25/05/14)"
+        },
+        {
+          "file": "photos/2025-06/cnstr_토목_2ab478d48b7b.jpg",
+          "caption": "K.O Drum Pit Handrail 설치 (25/05/22)"
+        },
+        {
+          "file": "photos/2025-06/cnstr_토목_03c7ded60631.png",
+          "caption": "신규침사지 터파기 및 톤마대 쌓기 (25/05/22)"
+        },
+        {
+          "file": "photos/2025-06/cnstr_토목_b6a2e78b9b18.png",
+          "caption": "#7탱크 남측 배수로 U형측구 타설 (25/05/19)"
+        }
+      ],
+      "slide": 11
+    },
+    {
+      "title": "공사 사진 (건축) — 2025.06",
+      "category": "육상부",
+      "type": "공사사진",
+      "items": [
+        {
+          "file": "photos/2025-06/cnstr_건축_436ebef60c17.jpg",
+          "caption": "본부빌딩B ROOF 패드 철근 조립 (25/05/24)"
+        },
+        {
+          "file": "photos/2025-06/cnstr_건축_07784b7b5268.jpg",
+          "caption": "WATER PUMP HOUSE PD, PS, EQUIP. PAD 타설 (25/05/01)"
+        },
+        {
+          "file": "photos/2025-06/cnstr_건축_1734e2490c11.jpg",
+          "caption": "SOG COMP. PED.  와인딩파이프 설치 및 2차 타설 (25/05/13)"
+        },
+        {
+          "file": "photos/2025-06/cnstr_건축_fd09a78bf6d6.jpg",
+          "caption": "주전기실 1층 에폭시도장 (25/05/18)"
+        }
+      ],
+      "slide": 11
+    },
+    {
+      "title": "공사 사진 (기계) — 2025.06",
+      "category": "육상부",
+      "type": "공사사진",
+      "items": [
+        {
+          "file": "photos/2025-06/cnstr_기계_c77afe91dc9f.png",
+          "caption": "#7탱크 Inner Tank Shell Plate(4단) 설치/취부 (25/05/13)"
+        },
+        {
+          "file": "photos/2025-06/cnstr_기계_81a7a6c4e809.png",
+          "caption": "해상모듈 TP-04D 설치 (25/05/13)"
+        },
+        {
+          "file": "photos/2025-06/cnstr_기계_c239909a5898.png",
+          "caption": "#8탱크 Inner Tank Shell Plate(1단+2단) 수평자동용접/사상 (25/05/27)"
+        },
+        {
+          "file": "photos/2025-06/cnstr_기계_905c8e8a2653.png",
+          "caption": "#8탱크 RISER PIPE - 배관보냉 시공 (25/05/27)"
+        },
+        {
+          "file": "photos/2025-06/cnstr_기계_e5a8103fa231.jpg",
+          "caption": "SOG Comp. Buffer Drum 설치 (25/05/30)"
+        },
+        {
+          "file": "photos/2025-06/cnstr_기계_c3fb0beaa1ce.png",
+          "caption": "#7탱크 Inner Tank Stiffener(5단) 조립(용접/사상) (25/05/29)"
+        },
+        {
+          "file": "photos/2025-06/cnstr_기계_e100c84824fe.png",
+          "caption": "#7탱크 Inner Tank Shell Plate(2단+3단) 수평 자동용접/사상 (25/05/07)"
+        },
+        {
+          "file": "photos/2025-06/cnstr_기계_a7e9e307e9e5.png",
+          "caption": "해상모듈 TP-04F 설치 (25/05/07)"
+        }
+      ],
+      "slide": 11
+    },
+    {
+      "title": "공사 사진 (전기) — 2025.06",
+      "category": "육상부",
+      "type": "공사사진",
+      "items": [
+        {
+          "file": "photos/2025-06/cnstr_전기_0c81bdd4e80f.jpg",
+          "caption": "본부빌딩 B 피뢰도선 전선관 설치 (25/05/12)"
+        },
+        {
+          "file": "photos/2025-06/cnstr_전기_93215a745739.jpg",
+          "caption": "KO Drum 접지작업 (25/05/19)"
+        },
+        {
+          "file": "photos/2025-06/cnstr_전기_63829e8246bd.jpg",
+          "caption": "#7탱크 계단 조명 Support 설치 (25/05/21)"
+        },
+        {
+          "file": "photos/2025-06/cnstr_전기_c729253da4a4.jpg",
+          "caption": "주전기실 2F 벽체 매입박스 설치 (25/05/25)"
+        }
+      ],
+      "slide": 11
     }
   ],
   "2025-07": [
@@ -2153,6 +2281,142 @@ window.PHOTOS_DATA = {
           "caption": "비상훈련(온열질환) (’25.07.18)"
         }
       ]
+    },
+    {
+      "title": "공사 사진 (토목) — 2025.07",
+      "category": "육상부",
+      "type": "공사사진",
+      "items": [
+        {
+          "file": "photos/2025-07/cnstr_토목_c43e1cc23c11.png",
+          "caption": "간선도로-1 U-DITCH 터파기 (25/06/02)"
+        },
+        {
+          "file": "photos/2025-07/cnstr_토목_4c6ded5ae930.png",
+          "caption": "간선도로-1 U-DITCH 버림 타설 (25/06/10)"
+        },
+        {
+          "file": "photos/2025-07/cnstr_토목_9e24302b6866.png",
+          "caption": "가배수로 파형강관 설치 및 천막설치 (25/06/12)"
+        },
+        {
+          "file": "photos/2025-07/cnstr_토목_0628b56c950e.png",
+          "caption": "간선도로-1 U-DITCH 철근조립 (25/06/18)"
+        },
+        {
+          "file": "photos/2025-07/cnstr_토목_34c60f7e009b.jpg",
+          "caption": "Ground Flare Pedestal 타설 (25/06/05)"
+        },
+        {
+          "file": "photos/2025-07/cnstr_토목_706e9d52ed99.jpg",
+          "caption": "#1터미널 SCV Wall 거푸집 설치 (25/06/23)"
+        },
+        {
+          "file": "photos/2025-07/cnstr_토목_39af95904904.jpg",
+          "caption": "#1터미널 SCV Wall 철근 설치 (25/06/12)"
+        },
+        {
+          "file": "photos/2025-07/cnstr_토목_e2848346f1a5.jpg",
+          "caption": "#1터미널 본부빌딩Area D/B 슬래그 포설 및 다짐 (25/06/26)"
+        }
+      ],
+      "slide": 11
+    },
+    {
+      "title": "공사 사진 (건축) — 2025.07",
+      "category": "육상부",
+      "type": "공사사진",
+      "items": [
+        {
+          "file": "photos/2025-07/cnstr_건축_0912f422f060.jpg",
+          "caption": "본부빌딩B 외벽 IP 석재판넬 설치 (25/06/24)"
+        },
+        {
+          "file": "photos/2025-07/cnstr_건축_0084968440af.png",
+          "caption": "주전기실 2층 외벽 초벌미장 (25/06/27)"
+        },
+        {
+          "file": "photos/2025-07/cnstr_건축_85f9e61fa4cf.jpg",
+          "caption": "BOG MAT SLAB FDN.앙카볼트설치 및 철근,거푸집설치 (25/06/30)"
+        },
+        {
+          "file": "photos/2025-07/cnstr_건축_8995b6e52e34.jpg",
+          "caption": "AIR COMPRESSOR SHELTER FDN. PD,TG,EQUIP.PAD 타설 (25/06/5)"
+        }
+      ],
+      "slide": 11
+    },
+    {
+      "title": "공사 사진 (기계) — 2025.07",
+      "category": "육상부",
+      "type": "공사사진",
+      "items": [
+        {
+          "file": "photos/2025-07/cnstr_기계_75bd3c5c7d68.png",
+          "caption": "#8탱크 - DRY SAND 포설 (25/06/18)"
+        },
+        {
+          "file": "photos/2025-07/cnstr_기계_8e628f7e5064.png",
+          "caption": "Jetty Area - 배관보냉 작업 (25/06/18)"
+        },
+        {
+          "file": "photos/2025-07/cnstr_기계_994211c828c7.png",
+          "caption": "#7탱크 Inner Tank Shell Plate(3단+4단) 수평자동용접/사상 (25/06/11)"
+        },
+        {
+          "file": "photos/2025-07/cnstr_기계_d0de296b9c04.png",
+          "caption": "#8탱크 Inner Tank Shell Plate(3단) 수직수동용접/사상 (25/06/11)"
+        },
+        {
+          "file": "photos/2025-07/cnstr_기계_c4fa9e14f945.png",
+          "caption": "Ground Flare Stack PKG. - Chamber 설치 (25/06/27)"
+        },
+        {
+          "file": "photos/2025-07/cnstr_기계_f836cc0654c6.png",
+          "caption": "#8탱크 Inner Tank Shell Plate(4단) 설치/취부 (25/06/27)"
+        },
+        {
+          "file": "photos/2025-07/cnstr_기계_0bedc3208ad1.png",
+          "caption": "#7탱크 Inner Tank Bottom Plate 취부/사상/용접 (25/06/02)"
+        },
+        {
+          "file": "photos/2025-07/cnstr_기계_d74398b974dc.png",
+          "caption": "#8탱크 Inner Tank Shell Plate(3단) 설치/취부 (25/06/02)"
+        }
+      ],
+      "slide": 11
+    },
+    {
+      "title": "공사 사진 (전기) — 2025.07",
+      "category": "육상부",
+      "type": "공사사진",
+      "items": [
+        {
+          "file": "photos/2025-07/cnstr_전기_6e10edd257ec.jpg",
+          "caption": "#8탱크 계단 조명 등기구 설치 (25/06/05)"
+        },
+        {
+          "file": "photos/2025-07/cnstr_전기_e4477b3e4f37.jpg",
+          "caption": "본부빌딩 B 2F (조명, 통신) CABLE 입선, 배관 (25/06/14)"
+        },
+        {
+          "file": "photos/2025-07/cnstr_전기_dc8dd3b2892d.jpg",
+          "caption": "주전기실 1F 등기구 설치 (25/06/17)"
+        },
+        {
+          "file": "photos/2025-07/cnstr_전기_8ef4dd39012a.jpg",
+          "caption": "주전기실 1층 Cable Tray 설치 (25/06/19)"
+        },
+        {
+          "file": "photos/2025-07/cnstr_전기_f38dbf906df4.jpg",
+          "caption": "Jetty Trestle Area RTD 설치작업 (25/06/23)"
+        },
+        {
+          "file": "photos/2025-07/cnstr_전기_328aa0b58f47.jpg",
+          "caption": "주전기실 옆 Pipe Rack 구간 비계 설치 (25/06/25)"
+        }
+      ],
+      "slide": 11
     }
   ],
   "2025-08": [
@@ -2365,6 +2629,34 @@ window.PHOTOS_DATA = {
           "caption": "특별안전보건교육 (’25.08.29)"
         }
       ]
+    },
+    {
+      "title": "공사 사진 (토목) — 2025.08",
+      "category": "육상부",
+      "type": "공사사진",
+      "items": [
+        {
+          "file": "photos/2025-08/cnstr_토목_87e123aaeaab.png",
+          "caption": "간선도로-1 우수맨홀 콘크리트 타설 (25/07/08)"
+        }
+      ],
+      "slide": 11
+    },
+    {
+      "title": "공사 사진 (전기) — 2025.08",
+      "category": "육상부",
+      "type": "공사사진",
+      "items": [
+        {
+          "file": "photos/2025-08/cnstr_전기_ed4c3e04739f.jpg",
+          "caption": "#7 Tank Roof (피뢰도선용) Anchor Bolt 설치 (25/07/09)"
+        },
+        {
+          "file": "photos/2025-08/cnstr_전기_fcf835101bea.jpg",
+          "caption": "#VALUE!"
+        }
+      ],
+      "slide": 11
     }
   ],
   "2025-09": [
@@ -2789,6 +3081,22 @@ window.PHOTOS_DATA = {
           "caption": "특별안전보건교육 (’25.09.17)"
         }
       ]
+    },
+    {
+      "title": "공사 사진 (전기) — 2025.10",
+      "category": "육상부",
+      "type": "공사사진",
+      "items": [
+        {
+          "file": "photos/2025-10/cnstr_전기_640fa9276295.jpg",
+          "caption": "#8탱크 Roof 피뢰도선용 Anchor Bolt 시공 (25/09/05)"
+        },
+        {
+          "file": "photos/2025-10/cnstr_전기_8ae9cfe3922d.jpg",
+          "caption": "해상 Module 지조립장 Cable Tray 설치 (25/09/12)"
+        }
+      ],
+      "slide": 11
     }
   ],
   "2025-11": [
@@ -3001,6 +3309,22 @@ window.PHOTOS_DATA = {
           "caption": "합동안전점검 (‘25.11.21)"
         }
       ]
+    },
+    {
+      "title": "공사 사진 (건축) — 2025.11",
+      "category": "육상부",
+      "type": "공사사진",
+      "items": [
+        {
+          "file": "photos/2025-11/cnstr_건축_62a7c282123e.png",
+          "caption": "망루 버림타설 완료 (25/10/20)"
+        },
+        {
+          "file": "photos/2025-11/cnstr_건축_1a34d834e305.png",
+          "caption": "발전기실 거더 및 수직사다리 설치 및 벽체 천장 페인트 완료 (25/10/17)"
+        }
+      ],
+      "slide": 11
     }
   ],
   "2025-12": [
@@ -3213,6 +3537,18 @@ window.PHOTOS_DATA = {
           "caption": "합동안전점검 (‘25.12.10)"
         }
       ]
+    },
+    {
+      "title": "공사 사진 (전기) — 2025.12",
+      "category": "육상부",
+      "type": "공사사진",
+      "items": [
+        {
+          "file": "photos/2025-12/cnstr_전기_c2755294f47f.jpg",
+          "caption": "#21 본부빌딩B 케이블 포설 (25/11/21)"
+        }
+      ],
+      "slide": 11
     }
   ],
   "2026-01": [
@@ -3425,6 +3761,138 @@ window.PHOTOS_DATA = {
           "caption": "합동안전점검 ('26.01.13)"
         }
       ]
+    },
+    {
+      "title": "공사 사진 (토목) — 2026.01",
+      "category": "육상부",
+      "type": "공사사진",
+      "items": [
+        {
+          "file": "photos/2026-01/cnstr_토목_36808cae3d33.jpg",
+          "caption": "#7탱크 Small Opening 철근가공 및 조립 (25/12/10)"
+        },
+        {
+          "file": "photos/2026-01/cnstr_토목_ae06298755bf.jpg",
+          "caption": "#7탱크 Small Opening 거푸집 설치 (25/12/15)"
+        },
+        {
+          "file": "photos/2026-01/cnstr_토목_cad91e32ec23.jpg",
+          "caption": "#7탱크 Small Opening Con'c 타설 (25/12/22)"
+        },
+        {
+          "file": "photos/2026-01/cnstr_토목_6a7d2c29c8aa.jpg",
+          "caption": "#8탱크 Small Opening 철근가공 및 조립 (25/12/24)"
+        },
+        {
+          "file": "photos/2026-01/cnstr_토목_de471aa92f71.jpg",
+          "caption": "U/G 9-3구간 PIV Valve Box 거푸집 설치 (25/12/03)"
+        },
+        {
+          "file": "photos/2026-01/cnstr_토목_06f99c6d306b.jpg",
+          "caption": "전기맨홀 (EMH-007) 벽체 Con'c 타설 (25/12/12)"
+        },
+        {
+          "file": "photos/2026-01/cnstr_토목_c764307c7334.png",
+          "caption": "주도로-1 U-Ditch 벽체 Con'c 타설 (25/12/03)"
+        },
+        {
+          "file": "photos/2026-01/cnstr_토목_5e6fd2663665.png",
+          "caption": "주도로-2 U-Ditch 기초 Con'c 타설 (25/12/12)"
+        }
+      ],
+      "slide": 11
+    },
+    {
+      "title": "공사 사진 (건축) — 2026.01",
+      "category": "육상부",
+      "type": "공사사진",
+      "items": [
+        {
+          "file": "photos/2026-01/cnstr_건축_5f0b2c15faa1.png",
+          "caption": "주전기실 외부 계단 석재타일 시공 (25/12/05)"
+        },
+        {
+          "file": "photos/2026-01/cnstr_건축_c407bf1edd9e.png",
+          "caption": "본부빌딩 B 서측 난간설치 (25/12/26)"
+        },
+        {
+          "file": "photos/2026-01/cnstr_건축_c26d7dc58bd4.jpg",
+          "caption": "SOG Compressor Shelter 외장판넬 공사 (25/12/19)"
+        },
+        {
+          "file": "photos/2026-01/cnstr_건축_9002146a7d94.jpg",
+          "caption": "분석실 B 되메우기 (25/12/16)"
+        }
+      ],
+      "slide": 11
+    },
+    {
+      "title": "공사 사진 (기계) — 2026.01",
+      "category": "육상부",
+      "type": "공사사진",
+      "items": [
+        {
+          "file": "photos/2026-01/cnstr_기계_17a6445274af.png",
+          "caption": "Ground Flare Chamber 보온 작업 (25/12/01)"
+        },
+        {
+          "file": "photos/2026-01/cnstr_기계_a19de9b2204d.png",
+          "caption": "#7탱크 Internal Pipe & Support 조립(용접/사상) (25/12/03)"
+        },
+        {
+          "file": "photos/2026-01/cnstr_기계_11dd21b229f1.png",
+          "caption": "#8탱크 Inner Tank Shell Plate(7단+8단) 수평용접/사상 (25/12/09)"
+        },
+        {
+          "file": "photos/2026-01/cnstr_기계_003aa4294eb8.png",
+          "caption": "해상모듈 (TP-16A) 설치작업 (25/12/09)"
+        },
+        {
+          "file": "photos/2026-01/cnstr_기계_356c2f2fdcbc.png",
+          "caption": "해상모듈 (LP-07D) 설치작업 (25/12/17)"
+        },
+        {
+          "file": "photos/2026-01/cnstr_기계_bf41d6418bd0.png",
+          "caption": "Loading Arm 입고 및 하역 (25/12/22)"
+        },
+        {
+          "file": "photos/2026-01/cnstr_기계_d91da38a0747.png",
+          "caption": "BOG 배관 작업 (25/12/26)"
+        },
+        {
+          "file": "photos/2026-01/cnstr_기계_db15e7cee255.png",
+          "caption": "#8탱크 Inner Tank Shell Plate(9단) 설치/취부/사상 (25/12/30)"
+        }
+      ],
+      "slide": 11
+    },
+    {
+      "title": "공사 사진 (전기) — 2026.01",
+      "category": "육상부",
+      "type": "공사사진",
+      "items": [
+        {
+          "file": "photos/2026-01/cnstr_전기_451ab780af12.jpg",
+          "caption": "#21 전기실 3층, 에어컨 관련 전선관 및 접지 설치 작업 (25/12/05)"
+        },
+        {
+          "file": "photos/2026-01/cnstr_전기_c6347fe41d7e.jpg",
+          "caption": "1터미널 SCV Area ~ #25 전기실 Cable 포설작업 (25/12/22)"
+        },
+        {
+          "file": "photos/2026-01/cnstr_전기_4d8cdc740184.jpg",
+          "caption": "#7탱크 Cable Tray 설치 (25/12/11)"
+        },
+        {
+          "file": "photos/2026-01/cnstr_전기_146eeba07654.jpg",
+          "caption": "#8탱크 입상부 Cable Tray 설치 (25/12/18)"
+        },
+        {
+          "file": "photos/2026-01/cnstr_전기_81993b1f2ec9.jpg",
+          "caption": "#8탱크 상부 Juntion Box 운반 작업 (25/12/23)"
+        }
+      ],
+      "slide": 11
     }
   ],
   "2026-02": [
@@ -3779,6 +4247,526 @@ window.PHOTOS_DATA = {
           "caption": "월간 안전점검 ('26.03.19)"
         }
       ]
+    }
+  ],
+  "2025-02": [
+    {
+      "title": "공사 사진 (토목) — 2025.02",
+      "category": "육상부",
+      "type": "공사사진",
+      "items": [
+        {
+          "file": "photos/2025-02/cnstr_토목_8c816ac61c49.png",
+          "caption": "#7 Tank STEP 4 수직 강선 인장 착수 (25/01/07)"
+        },
+        {
+          "file": "photos/2025-02/cnstr_토목_0320b98e50d4.png",
+          "caption": "#7 Tank STEP 4 수직 강선 그라우트 주입 완료 (25/01/25)"
+        },
+        {
+          "file": "photos/2025-02/cnstr_토목_c6cbd38fdad5.png",
+          "caption": "#8 Tank Roof 2단 철근 설치 (25/01/13)"
+        },
+        {
+          "file": "photos/2025-02/cnstr_토목_317c4664e75e.png",
+          "caption": "#8 Tank Roof 2단 1차 타설 (25/01/20)"
+        },
+        {
+          "file": "photos/2025-02/cnstr_토목_1406e3270ac2.png",
+          "caption": "Utility 기초  타설 (25/01/06)"
+        },
+        {
+          "file": "photos/2025-02/cnstr_토목_06f1e60f6498.png",
+          "caption": "Process Pipe Rack 기초 타설 (25/01/20)"
+        }
+      ],
+      "slide": 11
+    },
+    {
+      "title": "공사 사진 (건축) — 2025.02",
+      "category": "육상부",
+      "type": "공사사진",
+      "items": [
+        {
+          "file": "photos/2025-02/cnstr_건축_6ce0325c7792.png",
+          "caption": "주전기실 1층 보 거푸집제작 및 설치(25/01/20)"
+        },
+        {
+          "file": "photos/2025-02/cnstr_건축_57b651f64b1c.png",
+          "caption": "주전기실 철근 가공 및 조립(25/01/16)"
+        },
+        {
+          "file": "photos/2025-02/cnstr_건축_afa9803afeb6.png",
+          "caption": "BOG 장비기초 버림콘크리트 타설(25/01/10)"
+        },
+        {
+          "file": "photos/2025-02/cnstr_건축_7de6a1f30412.png",
+          "caption": "본부빌딩B 1층 시스템동바리 설치(25/01/20)"
+        }
+      ],
+      "slide": 11
+    },
+    {
+      "title": "공사 사진 (기계) — 2025.02",
+      "category": "육상부",
+      "type": "공사사진",
+      "items": [
+        {
+          "file": "photos/2025-02/cnstr_기계_95faa05b877e.png",
+          "caption": "Sleeper Area Pipe Rack-B 설치작업 (25/01/23)"
+        },
+        {
+          "file": "photos/2025-02/cnstr_기계_3952d497c86d.png",
+          "caption": "#7 Tank C.P 2nd Wall Plate 설치/취부 (25/01/23)"
+        },
+        {
+          "file": "photos/2025-02/cnstr_기계_2b84a60361dd.png",
+          "caption": "#8 Tank CGB 설치 (25/01/18)"
+        },
+        {
+          "file": "photos/2025-02/cnstr_기계_e5d3a8858977.png",
+          "caption": "#7 Tank Wall CGB 설치 (25/01/18)"
+        },
+        {
+          "file": "photos/2025-02/cnstr_기계_888087da9622.png",
+          "caption": "SNG Rack T7~8구간 설치 (25/01/13)"
+        },
+        {
+          "file": "photos/2025-02/cnstr_기계_60d90da7e35f.png",
+          "caption": "#7 Tank Riser Support Line Marking (25/01/13)"
+        },
+        {
+          "file": "photos/2025-02/cnstr_기계_f07802d7b3ae.png",
+          "caption": "#8 Tank PCB 설치 (25/01/06)"
+        }
+      ],
+      "slide": 11
+    },
+    {
+      "title": "공사 사진 (전기) — 2025.02",
+      "category": "육상부",
+      "type": "공사사진",
+      "items": [
+        {
+          "file": "photos/2025-02/cnstr_전기_eed8b71c1431.jpg",
+          "caption": "본부빌딩 B 매립박스 설치 작업 (25/01/09)"
+        },
+        {
+          "file": "photos/2025-02/cnstr_전기_7a01f79501c5.png",
+          "caption": "SS #21 주전기실 접지작업 (25/01/06)"
+        },
+        {
+          "file": "photos/2025-02/cnstr_전기_4612f394befb.png",
+          "caption": "#8 Tank 피뢰도선 설치 (25/01/04)"
+        }
+      ],
+      "slide": 11
+    }
+  ],
+  "2025-05": [
+    {
+      "title": "공사 사진 (토목) — 2025.05",
+      "category": "육상부",
+      "type": "공사사진",
+      "items": [
+        {
+          "file": "photos/2025-05/cnstr_토목_1a31657757fd.jpg",
+          "caption": "#8탱크 PT Step 2 수직 강연선 인장 (25/04/14)"
+        },
+        {
+          "file": "photos/2025-05/cnstr_토목_469362296a85.jpg",
+          "caption": "#8탱크 Roof 상부 면정리 (25/04/12)"
+        },
+        {
+          "file": "photos/2025-05/cnstr_토목_163471b82047.jpg",
+          "caption": "#8탱크 PT Step 2 수직 강연선 삽입 (25/04/09)"
+        },
+        {
+          "file": "photos/2025-05/cnstr_토목_8813d701a208.jpg",
+          "caption": "#8탱크 PT Step 2 수직 정착구 무수축 타설 (25/04/23)"
+        },
+        {
+          "file": "photos/2025-05/cnstr_토목_d589d5958563.jpg",
+          "caption": "#8탱크 Roof Pedestal 타설(수직 강선 간섭개소) (25/04/25)"
+        },
+        {
+          "file": "photos/2025-05/cnstr_토목_58cd7cee904e.jpg",
+          "caption": "#8탱크 PT Step 2 수직 정착구 그라우팅 (25/04/30)"
+        },
+        {
+          "file": "photos/2025-05/cnstr_토목_931066d9e6f4.png",
+          "caption": "간선도로 1구간 U형측구 기계화 타설 시험시공 (25/04/24)"
+        },
+        {
+          "file": "photos/2025-05/cnstr_토목_6511ce5623f5.jpg",
+          "caption": "K.O Drum Pit Wall 타설 (25/04/29)"
+        }
+      ],
+      "slide": 11
+    },
+    {
+      "title": "공사 사진 (건축) — 2025.05",
+      "category": "육상부",
+      "type": "공사사진",
+      "items": [
+        {
+          "file": "photos/2025-05/cnstr_건축_580fae18b0fa.jpg",
+          "caption": "본부빌딩 B 3층  WALL 및 COLUMN 거푸집 설치 (25/04/24)"
+        },
+        {
+          "file": "photos/2025-05/cnstr_건축_15dc94fd65f6.jpg",
+          "caption": "Water Pump House 기초 철근조립 및 거푸집설치 (25/04/23)"
+        },
+        {
+          "file": "photos/2025-05/cnstr_건축_444c725e3449.png",
+          "caption": "주전기실 3층 3~6열 슬라브 보 철근배근 (25/04/26)"
+        },
+        {
+          "file": "photos/2025-05/cnstr_건축_66b3c5753d1d.png",
+          "caption": "주전기실 1층 블록 쌓기 (25/04/20)"
+        }
+      ],
+      "slide": 11
+    },
+    {
+      "title": "공사 사진 (기계) — 2025.05",
+      "category": "육상부",
+      "type": "공사사진",
+      "items": [
+        {
+          "file": "photos/2025-05/cnstr_기계_4586e53419df.png",
+          "caption": "#8탱크 C.P 2nd Wall Plate 용접/사상 (25/04/15)"
+        },
+        {
+          "file": "photos/2025-05/cnstr_기계_3407cfdbb6cc.png",
+          "caption": "#7탱크 입상배관 설치작업 (25/04/15)"
+        },
+        {
+          "file": "photos/2025-05/cnstr_기계_5b54b3384082.png",
+          "caption": "#7탱크 Inner Tank Shell Plate(3단) 수직 용접/사상 (25/04/18)"
+        },
+        {
+          "file": "photos/2025-05/cnstr_기계_66b20898857a.png",
+          "caption": "해상모듈 TP-03A 설치 (25/04/18)"
+        },
+        {
+          "file": "photos/2025-05/cnstr_기계_e2d584d2e327.png",
+          "caption": "#8탱크 Inner Tank Shell Plate(1단) 설치/취부 (25/04/24)"
+        },
+        {
+          "file": "photos/2025-05/cnstr_기계_b2cdce10e9e6.png",
+          "caption": "#8탱크 Dry Sand 포설 (25/04/24)"
+        },
+        {
+          "file": "photos/2025-05/cnstr_기계_d508140829a6.png",
+          "caption": "해상모듈 TP-01AB 설치 (25/04/02)"
+        },
+        {
+          "file": "photos/2025-05/cnstr_기계_456086d71ae3.png",
+          "caption": "Interconnecting Pipe Rack-2 갤러리 권상설치 (25/04/08)"
+        }
+      ],
+      "slide": 11
+    },
+    {
+      "title": "공사 사진 (전기) — 2025.05",
+      "category": "육상부",
+      "type": "공사사진",
+      "items": [
+        {
+          "file": "photos/2025-05/cnstr_전기_db8441e647e2.jpg",
+          "caption": "해상 Module 지조립장 Cable Tray 설치 (25/04/01)"
+        },
+        {
+          "file": "photos/2025-05/cnstr_전기_218ca5fff38f.jpg",
+          "caption": "#8탱크 측면 피뢰도선 설치 (25/04/08)"
+        },
+        {
+          "file": "photos/2025-05/cnstr_전기_4214774730a4.jpg",
+          "caption": "Ground Flare Stack 접지작업 (25/04/21)"
+        },
+        {
+          "file": "photos/2025-05/cnstr_전기_fc760fae1058.jpg",
+          "caption": "주전기실 매입배관 설치 (25/04/28)"
+        }
+      ],
+      "slide": 11
+    }
+  ],
+  "2026-05": [
+    {
+      "title": "공사 사진 (토목) — 2026.05",
+      "category": "육상부",
+      "type": "공사사진",
+      "items": [
+        {
+          "file": "photos/2026-05/cnstr_토목_ba696f63e0bd.jpg",
+          "caption": "7TK Wall 도장(26/04/29)"
+        },
+        {
+          "file": "photos/2026-05/cnstr_토목_acd2cdaf0442.jpg",
+          "caption": "8TK L/O 콘크리트 타설(26/04/16)"
+        },
+        {
+          "file": "photos/2026-05/cnstr_토목_3c188bec37f7.png",
+          "caption": "7TK Wall Water Jet Cleaning 작업(26/04/14)"
+        },
+        {
+          "file": "photos/2026-05/cnstr_토목_74b5d4163860.png",
+          "caption": "8TK 수평강선 삽입(26/04/20)"
+        },
+        {
+          "file": "photos/2026-05/cnstr_토목_f955ef1dea9b.jpg",
+          "caption": "7TK Pelite 유류저장소 Wall 콘크리트 타설(26/04/08)"
+        },
+        {
+          "file": "photos/2026-05/cnstr_토목_dfe2755121dd.jpg",
+          "caption": "PDO 기초 터파기 작업(26/04/27)"
+        },
+        {
+          "file": "photos/2026-05/cnstr_토목_402f06628577.jpg",
+          "caption": "간선도로-1 L-Ditch 콘크리트 타설(26/04/29)"
+        },
+        {
+          "file": "photos/2026-05/cnstr_토목_aaa1447ea828.jpg",
+          "caption": "Fence-A구간 설치작업(26/04/16)"
+        }
+      ],
+      "slide": 11
+    },
+    {
+      "title": "공사 사진 (건축) — 2026.05",
+      "category": "육상부",
+      "type": "공사사진",
+      "items": [
+        {
+          "file": "photos/2026-05/cnstr_건축_3cb5c65bafa6.png",
+          "caption": "망루 게이트하우스 세면대, 위생기구 설치(26/04/16)"
+        },
+        {
+          "file": "photos/2026-05/cnstr_건축_6c47fc9d1ed0.jpg",
+          "caption": "본부빌딩 3층 텍스 설치(26/04/15)"
+        },
+        {
+          "file": "photos/2026-05/cnstr_건축_68e91104ec68.jpg",
+          "caption": "분석실B 미장(26/04/23)"
+        },
+        {
+          "file": "photos/2026-05/cnstr_건축_0503b28f3c9a.jpg",
+          "caption": "하역운전실 MAT Con'c 타설(26/04/13)"
+        }
+      ],
+      "slide": 11
+    },
+    {
+      "title": "공사 사진 (기계) — 2026.05",
+      "category": "육상부",
+      "type": "공사사진",
+      "items": [
+        {
+          "file": "photos/2026-05/cnstr_기계_8b7aa45f35b6.png",
+          "caption": "7TK Deck Insulation 작업(26/04/27)"
+        },
+        {
+          "file": "photos/2026-05/cnstr_기계_9971066eb9a2.png",
+          "caption": "BOG, SOG Area NG Line 가압테스트(26/04/27)"
+        },
+        {
+          "file": "photos/2026-05/cnstr_기계_3929b81d1480.png",
+          "caption": "#8 Tank Inner Tank Shell Plate(1단) 용접/사상(26/04/06)"
+        },
+        {
+          "file": "photos/2026-05/cnstr_기계_fe80280a699b.png",
+          "caption": "7TK BackPlate / Blanket 설치 작업(26/04/06)"
+        },
+        {
+          "file": "photos/2026-05/cnstr_기계_2bdbc2bb8369.png",
+          "caption": "Process Area - 배관보냉작업(26/04/10)"
+        },
+        {
+          "file": "photos/2026-05/cnstr_기계_e69be0a581c7.png",
+          "caption": "#7 Tank LP LNG Pump 설치(26/04/20)"
+        },
+        {
+          "file": "photos/2026-05/cnstr_기계_f5000e2e3320.png",
+          "caption": "#8 Tank 수압시험-Tank 충수(26/04/20)"
+        },
+        {
+          "file": "photos/2026-05/cnstr_기계_484f891d51b4.png",
+          "caption": "배관 Air Blowing(26/04/24)"
+        }
+      ],
+      "slide": 11
+    },
+    {
+      "title": "공사 사진 (전기) — 2026.05",
+      "category": "육상부",
+      "type": "공사사진",
+      "items": [
+        {
+          "file": "photos/2026-05/cnstr_전기_08d584a12e0a.png",
+          "caption": "Sleeper Area 계기 설치 및 Hook-Up 설치 작업(26/04/01)"
+        },
+        {
+          "file": "photos/2026-05/cnstr_전기_ec42ca97a1c2.png",
+          "caption": "#24 전기실 1층 Cable Support 설치 작업(26/04/25)"
+        },
+        {
+          "file": "photos/2026-05/cnstr_전기_e23ca672f90e.jpg",
+          "caption": "#8Tank Cable 입선, 결선(26/04/21)"
+        },
+        {
+          "file": "photos/2026-05/cnstr_전기_ff530e0fabca.jpg",
+          "caption": "#8Tank EBHS Tray 설치(26/04/23)"
+        },
+        {
+          "file": "photos/2026-05/cnstr_전기_9aef3763c9bd.jpg",
+          "caption": "Anode cable 맨홀 인입(26/04/15)"
+        },
+        {
+          "file": "photos/2026-05/cnstr_전기_707d762eb304.jpg",
+          "caption": "R&J SHUNT BOX CABLE 재단(26/04/27)"
+        }
+      ],
+      "slide": 11
+    }
+  ],
+  "2026-04": [
+    {
+      "title": "공사 사진 (토목) — 2026.04",
+      "category": "육상부",
+      "type": "공사사진",
+      "items": [
+        {
+          "file": "photos/2026-04/cnstr_토목_3468a6c21bd3.jpg",
+          "caption": "Fuel Oil Storage TK 방수 (26/03/13)"
+        },
+        {
+          "file": "photos/2026-04/cnstr_토목_c6a9b9d8ffb8.jpg",
+          "caption": "Neutralization Basin 방수 (26/03/21)"
+        },
+        {
+          "file": "photos/2026-04/cnstr_토목_1bcde3dc1b1f.png",
+          "caption": "7TK 수평강선 삽입 (26/03/01)"
+        },
+        {
+          "file": "photos/2026-04/cnstr_토목_3dd9dbf71de8.png",
+          "caption": "7TK 수평강선 인장 (26/03/11)"
+        },
+        {
+          "file": "photos/2026-04/cnstr_토목_94d447d6f2ab.jpg",
+          "caption": "8TK Annular Water Jet Cleaning (26/03/31)"
+        },
+        {
+          "file": "photos/2026-04/cnstr_토목_332ff0ed9ab4.jpg",
+          "caption": "8TK Anunular 면보수 (26/03/20)"
+        },
+        {
+          "file": "photos/2026-04/cnstr_토목_a9a5fecc6381.jpg",
+          "caption": "간선도로-1 측구수로관 설치 (26/03/06)"
+        },
+        {
+          "file": "photos/2026-04/cnstr_토목_3e42ddf7016d.jpg",
+          "caption": "주도로-6,8 U-Ditch 기초 콘크리트 타설 (26/03/16)"
+        }
+      ],
+      "slide": 11
+    },
+    {
+      "title": "공사 사진 (건축) — 2026.04",
+      "category": "육상부",
+      "type": "공사사진",
+      "items": [
+        {
+          "file": "photos/2026-04/cnstr_건축_2f33330d85a1.jpg",
+          "caption": "Jetty 전기실 판넬설치 (26/03/20)"
+        },
+        {
+          "file": "photos/2026-04/cnstr_건축_d8c0e097d82a.jpg",
+          "caption": "분석실B 시스템동바리 해체 (26/03/10)"
+        },
+        {
+          "file": "photos/2026-04/cnstr_건축_e875ec0820c3.png",
+          "caption": "망루 외부 시스템비계 해체 (26/03/12)"
+        },
+        {
+          "file": "photos/2026-04/cnstr_건축_cb719fb36e51.png",
+          "caption": "망루 천장 시공 (26/03/12)"
+        }
+      ],
+      "slide": 11
+    },
+    {
+      "title": "공사 사진 (기계) — 2026.04",
+      "category": "육상부",
+      "type": "공사사진",
+      "items": [
+        {
+          "file": "photos/2026-04/cnstr_기계_c57a04d64a7c.png",
+          "caption": "#8 Tank Internal Pipe & Support 지조립(용접/사상) (26/03/10)"
+        },
+        {
+          "file": "photos/2026-04/cnstr_기계_0648f67df194.png",
+          "caption": "'Tankage B Pigging (26/03/13)"
+        },
+        {
+          "file": "photos/2026-04/cnstr_기계_22371afcf854.png",
+          "caption": "#8 Tank Large Opening Closing (26/03/18)"
+        },
+        {
+          "file": "photos/2026-04/cnstr_기계_8a813838da63.png",
+          "caption": "#7 Tank 잔수처리 & 청소 (26/03/20)"
+        },
+        {
+          "file": "photos/2026-04/cnstr_기계_754dae95b6ad.png",
+          "caption": "Tankage Area -  배관보냉작업 (26/03/23)"
+        },
+        {
+          "file": "photos/2026-04/cnstr_기계_882ad2b28b78.png",
+          "caption": "#7 Tank Resilient Blanket 자재반입 (26/03/23)"
+        },
+        {
+          "file": "photos/2026-04/cnstr_기계_bfab4952fea1.png",
+          "caption": "Interconnecting#1 배관작업 (26/03/26)"
+        },
+        {
+          "file": "photos/2026-04/cnstr_기계_fb49abce5dd8.png",
+          "caption": "7Tank Resilient Blanket 설치 (26/03/29)"
+        }
+      ],
+      "slide": 11
+    },
+    {
+      "title": "공사 사진 (전기) — 2026.04",
+      "category": "육상부",
+      "type": "공사사진",
+      "items": [
+        {
+          "file": "photos/2026-04/cnstr_전기_0974d284b2d1.jpg",
+          "caption": "#7 Tank 상부 cable 입선 (26/03/09)"
+        },
+        {
+          "file": "photos/2026-04/cnstr_전기_60edd1559bd7.jpg",
+          "caption": "#7 Tank Tray Cover 설치 (26/03/16)"
+        },
+        {
+          "file": "photos/2026-04/cnstr_전기_ff2a1fd86d31.jpg",
+          "caption": "해상구간 전선관 설치 (26/03/23)"
+        },
+        {
+          "file": "photos/2026-04/cnstr_전기_11d707212cc6.jpg",
+          "caption": "Air Compressor Area P/R 계장 전선관 설치 작업 (26/03/04)"
+        },
+        {
+          "file": "photos/2026-04/cnstr_전기_da662becfbfe.jpg",
+          "caption": "#21 전기실 ~ 7,8 Tank P/R 구간 Cable 포설 작업 (26/03/13)"
+        },
+        {
+          "file": "photos/2026-04/cnstr_전기_1774f3b6da2b.jpg",
+          "caption": "Air Comp. Area 계기 설치 및 Hook-Up 작업 (26/03/23)"
+        }
+      ],
+      "slide": 11
     }
   ]
 };

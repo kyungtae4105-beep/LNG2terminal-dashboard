@@ -54,3 +54,11 @@ make_icons.py
 
 # 사용자 노트
 기대효과*.txt
+
+# 엑셀 OLE2 → xlsx 변환 임시 폴더 (재생성 가능, 용량 큼)
+_xlsx_converted/
+_xlsx_converted2/
+
+# 임시 로그
+_com_log.txt
+_check.js
