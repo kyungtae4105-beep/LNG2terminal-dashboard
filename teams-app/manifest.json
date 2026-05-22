@@ -1,7 +1,7 @@
 {
   "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.17/MicrosoftTeams.schema.json",
   "manifestVersion": "1.17",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "id": "7747b2a0-8571-4fcd-9d65-0e2a2b9163a4",
   "packageName": "com.poscointernational.lng2.dashboard",
   "developer": {
@@ -29,7 +29,7 @@
       "name": "Dashboard",
       "contentUrl": "https://energytf-dashboard.pages.dev/",
       "websiteUrl": "https://energytf-dashboard.pages.dev/",
-      "scopes": ["personal"]
+      "scopes": ["personal", "team", "groupChat"]
     }
   ],
   "permissions": ["identity"],

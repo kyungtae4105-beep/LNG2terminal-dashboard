@@ -16,9 +16,11 @@
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
 <script src="https://res.cdn.office.net/teams-js/2.24.0/js/MicrosoftTeams.min.js"></script>
 <script src="data.js"></script>
 <script src="photos.js"></script>
+<script src="schedule_data.js"></script>
 <script src="assets/data-source.js"></script>
 <script src="assets/auth-bar.js" defer></script>
 <style>
@@ -1622,9 +1624,14 @@ table.editable td.num input {
   grid-template-rows: 1.1fr 1fr;
   gap: 14px;
 }
-/* 마일스톤 컬럼: 2개 서브 (핵심 마일스톤 + 특이사항 — 특이사항을 살짝 위로) */
+/* 마일스톤 컬럼: 2개 서브 (좌·우 컬럼과 동일 비율로 통일 — 특이사항을 위로 정렬) */
 .panel[data-tab="overview"] .ov-col-ms .ov-group-body {
-  grid-template-rows: 1.65fr 1fr;
+  grid-template-rows: 1.1fr 1fr;
+}
+/* 마일스톤 리스트는 max-height + overflow로 길어지면 스크롤 */
+.panel[data-tab="overview"] .ov-sub-ms .ov-ms-list {
+  max-height: 100%;
+  overflow-y: auto;
 }
 .panel[data-tab="overview"] .ov-sub {
   display: flex;
@@ -2324,6 +2331,10 @@ table.editable td.num input {
 
       <div class="menu-group">🏗️ 프로젝트</div>
       <div class="menu-item" data-tab="progress"><span class="ic">📈</span>공정 관리</div>
+      <div class="menu-item" data-tab="schedule"><span class="ic">📅</span>Master Schedule</div>
+      <div class="menu-item" data-tab="process"><span class="ic">🔗</span>Process 공정표</div>
+      <div class="menu-item" data-tab="monthly"><span class="ic">📆</span>월간 공정 (3개월)</div>
+      <div class="menu-item" data-tab="orders"><span class="ic">📦</span>기자재 발주현황</div>
       <div class="menu-item" data-tab="resource"><span class="ic">👷</span>시공/자원관리</div>
       <div class="menu-item" data-tab="safety"><span class="ic">🛡️</span>안전 관리</div>
 
@@ -2375,6 +2386,10 @@ table.editable td.num input {
 const TAB_DEFS = {
   overview:   { title: '종합 대시보드',     icon: '📊' },
   progress:   { title: '공정 관리',         icon: '📈' },
+  schedule:   { title: 'Master Schedule',   icon: '📅' },
+  process:    { title: 'Process 공정표',    icon: '🔗' },
+  monthly:    { title: '월간 공정 (3개월)', icon: '📆' },
+  orders:     { title: '기자재 발주현황',   icon: '📦' },
   resource:   { title: '시공/자원관리',     icon: '👷' },
   safety:     { title: '안전 관리',         icon: '🛡️' },
   photos:     { title: '월별 작업사진',     icon: '📷' },
@@ -3106,10 +3121,10 @@ PANELS.overview = () => {
               </div>
             </div>
 
-            <!-- 서브2: 공정구역별 Near Miss 분포 -->
+            <!-- 서브2: 시공 지연 모니터 (EPC) -->
             <div class="ov-sub">
-              <div class="ov-sub-title">📊 공정구역별 Near Miss 분포</div>
-              <div class="ov-sub-body"><div class="ov-chart"><canvas id="ov-incident"></canvas></div></div>
+              <div class="ov-sub-title">🚨 시공 지연 모니터 <span id="ov-design-meta" style="font-weight:400;color:#7a8694;font-size:12px;margin-left:6px;"></span></div>
+              <div class="ov-sub-body"><div id="ov-design-host" style="padding:4px;max-height:420px;overflow-y:auto;"></div></div>
             </div>
 
           </div>
@@ -3166,30 +3181,96 @@ PANEL_INIT.overview = () => {
     }
   });
 
-  // === 공정구역별 Near Miss 분포 (가로 누적 바차트) ===
-  destroyChart('ov-incident');
-  const inc = d.incident_summary;
-  charts['ov-incident'] = new Chart(document.getElementById('ov-incident'), {
-    type: 'bar',
-    data: {
-      labels: inc.map(r => r.sub),
-      datasets: [
-        { label: '일반 Near Miss', data: inc.map(r => r.일반NearMiss), backgroundColor: '#6ba8c0' },
-        { label: '중대 Near Miss', data: inc.map(r => r.중대NearMiss), backgroundColor: '#4a6594' }
-      ]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false, indexAxis: 'y',
-      plugins: {
-        legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 13.5 }, padding: 10 } },
-        tooltip: { mode: 'index', intersect: false }
-      },
-      scales: {
-        x: { stacked: true, ticks: { font: { size: 13 }, precision: 0 }, grid: { color: 'rgba(0,0,0,0.04)' } },
-        y: { stacked: true, ticks: { font: { size: 15, weight: '600' } }, grid: { display: false } }
+  // === 시공 지연 모니터 (EPC 5월) — qty_progress 기반, 큰 폰트 + 한눈에 인사이트 ===
+  const ovDesignHost = document.getElementById('ov-design-host');
+  const ovDesignMeta = document.getElementById('ov-design-meta');
+  const qty = window.SCHEDULE_DATA && window.SCHEDULE_DATA.qty_progress;
+  if (qty && qty.rows && qty.rows.length && ovDesignHost) {
+    const epcRow = qty.rows.find(r => r.name === '종합 공정률 (EPC)');
+    const engRow = qty.rows.find(r => r.name === 'ENGINEERING');
+    const procRow = qty.rows.find(r => r.name === 'PROCUREMENT');
+    const consRow = qty.rows.find(r => r.name === 'CONSTRUCTION');
+    const pct = v => v != null ? +(v * 100).toFixed(2) : null;
+    const epcPlan = pct(epcRow && epcRow.plan_may);
+    const epcExp  = pct(epcRow && epcRow.expect_may);
+    const epcGap  = (epcPlan != null && epcExp != null) ? +(epcExp - epcPlan).toFixed(2) : null;
+    const consPlan = pct(consRow && consRow.plan_may);
+    const consExp  = pct(consRow && consRow.expect_may);
+    const consGap  = (consPlan != null && consExp != null) ? +(consExp - consPlan).toFixed(2) : null;
+    const engGap = engRow ? +((engRow.expect_may - engRow.plan_may) * 100).toFixed(2) : null;
+    const procGap = procRow ? +((procRow.expect_may - procRow.plan_may) * 100).toFixed(2) : null;
+    if (ovDesignMeta) ovDesignMeta.textContent = `(${qty.title.replace('5-1. 물량처리계획 (EPC 공정률)','').trim() || '5월 기준'} · 5-1.물량처리계획)`;
+
+    // CONSTRUCTION 하위 sub 중 갭이 큰 Top 3
+    const consSubs = [];
+    const consIdx = qty.rows.indexOf(consRow);
+    if (consIdx >= 0) {
+      for (let i = consIdx + 1; i < qty.rows.length; i++) {
+        const r = qty.rows[i];
+        if (['ENGINEERING','PROCUREMENT','CONSTRUCTION'].includes(r.name)) break;
+        if (r.kind === 'sub' && r.plan_may != null && r.expect_may != null) {
+          const g = (r.expect_may - r.plan_may) * 100;
+          consSubs.push({ name: r.name.replace(/^[IVX]+\.\s*/, ''), planMay: r.plan_may * 100, expMay: r.expect_may * 100, gap: g });
+        }
       }
     }
-  });
+    const topDelays = consSubs.filter(s => s.gap < 0).sort((a, b) => a.gap - b.gap).slice(0, 3);
+
+    const gapColor = (g) => g == null ? '#7a8694' : (g <= -3 ? '#c14a4a' : (g <= -1 ? '#d49462' : '#3f8a3f'));
+    const epcColor = gapColor(epcGap);
+    const consColor = gapColor(consGap);
+
+    // EPC mini bar (계획 폭 회색 + 실적 폭 색)
+    const epcMaxScale = Math.max(epcPlan || 0, epcExp || 0, 100);
+    const consMaxScale = Math.max(consPlan || 0, consExp || 0, 100);
+
+    ovDesignHost.innerHTML = `
+      <!-- 메인 KPI: 전체 EPC GAP을 큰 숫자로 -->
+      <div style="display:flex;align-items:baseline;justify-content:space-between;padding:10px 14px;background:${epcColor === '#c14a4a' ? '#fcf0f0' : (epcColor === '#d49462' ? '#fef9ee' : '#f0f8f0')};border-radius:6px;margin-bottom:12px;">
+        <div>
+          <div style="font-size:12px;color:#5a6677;font-weight:600;">전체 EPC GAP</div>
+          <div style="font-size:32px;font-weight:700;color:${epcColor};line-height:1.05;">${epcGap != null ? (epcGap >= 0 ? '+' : '') + epcGap.toFixed(2) : '–'}<span style="font-size:18px;">%p</span></div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:11.5px;color:#7a8694;">예상 실적 / 계획</div>
+          <div style="font-size:16px;font-weight:600;color:#28323e;">${epcExp != null ? epcExp.toFixed(2) : '–'}% <span style="color:#9aa6b4;">/ ${epcPlan != null ? epcPlan.toFixed(2) : '–'}%</span></div>
+        </div>
+      </div>
+
+      <!-- EPC 3분야 mini bar (계획 라인 + 실적 막대) -->
+      <div style="margin-bottom:12px;">
+        <div style="font-size:12.5px;color:#28323e;font-weight:700;margin-bottom:8px;">📐 EPC 분야별 진척</div>
+        ${[
+          { label: '시공 (Construction)', plan: consPlan, exp: consExp, gap: consGap, color: consColor },
+          { label: '구매 (Procurement)',   plan: pct(procRow && procRow.plan_may), exp: pct(procRow && procRow.expect_may), gap: procGap, color: gapColor(procGap) },
+          { label: '설계 (Engineering)',   plan: pct(engRow && engRow.plan_may),  exp: pct(engRow && engRow.expect_may), gap: engGap, color: gapColor(engGap) },
+        ].map(r => `
+          <div style="margin-bottom:8px;">
+            <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:3px;">
+              <span style="font-size:12px;color:#28323e;font-weight:600;">${r.label}</span>
+              <span style="font-size:12px;"><b style="color:${r.color};">${r.exp != null ? r.exp.toFixed(2) : '–'}%</b> <span style="color:#9aa6b4;">/ ${r.plan != null ? r.plan.toFixed(2) : '–'}%</span> <span style="color:${r.color};font-weight:600;">(${r.gap != null ? (r.gap >= 0 ? '+' : '') + r.gap.toFixed(2) : '–'}p)</span></span>
+            </div>
+            <div style="position:relative;height:10px;background:#eef0f4;border-radius:5px;overflow:hidden;">
+              <div style="position:absolute;top:0;left:0;height:100%;width:${Math.min(100, r.exp || 0)}%;background:${r.color};"></div>
+              <div style="position:absolute;top:-2px;left:${Math.min(100, r.plan || 0)}%;width:2px;height:14px;background:#28323e;opacity:0.6;"></div>
+            </div>
+          </div>`).join('')}
+      </div>
+
+      <!-- Top 3 지연 공종 -->
+      <div>
+        <div style="font-size:12.5px;color:#28323e;font-weight:700;margin-bottom:6px;">⛏ 시공 하위 — 지연 Top 3</div>
+        ${topDelays.length ? topDelays.map(t => `
+          <div style="display:flex;align-items:center;gap:8px;padding:6px 4px;border-bottom:1px solid #f0f2f6;">
+            <div style="flex:1;font-size:12.5px;color:#28323e;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${escAttr(t.name)}">${escHtml(t.name)}</div>
+            <div style="font-size:11.5px;color:#7a8694;white-space:nowrap;">${t.expMay.toFixed(2)}% / ${t.planMay.toFixed(2)}%</div>
+            <div style="font-size:13px;font-weight:700;color:#c14a4a;min-width:64px;text-align:right;">${t.gap.toFixed(2)}%p</div>
+          </div>`).join('') : '<div style="padding:8px;color:#3f8a3f;font-size:12px;text-align:center;">✓ 시공 부문 지연 항목 없음</div>'}
+      </div>
+    `;
+  } else if (ovDesignHost) {
+    ovDesignHost.innerHTML = '<div style="padding:20px;text-align:center;color:#7a8694;font-size:13px;">시공 진척 데이터가 없습니다 (5-1 시트 추출 필요)</div>';
+  }
 
   // === 마일스톤 탭 토글 ===
   const root = document.querySelector('.panel[data-tab="overview"]');
@@ -3208,13 +3289,9 @@ PANEL_INIT.overview = () => {
 };
 
 //------------------------------------------------------------
-// Progress
+// Progress — 종합대시보드 톤 통일 · 실데이터 (15개월 EPC 시계열) 기반
 //------------------------------------------------------------
-PANELS.progress = () => {
-  const d = D10();
-  const lastIdx = lastValidIdx(d.progress.종합.actual);
-  const lastMonth = d.progress.months[lastIdx];
-  return `
+PANELS.progress = () => `
   ${tabToolbar('progress')}
   <div class="inline-edit-area" data-edit="progress">
     <div class="editor-section">
@@ -3222,275 +3299,474 @@ PANELS.progress = () => {
       <div class="section-body"><table class="editable" id="ed-progress-inline"></table></div>
     </div>
   </div>
-  <div class="grid">
-    <!-- KPI summary row -->
-    <div class="card col-3">
-      <h3>종합 (${fmtMonthShort(lastMonth)})</h3>
-      <div class="kpi green" style="height: 90px;">
-        <div class="v" style="font-size: 32px;">${(d.progress.종합.actual[lastIdx] ?? 0).toFixed(2)}%</div>
-        <div class="l">계획 ${(d.progress.종합.plan[lastIdx] ?? 0).toFixed(2)}% / 잔여 ${(100-(d.progress.종합.actual[lastIdx]??0)).toFixed(1)}%</div>
-      </div>
+  <div id="pg-root" style="padding:18px 22px 28px;background:#f5f8fc;">
+    <style>
+      #pg-root .pg-grid { display:grid; grid-template-columns:repeat(12, 1fr); gap:16px; }
+      #pg-root .pg-card { background:#fff; border:1px solid #e6eaf1; border-radius:10px; padding:18px 20px; box-shadow:0 1px 2px rgba(20,30,60,0.04); }
+      #pg-root .pg-title { font-size:16px; font-weight:700; color:#28323e; margin:0 0 12px; display:flex; align-items:center; gap:8px; letter-spacing:0.01em; }
+      #pg-root .pg-title .pg-sub { font-size:13px; font-weight:500; color:#7a8694; margin-left:auto; }
+      #pg-root .pg-kpi { display:flex; flex-direction:column; gap:6px; }
+      #pg-root .pg-kpi .lbl { font-size:13px; color:#5a6677; font-weight:600; }
+      #pg-root .pg-kpi .val { font-size:34px; font-weight:700; line-height:1.05; }
+      #pg-root .pg-kpi .sub { font-size:12.5px; color:#7a8694; }
+      #pg-root .ec-chart { width:100%; height:360px; }
+      #pg-root .ec-chart-tall { width:100%; height:420px; }
+      #pg-root .col-3 { grid-column: span 3; }
+      #pg-root .col-6 { grid-column: span 6; }
+      #pg-root .col-8 { grid-column: span 8; }
+      #pg-root .col-4 { grid-column: span 4; }
+      #pg-root .col-12 { grid-column: span 12; }
+      @media (max-width:1200px) { #pg-root .col-3 { grid-column: span 6; } #pg-root .col-8, #pg-root .col-4, #pg-root .col-6 { grid-column: span 12; } }
+    </style>
+    <div style="display:flex;align-items:baseline;gap:14px;margin-bottom:14px;">
+      <h2 style="margin:0;font-size:22px;color:#2c569f;font-weight:700;">📊 공정 관리</h2>
+      <span id="pg-asof" style="font-size:13.5px;color:#7a8694;"></span>
     </div>
-    <div class="card col-3">
-      <h3>육상부</h3>
-      <div class="kpi" style="background:#eaf0f7; color:#2c569f; height: 90px;">
-        <div class="v" style="font-size: 32px;">${(d.progress.육상부.actual[lastIdx] ?? 0).toFixed(2)}%</div>
-        <div class="l">계획 ${(d.progress.육상부.plan[lastIdx] ?? 0).toFixed(2)}% / 편차 ${(d.progress.육상부.actual[lastIdx]-d.progress.육상부.plan[lastIdx]).toFixed(2)}%p</div>
-      </div>
-    </div>
-    <div class="card col-3">
-      <h3>해상부</h3>
-      <div class="kpi" style="background:#d9e8ee; color:#2f6f88; height: 90px;">
-        <div class="v" style="font-size: 32px;">${(d.progress.해상부.actual[lastIdx] ?? 0).toFixed(2)}%</div>
-        <div class="l">계획 ${(d.progress.해상부.plan[lastIdx] ?? 0).toFixed(2)}% / 편차 ${(d.progress.해상부.actual[lastIdx]-d.progress.해상부.plan[lastIdx]).toFixed(2)}%p</div>
-      </div>
-    </div>
-    <div class="card col-3">
-      <h3>154kV</h3>
-      <div class="kpi" style="background:#ece1cc; color:#8c5526; height: 90px;">
-        <div class="v" style="font-size: 32px;">${(d.progress["154kV"].actual[lastIdx] == null || d.progress["154kV"].actual[lastIdx] >= 100) ? '완료' : d.progress["154kV"].actual[lastIdx].toFixed(0)+'%'}</div>
-        <div class="l">${(d.progress["154kV"].actual[lastIdx] == null || d.progress["154kV"].actual[lastIdx] >= 100) ? '공사 완료' : '계획 '+d.progress["154kV"].plan[lastIdx].toFixed(0)+'%'}</div>
-      </div>
-    </div>
+    <div class="pg-grid">
+      <!-- Row 1: KPI 4 (가로 1/4씩) -->
+      <div class="pg-card col-3"><div class="pg-kpi" id="pg-kpi-plan"></div></div>
+      <div class="pg-card col-3"><div class="pg-kpi" id="pg-kpi-actual"></div></div>
+      <div class="pg-card col-3"><div class="pg-kpi" id="pg-kpi-gap"></div></div>
+      <div class="pg-card col-3"><div class="pg-kpi" id="pg-kpi-manpower"></div></div>
 
-    <div class="card col-12">
-      <h3>📈 공정구역별 S-Curve (Plan vs Actual)</h3>
-      <div class="chart-container chart-tall"><canvas id="pg-sub"></canvas></div>
-    </div>
+      <!-- Row 2: S-Curve + 분야 비교 -->
+      <div class="pg-card col-6">
+        <h3 class="pg-title">📈 EPC 누계 진척 <span class="pg-sub">25.02 ~ 26.05 시계열</span></h3>
+        <div class="ec-chart" id="pg-scurve"></div>
+      </div>
+      <div class="pg-card col-6">
+        <h3 class="pg-title">📊 분야별 진척 비교 <span class="pg-sub">5월 계획 vs 실적</span></h3>
+        <div class="ec-chart" id="pg-fields"></div>
+      </div>
 
-    <div class="card col-6">
-      <h3>📊 공정구역별 월별 편차 (Actual − Plan, %p)</h3>
-      <div class="chart-container chart-tall"><canvas id="pg-deviation"></canvas></div>
-    </div>
-    <div class="card col-6">
-      <h3>⚡ 월별 진척율 변화 (MoM Δ%p)</h3>
-      <div class="chart-container chart-tall"><canvas id="pg-velocity"></canvas></div>
-    </div>
+      <!-- Row 3: Heatmap + 지연 기여도 -->
+      <div class="pg-card col-6">
+        <h3 class="pg-title">🌡 분야 × 월 갭 Heatmap <span class="pg-sub">Actual − Plan (%p)</span></h3>
+        <div class="ec-chart" id="pg-heat"></div>
+      </div>
+      <div class="pg-card col-6">
+        <h3 class="pg-title">🎯 지연 기여도 분석 <span class="pg-sub">전체 갭을 분야별로 분해</span></h3>
+        <div class="ec-chart" id="pg-contrib"></div>
+      </div>
 
-    <div class="card col-6">
-      <h3>🗓️ 월×공정구역 공정률 히트맵 (실적)</h3>
-      <div id="pg-heatmap" style="overflow: auto;"></div>
-    </div>
-    <div class="card col-6">
-      <h3>📋 공정구역별 공정률 데이터</h3>
-      <div style="max-height: 360px; overflow: auto;">
-        <table id="pg-table"></table>
+      <!-- Row 4: 인원 추이 + Gantt -->
+      <div class="pg-card col-6">
+        <h3 class="pg-title">👷 인원 동원 추이 <span class="pg-sub">공정구역 · 최근 6개월</span></h3>
+        <div class="ec-chart" id="pg-manpower"></div>
+      </div>
+      <div class="pg-card col-6">
+        <h3 class="pg-title">🗓 Critical Path Gantt <span class="pg-sub">Master Rev.6B · TODAY 표시</span></h3>
+        <div class="ec-chart" id="pg-gantt"></div>
       </div>
     </div>
   </div>
 `;
-};
+
 PANEL_INIT.progress = () => {
   bindTabToolbar('progress');
-  const d = D10();
-  const months = d.progress.months;
-  const monthsShort = months.map(fmtMonthCompact);
-
-  destroyChart('pg-sub');
-  charts['pg-sub'] = new Chart(document.getElementById('pg-sub'), {
-    data: {
-      labels: monthsShort,
-      datasets: [
-        { type: 'line', label: '종합 계획', data: d.progress.종합.plan, borderColor: '#5a6677', borderDash: [4,3], borderWidth: 2.5, pointRadius: 3, pointBackgroundColor: '#5a6677' },
-        { type: 'line', label: '종합 실적', data: d.progress.종합.actual, borderColor: '#2c569f', borderWidth: 4, pointRadius: 5, pointBackgroundColor: '#2c569f', backgroundColor: 'rgba(36,74,130,0.10)', fill: false },
-        { type: 'line', label: '육상 계획', data: d.progress.육상부.plan, borderColor: '#4a7bd1', borderDash: [6,4], borderWidth: 2, pointRadius: 3, pointBackgroundColor: '#4a7bd1' },
-        { type: 'line', label: '육상 실적', data: d.progress.육상부.actual, borderColor: '#4a7bd1', borderWidth: 3, pointRadius: 4, pointBackgroundColor: '#4a7bd1' },
-        { type: 'line', label: '해상 계획', data: d.progress.해상부.plan, borderColor: '#6ba8c0', borderDash: [6,4], borderWidth: 2, pointRadius: 3, pointBackgroundColor: '#6ba8c0' },
-        { type: 'line', label: '해상 실적', data: d.progress.해상부.actual, borderColor: '#6ba8c0', borderWidth: 3, pointRadius: 4, pointBackgroundColor: '#6ba8c0' },
-        { type: 'line', label: '154kV 계획', data: d.progress["154kV"].plan, borderColor: '#d49462', borderDash: [6,4], borderWidth: 2, pointRadius: 3, pointBackgroundColor: '#d49462' },
-        { type: 'line', label: '154kV 실적', data: d.progress["154kV"].actual, borderColor: '#d49462', borderWidth: 3, pointRadius: 4, pointBackgroundColor: '#d49462' }
-      ]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 11 } } }, tooltip: { mode: 'index', intersect: false } },
-      scales: { y: { min: 50, max: 102, ticks: { callback: v => v + '%' } }, x: { grid: { display: false } } }
-    }
-  });
-
-  // Deviation chart
-  destroyChart('pg-deviation');
-  const subs = ['종합','육상부','해상부','154kV'];
-  charts['pg-deviation'] = new Chart(document.getElementById('pg-deviation'), {
-    type: 'bar',
-    data: {
-      labels: monthsShort,
-      datasets: subs.map((s) => ({
-        label: s,
-        data: d.progress[s].actual.map((a,j) => {
-          const p = d.progress[s].plan[j];
-          if (a == null || p == null) return null;
-          return +(a - p).toFixed(2);
-        }),
-        backgroundColor: SUB_COLORS[s],
-        borderRadius: 3,
-      }))
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { position: 'bottom' }, tooltip: { mode: 'index', intersect: false } },
-      scales: { y: { title: { display: true, text: '편차(%p)' } }, x: { grid: { display: false } } }
-    }
-  });
-
-  // MoM velocity chart (delta from previous month)
-  destroyChart('pg-velocity');
-  charts['pg-velocity'] = new Chart(document.getElementById('pg-velocity'), {
-    type: 'bar',
-    data: {
-      labels: monthsShort,
-      datasets: subs.map((s) => ({
-        label: s,
-        data: d.progress[s].actual.map((v, i, arr) => {
-          if (i === 0 || v == null || arr[i-1] == null) return null;
-          return +(v - arr[i-1]).toFixed(2);
-        }),
-        backgroundColor: SUB_COLORS[s] + 'cc',
-        borderColor: SUB_COLORS[s],
-        borderWidth: 1,
-        borderRadius: 3,
-      }))
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { position: 'bottom' }, tooltip: { mode: 'index', intersect: false } },
-      scales: { y: { title: { display: true, text: 'MoM 증분 (%p)' }, beginAtZero: true }, x: { grid: { display: false } } }
-    }
-  });
-
-  // Heatmap (월 × 공정구역 → 실적 %)
-  const heatRoot = document.getElementById('pg-heatmap');
-  if (heatRoot) {
-    let h = '<table style="border-collapse: collapse; width: 100%; font-size: 12px;"><thead><tr><th style="padding:6px; background:#f1f5f9; border:1px solid #e2e8f0;">공정구역</th>';
-    monthsShort.forEach(m => {
-      h += `<th style="padding:6px; background:#f1f5f9; border:1px solid #e2e8f0; min-width: 56px;">${m}</th>`;
-    });
-    h += '</tr></thead><tbody>';
-    subs.forEach(s => {
-      h += `<tr><td style="padding:6px; background:#f8fafc; border:1px solid #e2e8f0; font-weight: 600;">${s}</td>`;
-      d.progress[s].actual.forEach((v, i) => {
-        if (v == null) {
-          h += `<td style="padding:6px; border:1px solid #e2e8f0; color:#94a3b8; text-align:center;">-</td>`;
-        } else {
-          const pct = v / 100;
-          // Color: low=red, mid=yellow, high=green
-          let bg;
-          if (pct < 0.5) bg = '#fee2e2';
-          else if (pct < 0.7) bg = '#fef3c7';
-          else if (pct < 0.85) bg = '#fef9c3';
-          else if (pct < 0.95) bg = '#dcfce7';
-          else bg = '#bbf7d0';
-          h += `<td style="padding:6px; border:1px solid #e2e8f0; background:${bg}; text-align:center; font-weight: 500;">${v.toFixed(1)}</td>`;
-        }
-      });
-      h += '</tr>';
-    });
-    h += '</tbody></table>';
-    heatRoot.innerHTML = h;
+  if (typeof echarts === 'undefined') {
+    document.getElementById('pg-root').innerHTML = '<div style="padding:40px;color:#a14d4d;">ECharts 로딩 실패 — 네트워크 확인 필요</div>';
+    return;
   }
+  const d = D();
+  const SD = window.SCHEDULE_DATA || {};
+  const epcSeries = (SD.epc_series && SD.epc_series.rows) || [];
+  const qty = SD.qty_progress;
+  // 종합 EPC 마지막 값 (qty_progress의 5월 또는 epc_series 마지막)
+  const lastSeries = epcSeries.length ? epcSeries[epcSeries.length - 1] : null;
+  const planLast   = lastSeries && lastSeries.epc ? (lastSeries.epc.plan || 0) * 100 : 0;
+  const actualLast = lastSeries && lastSeries.epc ? (lastSeries.epc.actual || 0) * 100 : 0;
+  const gap = +(actualLast - planLast).toFixed(2);
+  const asOfMonth = lastSeries ? lastSeries.ym : '-';
+  document.getElementById('pg-asof').textContent = `As of ${asOfMonth} · 15개월 시계열 (25.02 ~ 26.05) · 출처 ${SD.source_file || '-'}`;
 
-  // Table
-  const tbl = document.getElementById('pg-table');
-  let html = '<thead><tr><th>월</th><th>구분</th><th>계획</th><th>실적</th><th>편차</th></tr></thead><tbody>';
-  subs.forEach(s => {
-    months.forEach((m,i) => {
-      const p = d.progress[s].plan[i], a = d.progress[s].actual[i];
-      if (p == null && a == null) return;
-      const dev = (a == null || p == null) ? null : (a-p).toFixed(2);
-      const cls = dev == null ? '' : (dev >= 0 ? 'badge-done' : 'badge-plan');
-      html += `<tr><td>${fmtMonthCompact(m)}</td><td><b>${s}</b></td><td>${p == null ? '-' : p.toFixed(2)}</td><td>${a == null ? '-' : a.toFixed(2)}</td><td>${dev == null ? '-' : `<span class="badge ${cls}">${dev}</span>`}</td></tr>`;
+  // 인원: data.js manpower 마지막 시점
+  const allMonths = d.progress.months;
+  const lastIdx = lastValidIdx(d.progress.종합.actual);
+  const subsManpower = ['육상부','해상부','154kV'];
+  const sumAt = i => subsManpower.reduce((s, k) => s + ((d.manpower[k].manager[i] ?? 0) + (d.manpower[k].partner[i] ?? 0)), 0);
+  const mpLast = sumAt(lastIdx);
+  const mpPrev = lastIdx > 0 ? sumAt(lastIdx - 1) : 0;
+  const mpDelta = mpLast - mpPrev;
+  const mpDeltaPct = mpPrev > 0 ? Math.round(mpDelta / mpPrev * 100) : 0;
+
+  // ===== Row 1: KPI 4개 (절제된 톤) =====
+  const PG_COLORS = { primary: '#2c569f', secondary: '#5a85c4', good: '#3f8a3f', bad: '#c14a4a', neutral: '#7a8694' };
+  const kpiHtml = (lbl, val, sub, color) => `<div class="lbl">${lbl}</div><div class="val" style="color:${color};">${val}</div><div class="sub">${sub}</div>`;
+  document.getElementById('pg-kpi-plan').innerHTML = kpiHtml('전체 누계 계획 (EPC)', `${planLast.toFixed(2)}%`, `${asOfMonth} 기준 · 5-1 시트`, PG_COLORS.primary);
+  document.getElementById('pg-kpi-actual').innerHTML = kpiHtml('전체 누계 실적 (EPC)', `${actualLast.toFixed(2)}%`, `잔여 ${(100-actualLast).toFixed(2)}%`, PG_COLORS.good);
+  document.getElementById('pg-kpi-gap').innerHTML = kpiHtml('공정 갭 (Actual − Plan)', `${gap >= 0 ? '+' : ''}${gap.toFixed(2)}%p`, gap < -3 ? '🚨 계획 대비 큰 지연' : (gap < 0 ? '계획 대비 지연' : '계획 대비 선행'), gap < 0 ? PG_COLORS.bad : PG_COLORS.good);
+  const mpSign = mpDelta > 0 ? '▲' : (mpDelta < 0 ? '▼' : '–');
+  const mpColor = mpDelta > 0 ? PG_COLORS.good : (mpDelta < 0 ? PG_COLORS.bad : PG_COLORS.neutral);
+  document.getElementById('pg-kpi-manpower').innerHTML = kpiHtml('일평균 투입인원 (data.js)', `${mpLast.toLocaleString()}명`, `MoM ${mpSign}${Math.abs(mpDelta)} (${mpDeltaPct >= 0 ? '+' : ''}${mpDeltaPct}%)`, mpColor);
+
+  // ===== ① EPC 누계 진척 S-Curve (15개월 시계열) =====
+  const ymLabels = epcSeries.map(r => r.ym.slice(2));   // '25-02'
+  const planArr   = epcSeries.map(r => r.epc && r.epc.plan   != null ? +(r.epc.plan   * 100).toFixed(2) : null);
+  const actualArr = epcSeries.map(r => r.epc && r.epc.actual != null ? +(r.epc.actual * 100).toFixed(2) : null);
+  const consArr   = epcSeries.map(r => r.cons && r.cons.actual != null ? +(r.cons.actual * 100).toFixed(2) : null);
+  const procArr   = epcSeries.map(r => r.proc && r.proc.actual != null ? +(r.proc.actual * 100).toFixed(2) : null);
+  const engArr    = epcSeries.map(r => r.eng && r.eng.actual != null ? +(r.eng.actual * 100).toFixed(2) : null);
+  const sc = echarts.init(document.getElementById('pg-scurve'));
+  sc.setOption({
+    grid: { left: 56, right: 28, top: 36, bottom: 64 },
+    tooltip: { trigger: 'axis' },
+    legend: { bottom: 6, icon: 'roundRect', itemHeight: 10, textStyle: { fontSize: 13 } },
+    xAxis: { type: 'category', data: ymLabels, axisLabel: { fontSize: 12, rotate: 30 } },
+    yAxis: { type: 'value', min: 0, max: 100, axisLabel: { formatter: '{value}%', fontSize: 12 } },
+    series: [
+      { name: '종합 계획',  type: 'line', data: planArr,   smooth: true, symbol: 'circle', symbolSize: 5, lineStyle: { color: PG_COLORS.neutral, type: 'dashed', width: 2 }, itemStyle: { color: PG_COLORS.neutral } },
+      { name: '종합 실적',  type: 'line', data: actualArr, smooth: true, symbol: 'circle', symbolSize: 7, lineStyle: { color: PG_COLORS.primary, width: 3.5 }, itemStyle: { color: PG_COLORS.primary }, areaStyle: { color: 'rgba(44,86,159,0.12)' },
+        markPoint: { symbol: 'pin', symbolSize: 60, data: [{ value: `${gap >= 0 ? '+' : ''}${gap.toFixed(2)}%p`, xAxis: ymLabels[ymLabels.length-1], yAxis: actualLast, itemStyle: { color: gap < 0 ? PG_COLORS.bad : PG_COLORS.good } }], label: { fontSize: 11, color: '#fff', fontWeight: 700 } } },
+      { name: '시공 실적',  type: 'line', data: consArr, smooth: true, symbol: 'none', lineStyle: { color: '#8a6e4b', width: 2 } },
+      { name: '구매 실적',  type: 'line', data: procArr, smooth: true, symbol: 'none', lineStyle: { color: '#6b5b95', width: 2 } },
+      { name: '설계 실적',  type: 'line', data: engArr,  smooth: true, symbol: 'none', lineStyle: { color: PG_COLORS.good, width: 2 } },
+    ],
+  });
+
+  // ===== ② 분야별 진척 비교 (5월 계획 vs 실적, 가로 막대) =====
+  const fields2 = qty && qty.rows ? ['ENGINEERING', 'PROCUREMENT', 'CONSTRUCTION'].map(n => qty.rows.find(r => r.name === n)).filter(Boolean) : [];
+  const fLabels = fields2.map(f => f.name === 'ENGINEERING' ? '설계' : (f.name === 'PROCUREMENT' ? '구매' : '시공'));
+  const fPlan = fields2.map(f => +(f.plan_may * 100).toFixed(2));
+  const fAct  = fields2.map(f => +(f.expect_may * 100).toFixed(2));
+  const fChart = echarts.init(document.getElementById('pg-fields'));
+  fChart.setOption({
+    grid: { left: 60, right: 30, top: 36, bottom: 50 },
+    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+    legend: { bottom: 4, icon: 'roundRect', itemHeight: 10, textStyle: { fontSize: 12.5 } },
+    xAxis: { type: 'value', max: 100, axisLabel: { formatter: '{value}%', fontSize: 11.5 } },
+    yAxis: { type: 'category', data: fLabels, axisLabel: { fontSize: 13.5, fontWeight: 600 } },
+    series: [
+      { name: '계획', type: 'bar', data: fPlan, itemStyle: { color: '#cdd5df', borderRadius: [0,3,3,0] }, barGap: '15%',
+        label: { show: true, position: 'right', formatter: '{c}%', fontSize: 11.5, color: '#7a8694' } },
+      { name: '실적', type: 'bar', data: fAct.map((v, i) => ({
+          value: v,
+          itemStyle: { color: (fPlan[i] - v >= 3) ? PG_COLORS.bad : PG_COLORS.primary, borderRadius: [0,3,3,0] }
+        })),
+        label: { show: true, position: 'right', formatter: '{c}%', fontSize: 12, fontWeight: 700, color: '#28323e' } },
+    ],
+  });
+
+  // ===== ③ Heatmap (분야 × 월) — epc_series 15개월 =====
+  const hYAxis = ['종합', '설계', '구매', '시공'];
+  const heatData = [];
+  let minGap = 0, maxGap = 0;
+  epcSeries.forEach((r, xi) => {
+    const items = [
+      { yi: 0, obj: r.epc },
+      { yi: 1, obj: r.eng },
+      { yi: 2, obj: r.proc },
+      { yi: 3, obj: r.cons },
+    ];
+    items.forEach(it => {
+      if (!it.obj || it.obj.plan == null || it.obj.actual == null) return;
+      const gv = +((it.obj.actual - it.obj.plan) * 100).toFixed(2);
+      heatData.push([xi, it.yi, gv]);
+      if (gv < minGap) minGap = gv;
+      if (gv > maxGap) maxGap = gv;
     });
   });
-  html += '</tbody>';
-  tbl.innerHTML = html;
+  const heat = echarts.init(document.getElementById('pg-heat'));
+  heat.setOption({
+    grid: { left: 70, right: 24, top: 16, bottom: 80 },
+    tooltip: { position: 'top', formatter: p => `<b>${hYAxis[p.value[1]]}</b> · ${epcSeries[p.value[0]].ym}<br>Gap: <b>${p.value[2] >= 0 ? '+' : ''}${p.value[2].toFixed(2)}%p</b>` },
+    xAxis: { type: 'category', data: ymLabels, axisLabel: { fontSize: 11, rotate: 30 }, splitArea: { show: true } },
+    yAxis: { type: 'category', data: hYAxis, axisLabel: { fontSize: 12.5, fontWeight: 600 }, splitArea: { show: true } },
+    visualMap: { min: Math.min(minGap, -5), max: Math.max(maxGap, 5), calculable: true, orient: 'horizontal',
+      left: 'center', bottom: 6, itemHeight: 90, itemWidth: 14, textStyle: { fontSize: 11 },
+      inRange: { color: [PG_COLORS.bad, '#f3c9c9', '#eef0f4', '#c5dbc5', PG_COLORS.good] },
+    },
+    series: [{ type: 'heatmap', data: heatData,
+      label: { show: true, fontSize: 11, formatter: p => p.value[2].toFixed(1) },
+      emphasis: { itemStyle: { borderColor: '#28323e', borderWidth: 2 } } }],
+  });
+
+  // ===== ④ 지연 기여도 분석 (Waterfall 대체) =====
+  // 분야별 갭 (Actual - Plan)을 가로 막대로. 종합 = 다른 분야의 합 (대조용 헤더).
+  const contribItems = qty && qty.rows ? [
+    { name: '시공',  row: qty.rows.find(r => r.name === 'CONSTRUCTION') },
+    { name: '구매',  row: qty.rows.find(r => r.name === 'PROCUREMENT') },
+    { name: '설계',  row: qty.rows.find(r => r.name === 'ENGINEERING') },
+    { name: '종합',  row: qty.rows.find(r => r.name === '종합 공정률 (EPC)'), isSum: true },
+  ].filter(it => it.row) : [];
+  const contribLabels = contribItems.map(it => it.name);
+  const contribValues = contribItems.map(it => {
+    const g = (it.row.expect_may - it.row.plan_may) * 100;
+    return +g.toFixed(2);
+  });
+  const contribChart = echarts.init(document.getElementById('pg-contrib'));
+  contribChart.setOption({
+    grid: { left: 60, right: 70, top: 30, bottom: 40 },
+    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' },
+      formatter: ps => {
+        const i = ps[0].dataIndex;
+        const it = contribItems[i];
+        return `<b>${it.name}</b><br>계획: ${(it.row.plan_may*100).toFixed(2)}%<br>실적: ${(it.row.expect_may*100).toFixed(2)}%<br>갭: <b style="color:${contribValues[i] < 0 ? PG_COLORS.bad : PG_COLORS.good};">${contribValues[i] >= 0 ? '+' : ''}${contribValues[i].toFixed(2)}%p</b>`;
+      } },
+    xAxis: { type: 'value', name: 'Actual − Plan (%p)', nameGap: 22, nameTextStyle: { fontSize: 11.5, color: '#7a8694' },
+      axisLabel: { fontSize: 11.5, formatter: v => (v > 0 ? '+' : '') + v } },
+    yAxis: { type: 'category', data: contribLabels, axisLabel: { fontSize: 14, fontWeight: 600 } },
+    series: [{
+      type: 'bar', data: contribValues.map((v, i) => ({
+        value: v,
+        itemStyle: {
+          color: contribItems[i].isSum
+            ? (v < 0 ? PG_COLORS.bad : PG_COLORS.good)
+            : (v <= -3 ? PG_COLORS.bad : (v < 0 ? '#d49462' : (v > 0 ? PG_COLORS.good : '#cdd5df'))),
+          borderRadius: 3,
+        },
+      })),
+      barWidth: '55%',
+      label: { show: true, position: 'right', formatter: p => (p.value >= 0 ? '+' : '') + p.value.toFixed(2) + '%p', fontSize: 13, fontWeight: 700, color: '#28323e' },
+      markLine: { silent: true, symbol: 'none', lineStyle: { color: '#cdd5df' }, data: [{ xAxis: 0 }] },
+    }],
+  });
+
+  // ===== ⑤ Manpower Stack (최근 6개월) =====
+  const RECENT_N = 6;
+  const winStart = Math.max(0, lastIdx - (RECENT_N - 1));
+  const mpMonths = allMonths.slice(winStart, lastIdx + 1);
+  const mpSeries = subsManpower.map((sub, i) => ({
+    name: sub, type: 'bar', stack: 'mp',
+    itemStyle: { color: [PG_COLORS.primary, PG_COLORS.secondary, '#8a6e4b'][i] },
+    data: mpMonths.map((_, j) => {
+      const idx = winStart + j;
+      return ((d.manpower[sub].manager[idx] ?? 0) + (d.manpower[sub].partner[idx] ?? 0));
+    }),
+  }));
+  const mpChart = echarts.init(document.getElementById('pg-manpower'));
+  mpChart.setOption({
+    grid: { left: 60, right: 24, top: 30, bottom: 60 },
+    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+    legend: { bottom: 4, icon: 'roundRect', itemHeight: 10, textStyle: { fontSize: 12.5 } },
+    xAxis: { type: 'category', data: mpMonths.map(fmtMonthCompact), axisLabel: { fontSize: 11.5 } },
+    yAxis: { type: 'value', axisLabel: { formatter: '{value}명', fontSize: 11.5 } },
+    series: mpSeries,
+  });
+
+  // ===== ⑥ Critical Path Gantt (col-6에 맞춰 축소) =====
+  const gantt = echarts.init(document.getElementById('pg-gantt'));
+  const ganttSpec = buildCriticalPathGantt(SD, 12);  // 상위 12개만
+  if (ganttSpec.xAxis) ganttSpec.xAxis.axisLabel = { fontSize: 11 };
+  if (ganttSpec.yAxis) ganttSpec.yAxis.axisLabel = { fontSize: 11.5, formatter: v => v.length > 22 ? v.slice(0, 21) + '…' : v };
+  if (ganttSpec.grid) { ganttSpec.grid.left = 190; ganttSpec.grid.top = 16; ganttSpec.grid.bottom = 36; ganttSpec.grid.right = 16; }
+  gantt.setOption(ganttSpec);
+
+  // 반응형
+  const charts_ec = [sc, fChart, heat, contribChart, mpChart, gantt];
+  const onResize = debounce(() => charts_ec.forEach(c => c && c.resize()), 100);
+  window.addEventListener('resize', onResize);
 };
 
+//--- Helper: WBS Treemap (5-1 qty_progress 활용) ---
+// 색: 갭(예상 - 계획)에 따라 음수면 빨강, 양수면 녹색
+function _gapColor(gapPct) {
+  if (gapPct == null || isNaN(gapPct)) return '#94a3b8';
+  if (gapPct <= -5) return '#ef4444';
+  if (gapPct <= -3) return '#f97316';
+  if (gapPct <= -1) return '#eab308';
+  if (gapPct < 1) return '#22c55e';
+  return '#10b981';
+}
+function buildWbsTreemap(SD) {
+  const qty = SD.qty_progress;
+  if (!qty || !qty.rows) return [];
+  const rows = qty.rows;
+  // EPC 3개 그룹: ENGINEERING / PROCUREMENT / CONSTRUCTION + 각각 직속 하위 (level 'sub')
+  // 종합 공정률은 root로 사용 안 함 (treemap top-level이 EPC 3개)
+  const epcGroups = ['ENGINEERING', 'PROCUREMENT', 'CONSTRUCTION'];
+  function packGroup(groupName) {
+    const gIdx = rows.findIndex(r => r.name === groupName);
+    if (gIdx < 0) return null;
+    const g = rows[gIdx];
+    // 하위: g 다음부터 다음 epc 그룹 이전까지 sub만 (leaf 제외 — 너무 많음)
+    let endIdx = rows.length;
+    for (let j = gIdx + 1; j < rows.length; j++) {
+      if (epcGroups.includes(rows[j].name)) { endIdx = j; break; }
+    }
+    const children = [];
+    for (let j = gIdx + 1; j < endIdx; j++) {
+      const r = rows[j];
+      if (r.kind === 'sub') {
+        const gapPct = (r.expect_may != null && r.plan_may != null) ? (r.expect_may - r.plan_may) * 100 : null;
+        children.push({
+          name: r.name.replace(/^[IVX]+\.\s*/, ''),  // 'I. 토목공사' → '토목공사'
+          value: (r.weight || 0) * 100,
+          planMay: r.plan_may, expMay: r.expect_may, gapPct,
+          itemStyle: { color: _gapColor(gapPct) },
+        });
+      }
+    }
+    const gapPct = (g.expect_may != null && g.plan_may != null) ? (g.expect_may - g.plan_may) * 100 : null;
+    const node = {
+      name: groupName === 'ENGINEERING' ? '설계 (Engineering)' :
+            (groupName === 'PROCUREMENT' ? '구매 (Procurement)' : '시공 (Construction)'),
+      value: (g.weight || 0) * 100,
+      planMay: g.plan_may, expMay: g.expect_may, gapPct,
+      itemStyle: { color: _gapColor(gapPct) },
+    };
+    if (children.length) node.children = children;
+    return node;
+  }
+  return epcGroups.map(packGroup).filter(Boolean);
+}
+
+//--- Helper: Waterfall 데이터 (계획 → 분야별 갭 → 실적) ---
+// delta 시리즈는 항상 양수(막대 길이), base 시리즈로 시작 위치 조절
+function buildWaterfall(SD, planLast, actualLast) {
+  const cats = ['계획'];
+  const base = [0];
+  const delta = [planLast];
+  const signed = [planLast];
+  const dp = SD.design_progress;
+  if (dp && dp.fields && dp.fields.length) {
+    const cleanName = s => String(s || '').replace(/^\s*\d+\.\s*/, '').trim();
+    const items = dp.fields.map(f => ({
+      name: cleanName(f.name),
+      gap: (((f.ratio || 0) - (f.plan_ratio || 0)) * 100) * (f.weight || 0) / 100,
+    })).sort((a, b) => Math.abs(b.gap) - Math.abs(a.gap));
+    const top = items.slice(0, 5);
+    const rest = items.slice(5).reduce((s, x) => s + x.gap, 0);
+    let cum = planLast;
+    const pushStep = (name, gap) => {
+      cats.push(name);
+      signed.push(gap);
+      if (gap >= 0) { base.push(cum); delta.push(gap); cum += gap; }
+      else { base.push(cum + gap); delta.push(-gap); cum += gap; }
+    };
+    for (const it of top) pushStep(it.name, it.gap);
+    if (Math.abs(rest) > 0.05) pushStep('기타', rest);
+  }
+  cats.push('실적');
+  base.push(0);
+  delta.push(actualLast);
+  signed.push(actualLast);
+  return { cats, base, delta, signed };
+}
+
+//--- Helper: Slip Chart 데이터 (monthly_schedule plan vs actual) ---
+function buildSlipData(SD) {
+  const points = [];
+  const mo = SD.monthly_schedule;
+  if (mo && mo.tasks) {
+    for (const t of mo.tasks) {
+      if (!t.plan || !t.plan.start || !t.actual || !t.actual.start) continue;
+      const p = new Date(t.plan.start);
+      const a = new Date(t.actual.start);
+      const slip = Math.round((a - p) / 86400000);
+      points.push([p, a, t.activity || t.subgroup || t.category || '–', t.plan.start, t.actual.start, slip]);
+    }
+  }
+  // 대각선 (min~max)
+  let lo = null, hi = null;
+  for (const p of points) {
+    const v1 = p[0], v2 = p[1];
+    if (!lo || v1 < lo) lo = v1;
+    if (!lo || v2 < lo) lo = v2;
+    if (!hi || v1 > hi) hi = v1;
+    if (!hi || v2 > hi) hi = v2;
+  }
+  if (!lo) { lo = new Date('2024-01-01'); hi = new Date('2026-12-31'); }
+  return { points, diag: [[lo, lo], [hi, hi]] };
+}
+
+//--- Helper: Critical Path Gantt (Master Schedule Rev.6B 최상위) ---
+function buildCriticalPathGantt(SD, limit) {
+  const ms = SD.master_schedule && SD.master_schedule.rev6b;
+  if (!ms || !ms.tasks) return { title: { text: '데이터 없음', left: 'center', textStyle: { fontSize: 13, color: '#7a8694' } } };
+  // 최상위 level (0 또는 1)에 해당하는 항목 중 날짜 있는 것 ~N개
+  const tasks = ms.tasks.filter(t => (t.level === 0 || t.level === 1) && t.start && t.end).slice(0, limit || 24);
+  const today = Date.now();
+  const data = tasks.map((t, i) => {
+    const s = new Date(t.start).getTime();
+    const e = new Date(t.end).getTime();
+    const isDelay = e < today && false; // todo: actual 없으니 단순 표시
+    return {
+      name: t.name, value: [i, s, e, t.name],
+      itemStyle: { color: t.level === 0 ? '#2563eb' : '#60a5fa' },
+    };
+  });
+  return {
+    grid: { left: 220, right: 20, top: 12, bottom: 36 },
+    tooltip: { formatter: p => `<b>${p.data.value[3]}</b><br>${new Date(p.data.value[1]).toISOString().slice(0,10)} ~ ${new Date(p.data.value[2]).toISOString().slice(0,10)}` },
+    xAxis: { type: 'time', axisLabel: { fontSize: 10 } },
+    yAxis: { type: 'category', data: tasks.map(t => t.name), inverse: true, axisLabel: { fontSize: 11, formatter: v => v.length > 28 ? v.slice(0, 27) + '…' : v } },
+    series: [{
+      type: 'custom',
+      renderItem: (params, api) => {
+        const cat = api.value(0);
+        const start = api.coord([api.value(1), cat]);
+        const end = api.coord([api.value(2), cat]);
+        const h = api.size([0, 1])[1] * 0.55;
+        return {
+          type: 'rect',
+          shape: { x: start[0], y: start[1] - h / 2, width: end[0] - start[0], height: h },
+          style: api.style(),
+        };
+      },
+      encode: { x: [1, 2], y: 0 },
+      data,
+      markLine: { silent: true, symbol: 'none', label: { show: true, position: 'end', formatter: 'TODAY', fontSize: 10, color: '#ef4444' }, lineStyle: { color: '#ef4444', type: 'dashed', width: 1.5 }, data: [{ xAxis: today }] },
+    }],
+  };
+}
+
 //------------------------------------------------------------
-// Resource (Manpower)
+// Resource (Manpower + Equipment) — 5월 엑셀(5-1/5-2/5-3) 기반
 //------------------------------------------------------------
 PANELS.resource = () => {
-  const d = D10();
-  const lastIdx = lastValidIdx(d.progress.종합.actual);
-  const lastMonth = d.manpower.months[lastIdx];
-  const totalMgr = ['육상부','해상부','154kV'].reduce((s,k) => s + (d.manpower[k].manager[lastIdx] ?? 0), 0);
-  const totalPtn = ['육상부','해상부','154kV'].reduce((s,k) => s + (d.manpower[k].partner[lastIdx] ?? 0), 0);
-  const totalCur = totalMgr + totalPtn;
-  const monthlyTotals = d.manpower.months.map((_, i) =>
-    ['육상부','해상부','154kV'].reduce((s,k) => s + (d.manpower[k].manager[i] ?? 0) + (d.manpower[k].partner[i] ?? 0), 0)
-  );
-  const cumulMM = monthlyTotals.reduce((s,v) => s+v, 0);
-  const peakIdx = monthlyTotals.reduce((bi, v, i) => v > monthlyTotals[bi] ? i : bi, 0);
   return `
   ${tabToolbar('resource')}
   <div class="inline-edit-area" data-edit="resource">
     <div class="editor-section">
-      <div class="section-header"><span class="arrow">▼</span><h3>👷 인력 투입 (관리자 / 협력사) — 인라인 편집</h3></div>
+      <div class="section-header"><span class="arrow">▼</span><h3>👷 인력 투입 (관리자 / 협력사) — 인라인 편집 (data.js)</h3></div>
       <div class="section-body"><table class="editable" id="ed-manpower-inline"></table></div>
     </div>
   </div>
-  <div class="grid">
-    <!-- KPI Cards -->
-    <div class="card col-3">
-      <h3>현재 인원 (${fmtMonthShort(lastMonth)})</h3>
-      <div class="kpi" style="background:#eaf0f7; color:#2c569f; height: 90px;">
-        <div class="v" style="font-size: 32px;">${totalCur.toLocaleString()}</div>
-        <div class="l">명 (관리자 ${totalMgr} + 협력 ${totalPtn})</div>
-      </div>
+  <div id="rs-root" style="padding:18px 22px 28px;background:#f5f8fc;">
+    <style>
+      #rs-root .rs-grid { display:grid; grid-template-columns:repeat(12, 1fr); gap:16px; }
+      #rs-root .rs-card { background:#fff; border:1px solid #e6eaf1; border-radius:10px; padding:18px 20px; box-shadow:0 1px 2px rgba(20,30,60,0.04); }
+      #rs-root .rs-title { font-size:16px; font-weight:700; color:#28323e; margin:0 0 12px; display:flex; align-items:center; gap:8px; letter-spacing:0.01em; }
+      #rs-root .rs-title .rs-sub { font-size:13px; font-weight:500; color:#7a8694; margin-left:auto; }
+      #rs-root .rs-hero { font-size:13px; color:#5a6677; font-weight:600; }
+      #rs-root .rs-val { font-size:34px; font-weight:700; line-height:1.05; }
+      #rs-root .rs-sublabel { font-size:13px; color:#7a8694; }
+      #rs-root .col-3 { grid-column: span 3; } #rs-root .col-4 { grid-column: span 4; }
+      #rs-root .col-6 { grid-column: span 6; } #rs-root .col-12 { grid-column: span 12; }
+      @media (max-width:1200px) { #rs-root .col-3, #rs-root .col-4 { grid-column: span 6; } #rs-root .col-6 { grid-column: span 12; } }
+      .rs-ec { width:100%; height:360px; }
+    </style>
+    <div style="display:flex;align-items:baseline;gap:14px;margin-bottom:14px;">
+      <h2 style="margin:0;font-size:22px;color:#2c569f;font-weight:700;">👷 시공 / 자원관리</h2>
+      <span id="rs-asof" style="font-size:13.5px;color:#7a8694;"></span>
     </div>
-    <div class="card col-3">
-      <h3>피크 인원</h3>
-      <div class="kpi" style="background:#e6ecf3; color:#2f4870; height: 90px;">
-        <div class="v" style="font-size: 32px;">${monthlyTotals[peakIdx]}</div>
-        <div class="l">${fmtMonthShort(d.manpower.months[peakIdx])} 기준</div>
-      </div>
-    </div>
-    <div class="card col-3">
-      <h3>누적 man-month</h3>
-      <div class="kpi" style="background:#f1f3f7; color:#3a4a63; height: 90px;">
-        <div class="v" style="font-size: 32px;">${cumulMM.toLocaleString()}</div>
-        <div class="l">${d.manpower.months.length}개월 누계</div>
-      </div>
-    </div>
-    <div class="card col-3">
-      <h3>관리자 비율</h3>
-      <div class="kpi" style="background:#f3dada; color:#a14d4d; height: 90px;">
-        <div class="v" style="font-size: 32px;">${totalCur > 0 ? (totalMgr / totalCur * 100).toFixed(1) : 0}%</div>
-        <div class="l">관리자 / 전체</div>
-      </div>
-    </div>
+    <div class="rs-grid">
+      <!-- Hero KPI 3 -->
+      <div class="rs-card col-4"><div id="rs-kpi-progress"></div></div>
+      <div class="rs-card col-4"><div id="rs-kpi-manpower"></div></div>
+      <div class="rs-card col-4"><div id="rs-kpi-equipment"></div></div>
 
-    <!-- Main charts -->
-    <div class="card col-6">
-      <h3>📊 월별 총 인력 투입 (공정구역 × 관리/협력)</h3>
-      <div class="chart-container chart-tall"><canvas id="rs-stack"></canvas></div>
-    </div>
-    <div class="card col-6">
-      <h3>관리자 vs 협력사 비율 (${fmtMonthShort(lastMonth)})</h3>
-      <div class="chart-container chart-tall"><canvas id="rs-pie"></canvas></div>
-    </div>
+      <!-- 분야별 공정률 -->
+      <div class="rs-card col-12">
+        <h3 class="rs-title">📐 분야별 공정률 현황 <span class="rs-sub">5월 계획 vs 예상 실적 누계</span></h3>
+        <div class="rs-ec" id="rs-epc" style="height:340px;"></div>
+      </div>
 
-    <div class="card col-6">
-      <h3>📈 누적 인공수 추이 (man-month)</h3>
-      <div class="chart-container chart-tall"><canvas id="rs-cumul"></canvas></div>
-    </div>
-    <div class="card col-6">
-      <h3>⚖️ 관리자 비율 변화 (월별 %)</h3>
-      <div class="chart-container chart-tall"><canvas id="rs-ratio"></canvas></div>
-    </div>
+      <!-- 5월 인원 도넛 + 장비 Top -->
+      <div class="rs-card col-6">
+        <h3 class="rs-title">👥 공종별 인원 동원 계획 <span class="rs-sub">5월 · 총 13,955 MD · 일평균 638명</span></h3>
+        <div class="rs-ec" id="rs-mp-pie" style="height:360px;"></div>
+      </div>
+      <div class="rs-card col-6">
+        <h3 class="rs-title">🚜 주요 장비 당월 실적 Top 6 <span class="rs-sub">4공종 합산 · 4월 실적</span></h3>
+        <div class="rs-ec" id="rs-eq-top" style="height:360px;"></div>
+      </div>
 
-    <div class="card col-6">
-      <h3>🗓️ 월×공정구역 인력 히트맵 (총 인원)</h3>
-      <div id="rs-heatmap" style="overflow: auto;"></div>
-    </div>
-    <div class="card col-6">
-      <h3>📊 공정구역별 인력 비중 (월별 %)</h3>
-      <div class="chart-container chart-tall"><canvas id="rs-share"></canvas></div>
-    </div>
-
-    <div class="card col-12">
-      <h3>📋 인력 상세 데이터</h3>
-      <div style="max-height: 360px; overflow: auto;">
-        <table id="rs-table"></table>
+      <!-- 시계열: 월별 인력 추이 -->
+      <div class="rs-card col-12">
+        <h3 class="rs-title">📈 월별 총 인력 투입 추이 <span class="rs-sub">data.js · 공정구역 × 관리/협력</span></h3>
+        <div class="rs-ec" id="rs-mp-trend" style="height:300px;"></div>
       </div>
     </div>
   </div>
@@ -3498,172 +3774,138 @@ PANELS.resource = () => {
 };
 PANEL_INIT.resource = () => {
   bindTabToolbar('resource');
-  const d = D10();
-  const lastIdx = lastValidIdx(d.progress.종합.actual);
-  const months = d.manpower.months;
-  const monthsShort = months.map(fmtMonthCompact);
+  if (typeof echarts === 'undefined') { document.getElementById('rs-root').innerHTML = '<div style="padding:40px;color:#a14d4d;">ECharts 로딩 실패</div>'; return; }
+  const SD = window.SCHEDULE_DATA || {};
+  const d = D();
+  const qty = SD.qty_progress;
+  const mp5 = SD.manpower_may;
+  const eq5 = SD.equipment_may;
+  const RS_COLORS = { primary: '#2c569f', secondary: '#5a85c4', good: '#3f8a3f', bad: '#c14a4a', neutral: '#7a8694', accent1: '#8a6e4b', accent2: '#6b5b95' };
+  document.getElementById('rs-asof').textContent = `엑셀 출처: ${SD.source_file || '-'} · 추출일: ${SD.extracted_at || '-'}`;
 
-  destroyChart('rs-stack');
-  charts['rs-stack'] = new Chart(document.getElementById('rs-stack'), {
-    type: 'bar',
-    data: {
-      labels: monthsShort,
-      datasets: [
-        { label: '육상-관리', data: d.manpower.육상부.manager, backgroundColor: '#2c569f', stack: 'land' },
-        { label: '육상-협력', data: d.manpower.육상부.partner, backgroundColor: '#5a85c4', stack: 'land' },
-        { label: '해상-관리', data: d.manpower.해상부.manager, backgroundColor: '#2f6f88', stack: 'sea' },
-        { label: '해상-협력', data: d.manpower.해상부.partner, backgroundColor: '#6da5b8', stack: 'sea' },
-        { label: '154kV-관리', data: d.manpower["154kV"].manager, backgroundColor: '#8c5526', stack: 'kv' },
-        { label: '154kV-협력', data: d.manpower["154kV"].partner, backgroundColor: '#c79666', stack: 'kv' }
-      ]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 11 } } }, tooltip: { mode: 'index', intersect: false } },
-      scales: { y: { stacked: true, beginAtZero: true, title: { display: true, text: '인원(명)' } }, x: { stacked: false, grid: { display: false } } }
-    }
-  });
+  // ===== Hero KPI 1: 총 누계 공정률 (EPC) =====
+  const epcRow = qty && qty.rows && qty.rows.find(r => r.name === '종합 공정률 (EPC)');
+  const planMay = epcRow ? (epcRow.plan_may * 100) : 0;
+  const expMay  = epcRow ? (epcRow.expect_may * 100) : 0;
+  const gap = +(expMay - planMay).toFixed(2);
+  document.getElementById('rs-kpi-progress').innerHTML = `
+    <div class="rs-hero">총 누계 공정률 (EPC) · 5월</div>
+    <div class="rs-val" style="color:${gap < 0 ? RS_COLORS.bad : RS_COLORS.good};">${expMay.toFixed(2)}%</div>
+    <div class="rs-sublabel">${gap < 0 ? '▼' : '▲'} ${Math.abs(gap).toFixed(2)}%p (계획 ${planMay.toFixed(2)}%)</div>
+    ${gap < -3 ? `<div style="margin-top:8px;padding:6px 10px;border-radius:6px;background:#fcf0f0;color:${RS_COLORS.bad};font-size:12.5px;font-weight:600;border-left:3px solid ${RS_COLORS.bad};">⚠ 시공 부문 만회대책 필요</div>` : ''}
+  `;
 
-  destroyChart('rs-pie');
-  const totalMgr = ['육상부','해상부','154kV'].reduce((s,k) => s + (d.manpower[k].manager[lastIdx] ?? 0), 0);
-  const totalPtn = ['육상부','해상부','154kV'].reduce((s,k) => s + (d.manpower[k].partner[lastIdx] ?? 0), 0);
-  charts['rs-pie'] = new Chart(document.getElementById('rs-pie'), {
-    type: 'doughnut',
-    data: {
-      labels: ['관리자', '협력사'],
-      datasets: [{ data: [totalMgr, totalPtn], backgroundColor: ['#c25656', '#4a7bd1'], borderWidth: 0 }]
-    },
-    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
-  });
+  // ===== Hero KPI 2: 5월 투입 인원 =====
+  const mpTotal = mp5 && mp5.total ? mp5.total.plan_may : 0;
+  const mpDaily = mp5 && mp5.total ? mp5.total.daily_may : 0;
+  const mpTop = mp5 && mp5.categories ? mp5.categories.slice().sort((a,b)=>b.plan_may-a.plan_may)[0] : null;
+  const mpTopPct = (mpTop && mpTotal) ? (mpTop.plan_may / mpTotal * 100) : 0;
+  document.getElementById('rs-kpi-manpower').innerHTML = `
+    <div class="rs-hero">5월 투입 예정 인원</div>
+    <div class="rs-val" style="color:${RS_COLORS.primary};">${mpTotal.toLocaleString()} <span style="font-size:16px;color:#7a8694;font-weight:500;">MD</span></div>
+    <div class="rs-sublabel">${mpTop ? `${mpTop.name} 비중 ${mpTopPct.toFixed(1)}% (최다)` : '–'} · 일평균 ${mpDaily}명</div>
+  `;
 
-  // Cumulative man-month (stacked area by sub)
-  destroyChart('rs-cumul');
-  const cumLand = []; const cumSea = []; const cum154 = [];
-  let aL = 0, aS = 0, aE = 0;
-  months.forEach((_, i) => {
-    aL += (d.manpower.육상부.manager[i] ?? 0) + (d.manpower.육상부.partner[i] ?? 0);
-    aS += (d.manpower.해상부.manager[i] ?? 0) + (d.manpower.해상부.partner[i] ?? 0);
-    aE += (d.manpower["154kV"].manager[i] ?? 0) + (d.manpower["154kV"].partner[i] ?? 0);
-    cumLand.push(aL); cumSea.push(aS); cum154.push(aE);
-  });
-  charts['rs-cumul'] = new Chart(document.getElementById('rs-cumul'), {
-    type: 'line',
-    data: {
-      labels: monthsShort,
-      datasets: [
-        { label: '육상부', data: cumLand, borderColor: '#4a7bd1', backgroundColor: 'rgba(74,123,209,0.30)', fill: true, tension: 0.3, pointRadius: 3 },
-        { label: '해상부', data: cumSea, borderColor: '#6ba8c0', backgroundColor: 'rgba(107,168,192,0.30)', fill: true, tension: 0.3, pointRadius: 3 },
-        { label: '154kV', data: cum154, borderColor: '#d49462', backgroundColor: 'rgba(212,148,98,0.30)', fill: true, tension: 0.3, pointRadius: 3 }
-      ]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { position: 'bottom' }, tooltip: { mode: 'index', intersect: false } },
-      scales: { y: { stacked: true, beginAtZero: true, title: { display: true, text: 'man-month' } }, x: { grid: { display: false } } }
-    }
-  });
+  // ===== Hero KPI 3: 최다 투입 장비 =====
+  const topEq = eq5 && eq5.aggregated && eq5.aggregated[0];
+  const topEq2 = eq5 && eq5.aggregated && eq5.aggregated[1];
+  document.getElementById('rs-kpi-equipment').innerHTML = `
+    <div class="rs-hero">최다 투입 장비 (4월 실적 4공종 합)</div>
+    <div class="rs-val" style="color:#1f2c3f;">${topEq ? topEq.name : '–'}</div>
+    <div class="rs-sublabel">${topEq ? `${topEq.actual_apr}대 투입` : '–'}${topEq2 ? ` / ${topEq2.name} ${topEq2.actual_apr}대` : ''}</div>
+  `;
 
-  // Manager ratio over time
-  destroyChart('rs-ratio');
-  const ratios = months.map((_, i) => {
-    const mg = ['육상부','해상부','154kV'].reduce((s,k) => s + (d.manpower[k].manager[i] ?? 0), 0);
-    const pt = ['육상부','해상부','154kV'].reduce((s,k) => s + (d.manpower[k].partner[i] ?? 0), 0);
-    const tot = mg + pt;
-    return tot > 0 ? +(mg / tot * 100).toFixed(2) : null;
-  });
-  charts['rs-ratio'] = new Chart(document.getElementById('rs-ratio'), {
-    type: 'line',
-    data: {
-      labels: monthsShort,
-      datasets: [
-        { label: '관리자 비율 (%)', data: ratios, borderColor: '#c25656', backgroundColor: 'rgba(194,86,86,0.20)', fill: true, tension: 0.3, pointRadius: 4, pointBackgroundColor: '#c25656', borderWidth: 2.5 }
-      ]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { position: 'bottom' } },
-      scales: { y: { beginAtZero: true, title: { display: true, text: '관리자 비율(%)' }, ticks: { callback: v => v + '%' } }, x: { grid: { display: false } } }
-    }
-  });
-
-  // Sub-share over time (% per sub)
-  destroyChart('rs-share');
-  const monthlyTotals = months.map((_, i) => ['육상부','해상부','154kV'].reduce((s,k) => s + (d.manpower[k].manager[i] ?? 0) + (d.manpower[k].partner[i] ?? 0), 0));
-  const sharePct = (sub) => months.map((_, i) => {
-    const t = monthlyTotals[i];
-    if (!t) return null;
-    return +(((d.manpower[sub].manager[i] ?? 0) + (d.manpower[sub].partner[i] ?? 0)) / t * 100).toFixed(1);
-  });
-  charts['rs-share'] = new Chart(document.getElementById('rs-share'), {
-    type: 'bar',
-    data: {
-      labels: monthsShort,
-      datasets: [
-        { label: '육상부', data: sharePct('육상부'), backgroundColor: '#2563eb', stack: 's' },
-        { label: '해상부', data: sharePct('해상부'), backgroundColor: '#10b981', stack: 's' },
-        { label: '154kV', data: sharePct('154kV'), backgroundColor: '#f59e0b', stack: 's' }
-      ]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { position: 'bottom' } },
-      scales: { y: { stacked: true, beginAtZero: true, max: 100, ticks: { callback: v => v + '%' } }, x: { stacked: true, grid: { display: false } } }
-    }
-  });
-
-  // Manpower heatmap (월 × 공정구역 → 총 인원)
-  const heatRoot = document.getElementById('rs-heatmap');
-  if (heatRoot) {
-    const cellByMonth = (sub) => months.map((_, i) => (d.manpower[sub].manager[i] ?? 0) + (d.manpower[sub].partner[i] ?? 0));
-    const subValues = ['육상부','해상부','154kV'];
-    let maxVal = 0;
-    subValues.forEach(s => cellByMonth(s).forEach(v => { if (v > maxVal) maxVal = v; }));
-    let h = '<table style="border-collapse: collapse; width: 100%; font-size: 12px;"><thead><tr><th style="padding:6px; background:#f1f5f9; border:1px solid #e2e8f0;">공정구역</th>';
-    monthsShort.forEach(m => {
-      h += `<th style="padding:6px; background:#f1f5f9; border:1px solid #e2e8f0; min-width: 56px;">${m}</th>`;
+  // ===== 분야별 공정률 (EPC) =====
+  if (qty && qty.rows) {
+    const groups = qty.rows.filter(r => ['종합 공정률 (EPC)', 'ENGINEERING', 'PROCUREMENT', 'CONSTRUCTION'].includes(r.name));
+    const labels = groups.map(g => g.name.replace('종합 공정률 (EPC)', '종합 (EPC)').replace('ENGINEERING','설계').replace('PROCUREMENT','구매').replace('CONSTRUCTION','시공'));
+    const planVals = groups.map(g => +((g.plan_may || 0) * 100).toFixed(2));
+    const actVals  = groups.map(g => +((g.expect_may || 0) * 100).toFixed(2));
+    const epcChart = echarts.init(document.getElementById('rs-epc'));
+    epcChart.setOption({
+      grid: { left: 60, right: 28, top: 36, bottom: 60 },
+      tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+      legend: { bottom: 4, icon: 'roundRect', itemHeight: 10, textStyle: { fontSize: 13 } },
+      xAxis: { type: 'category', data: labels, axisLabel: { fontSize: 13.5, fontWeight: 600, interval: 0 } },
+      yAxis: { type: 'value', max: 100, axisLabel: { formatter: '{value}%', fontSize: 12 } },
+      series: [
+        { name: '5월 계획 누계', type: 'bar', data: planVals, itemStyle: { color: '#cdd5df' }, barGap: '15%',
+          label: { show: true, position: 'top', fontSize: 12, formatter: '{c}%', color: '#7a8694' } },
+        { name: '5월 예상 실적', type: 'bar', data: actVals, itemStyle: {
+            color: (p) => (planVals[p.dataIndex] - actVals[p.dataIndex] >= 3) ? RS_COLORS.bad : RS_COLORS.primary
+          },
+          label: { show: true, position: 'top', fontSize: 13, fontWeight: 700, formatter: '{c}%', color: '#28323e' } },
+      ],
     });
-    h += '<th style="padding:6px; background:#f1f5f9; border:1px solid #e2e8f0;">합계</th></tr></thead><tbody>';
-    subValues.forEach(s => {
-      const vals = cellByMonth(s);
-      const total = vals.reduce((a,b) => a+b, 0);
-      h += `<tr><td style="padding:6px; background:#f8fafc; border:1px solid #e2e8f0; font-weight: 600;">${s}</td>`;
-      vals.forEach(v => {
-        if (!v) {
-          h += `<td style="padding:6px; border:1px solid #e2e8f0; color:#94a3b8; text-align:center;">-</td>`;
-        } else {
-          const ratio = v / maxVal;
-          const r = Math.round(255 - (255 - 37) * ratio);
-          const g = Math.round(255 - (255 - 99) * ratio);
-          const b = Math.round(255 - (255 - 235) * ratio);
-          const txtColor = ratio > 0.5 ? '#fff' : '#1e3a8a';
-          h += `<td style="padding:6px; border:1px solid #e2e8f0; background:rgb(${r},${g},${b}); color:${txtColor}; text-align:center; font-weight: 500;">${v}</td>`;
-        }
-      });
-      h += `<td style="padding:6px; border:1px solid #e2e8f0; background:#fef9c3; text-align:center; font-weight: 600;">${total}</td>`;
-      h += '</tr>';
-    });
-    // total row
-    h += '<tr><td style="padding:6px; background:#f8fafc; border:1px solid #e2e8f0; font-weight: 600;">합계</td>';
-    monthlyTotals.forEach(t => {
-      h += `<td style="padding:6px; border:1px solid #e2e8f0; background:#fef9c3; text-align:center; font-weight: 600;">${t || '-'}</td>`;
-    });
-    h += `<td style="padding:6px; border:1px solid #e2e8f0; background:#fde68a; text-align:center; font-weight: 700;">${monthlyTotals.reduce((a,b) => a+b, 0)}</td>`;
-    h += '</tr></tbody></table>';
-    heatRoot.innerHTML = h;
+    window.__rsCharts = (window.__rsCharts || []); window.__rsCharts.push(epcChart);
   }
 
-  // Detail table
-  const tbl = document.getElementById('rs-table');
-  let html = '<thead><tr><th>월</th><th>구분</th><th>관리자</th><th>협력사</th><th>합계</th></tr></thead><tbody>';
-  ['종합','육상부','해상부','154kV'].forEach(s => {
-    months.forEach((m,i) => {
-      const mg = d.manpower[s].manager[i], pt = d.manpower[s].partner[i];
-      if (mg == null && pt == null) return;
-      html += `<tr><td>${fmtMonthCompact(m)}</td><td><b>${s}</b></td><td>${mg ?? '-'}</td><td>${pt ?? '-'}</td><td><b>${(mg ?? 0) + (pt ?? 0)}</b></td></tr>`;
+  // ===== 공종별 인원 도넛 (절제된 4색) =====
+  if (mp5 && mp5.categories) {
+    const pieData = mp5.categories.map(c => ({ name: c.name, value: c.plan_may || 0 }));
+    const colors = [RS_COLORS.primary, RS_COLORS.secondary, RS_COLORS.accent1, RS_COLORS.accent2];
+    const mpPie = echarts.init(document.getElementById('rs-mp-pie'));
+    mpPie.setOption({
+      tooltip: { trigger: 'item', formatter: p => `<b>${p.name}</b><br>${p.value.toLocaleString()} MD (${p.percent.toFixed(1)}%)` },
+      legend: { right: 8, top: 'middle', orient: 'vertical', icon: 'circle', itemHeight: 12, textStyle: { fontSize: 13.5 }, formatter: name => {
+        const c = mp5.categories.find(x => x.name === name);
+        return c ? `${name} ${(c.plan_may/mpTotal*100).toFixed(1)}%` : name;
+      } },
+      series: [{
+        type: 'pie', radius: ['48%','78%'], center: ['38%','50%'], avoidLabelOverlap: true,
+        data: pieData.map((d, i) => ({ ...d, itemStyle: { color: colors[i] } })),
+        label: { show: true, formatter: '{b}\n{d}%', fontSize: 12, fontWeight: 600 },
+        labelLine: { show: true },
+        emphasis: { label: { show: true, fontSize: 14.5, fontWeight: 'bold' } },
+      }],
     });
+    window.__rsCharts.push(mpPie);
+  }
+
+  // ===== 장비 Top 6 =====
+  if (eq5 && eq5.aggregated && eq5.aggregated.length) {
+    const top = eq5.aggregated.slice(0, 6).reverse();
+    const eqTop = echarts.init(document.getElementById('rs-eq-top'));
+    eqTop.setOption({
+      grid: { left: 110, right: 40, top: 20, bottom: 40 },
+      tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' }, formatter: ps => `<b>${ps[0].name}</b><br>4월 실적: ${ps[0].value}대` },
+      xAxis: { type: 'value', axisLabel: { fontSize: 12 } },
+      yAxis: { type: 'category', data: top.map(t => t.name), axisLabel: { fontSize: 13.5, fontWeight: 600 } },
+      series: [{
+        type: 'bar', data: top.map(t => t.actual_apr), itemStyle: { color: RS_COLORS.primary, borderRadius: [0,4,4,0] },
+        label: { show: true, position: 'right', fontSize: 13, fontWeight: 600, formatter: '{c}대', color: '#28323e' },
+      }],
+    });
+    window.__rsCharts.push(eqTop);
+  }
+
+  // ===== 월별 인력 추이 (data.js, 최근 24개월) =====
+  const months = d.manpower.months;
+  const last = Math.max(0, months.length - 24);
+  const monthsRecent = months.slice(last);
+  const subs = ['육상부','해상부','154kV'];
+  const subColors = [RS_COLORS.primary, RS_COLORS.secondary, RS_COLORS.accent1];
+  const series = [];
+  subs.forEach((sub, i) => {
+    series.push({ name: `${sub}-관리`, type: 'bar', stack: sub,
+      data: monthsRecent.map((_, j) => d.manpower[sub].manager[last + j] || 0), itemStyle: { color: subColors[i] } });
+    series.push({ name: `${sub}-협력`, type: 'bar', stack: sub,
+      data: monthsRecent.map((_, j) => d.manpower[sub].partner[last + j] || 0), itemStyle: { color: subColors[i], opacity: 0.55 } });
   });
-  html += '</tbody>';
-  tbl.innerHTML = html;
+  const mpTrend = echarts.init(document.getElementById('rs-mp-trend'));
+  mpTrend.setOption({
+    grid: { left: 60, right: 24, top: 34, bottom: 56 },
+    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+    legend: { bottom: 4, icon: 'roundRect', itemHeight: 10, textStyle: { fontSize: 12 } },
+    xAxis: { type: 'category', data: monthsRecent.map(fmtMonthCompact), axisLabel: { fontSize: 11.5, rotate: 30 } },
+    yAxis: { type: 'value', axisLabel: { formatter: '{value}명', fontSize: 11.5 } },
+    series,
+  });
+  window.__rsCharts.push(mpTrend);
+
+  // 반응형
+  const onResize = debounce(() => (window.__rsCharts || []).forEach(c => c && c.resize()), 100);
+  window.addEventListener('resize', onResize);
 };
 
 //------------------------------------------------------------
@@ -5222,6 +5464,1688 @@ openTab('overview');
     }).catch(function () { /* Teams 외 호스트 iframe이면 무시 */ });
   } catch (e) { /* SDK 로드 실패해도 대시보드는 정상 동작 */ }
 })();
+
+//============================================================
+// Master Schedule + Process + Monthly 일정 시각화 (HTML 트리 + SVG 간트)
+//============================================================
+(function () {
+  const SD = window.SCHEDULE_DATA;
+  if (!SD) {
+    const errHtml = '<div style="padding:24px;color:#a14d4d;font-size:14px;">schedule_data.js를 찾을 수 없습니다. <code>py extract_schedule.py</code>로 재생성해 주세요.</div>';
+    PANELS.schedule = () => errHtml;
+    PANELS.process  = () => errHtml;
+    PANELS.monthly  = () => errHtml;
+    PANELS.orders   = () => errHtml;
+    return;
+  }
+
+  //--- 색상/디멘션 ---
+  const LEVEL_FILLS = ['#2c569f', '#4a7bd1', '#7a9fde', '#9ec0e2', '#a3b3c4'];
+  const COMPARE_COLORS = {
+    rev4:     { fill: '#a3b3c4', stroke: '#7a8694', label: 'Master Rev.4' },
+    recovery: { fill: '#d49462', stroke: '#b67d4f', label: '공정만회' },
+    updated:  { fill: '#2c569f', stroke: '#1d3d76', label: 'Updated' },
+    rev1:     { fill: '#a3b3c4', stroke: '#7a8694', label: '이전 Rev.1' },
+    rev2b:    { fill: '#2c569f', stroke: '#1d3d76', label: '현행 Rev.2B' },
+    plan:     { fill: '#a3b3c4', stroke: '#7a8694', label: '계획' },
+    change:   { fill: '#d49462', stroke: '#b67d4f', label: '변경' },
+    actual:   { fill: '#2c569f', stroke: '#1d3d76', label: '실적' },
+  };
+  const PX_PER_DAY = 3.5;
+  const LABEL_W = 360;
+  const ROW_H = 28;
+  const HEADER_H = 56;
+
+  //--- 유틸 ---
+  const $$ = (sel, root) => Array.from((root || document).querySelectorAll(sel));
+  function escHtml(s) { return String(s == null ? '' : s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])); }
+  function escAttr(s) { return escHtml(s).replace(/"/g, '&quot;'); }
+  function debounce(fn, ms) { let id; return function(...a){ clearTimeout(id); id = setTimeout(()=>fn.apply(this,a), ms); }; }
+  function hasDates(t, compareKeys) {
+    if (compareKeys) return compareKeys.some(k => t[k] && (t[k].start || t[k].end));
+    return !!(t.start || t.end);
+  }
+  function rangeOf(tasks, compareKeys) {
+    let lo = null, hi = null;
+    for (const t of tasks) {
+      const keys = compareKeys || [null];
+      for (const k of keys) {
+        const obj = k ? t[k] : t;
+        if (!obj) continue;
+        for (const f of ['start', 'end']) {
+          const v = obj[f];
+          if (typeof v !== 'string') continue;
+          const d = new Date(v);
+          if (!lo || d < lo) lo = d;
+          if (!hi || d > hi) hi = d;
+        }
+      }
+    }
+    return { lo: lo || new Date('2022-01-01'), hi: hi || new Date('2027-12-31') };
+  }
+  function monthTicks(start, end) {
+    const out = [];
+    const d = new Date(start.getFullYear(), start.getMonth(), 1);
+    while (d <= end) { out.push(new Date(d)); d.setMonth(d.getMonth() + 1); }
+    return out;
+  }
+
+  //--- ancestor chain 추출 (자신 + 모든 부모의 name) ---
+  function ancestorNames(t, allTasks) {
+    const out = [t.name || ''];
+    let cur = t;
+    while (cur && cur.parent_idx != null) {
+      cur = allTasks[cur.parent_idx];
+      if (cur) out.unshift(cur.name || '');
+    }
+    return out;
+  }
+
+  //--- Master Schedule 4개 카테고리 분류 ---
+  const MASTER_CATS = [
+    { key: 'ep',    label: '🛠 엔지니어링·조달', re: /engineering|procurement|jib crane|loading pump|elevator|compressor|vaporiz|loading arm|flare|gangway|fire equipment|fuel gas heater|valves|valve|pressure vessel|fire water tank|air compressor|overhead crane|hoist|desuperheater|sampling package|electric heat tracing|ship shore|clean agent|hvac|ebhs|earthquake monitoring|inclinometer|fire protection equipment/i },
+    { key: 'civil', label: '🏗 토목·지반',       re: /토목|지반|항타|배수로|부지정지|drainage|civil|road|pile|콘크리트|prestress|p-?s\b|강선|기초|보냉|annular|center part|wall (1[0-9]단|[1-9]단)|wall conc|base slab|ring beam|roof con|cupola/i },
+    { key: 'mech',  label: '⚙ 기계·배관·소방',   re: /기계|배관|소방|module|tank|insulation|piping|mechanical|fire|inner shell|outer shell|liner|stiffener|top ring|opening|hydro test|pneumatic|deck insul|로cool|cooldown|n2 purge|cathodic protection|bottom heating|보일러|배관 제작|module|trestle|jetty top|berth/i },
+    { key: 'eib',   label: '⚡ 계전·건축·시운전', re: /전기|계장|건축|architectural|시운전|electrical|instrument|building|hvac|substation|control room|panel|cable|tray|lighting|grounding|alarm|p&do|filling|cool down|electrical & instrument/i },
+  ];
+  function masterCategoryOf(t, allTasks) {
+    const chain = ancestorNames(t, allTasks).join(' | ');
+    for (const cat of MASTER_CATS) {
+      if (cat.re.test(chain)) return cat.key;
+    }
+    return 'misc';
+  }
+
+  //--- Process 1~8 카테고리 (level 1 ancestor의 name) ---
+  function processCategoryOf(t, allTasks) {
+    if (t.level === 1) return t.name;
+    let cur = t;
+    while (cur && cur.parent_idx != null) {
+      cur = allTasks[cur.parent_idx];
+      if (cur && cur.level === 1) return cur.name;
+    }
+    return null;
+  }
+
+  //--- 카테고리 필터: 선택된 카테고리 task + 모든 ancestor 유지 ---
+  function filterByCategory(tasks, categoryFn, wantedKey) {
+    if (!wantedKey || wantedKey === 'all') return tasks;
+    const keep = new Set();
+    for (let i = 0; i < tasks.length; i++) {
+      const cat = categoryFn(tasks[i], tasks);
+      if (cat === wantedKey) {
+        keep.add(i);
+        let cur = tasks[i].parent_idx;
+        while (cur != null) { keep.add(cur); cur = tasks[cur].parent_idx; }
+      }
+    }
+    const oldToNew = new Map();
+    const out = [];
+    for (let i = 0; i < tasks.length; i++) {
+      if (keep.has(i)) { oldToNew.set(i, out.length); out.push({...tasks[i]}); }
+    }
+    for (const t of out) if (t.parent_idx != null) t.parent_idx = oldToNew.get(t.parent_idx);
+    return out;
+  }
+
+  //--- 트리 접힘 처리: 보이는 행 + 자식 보유 정보 ---
+  function visibleTasks(tasks, collapsed) {
+    const childrenOf = new Map();
+    for (let i = 0; i < tasks.length; i++) {
+      const p = tasks[i].parent_idx;
+      if (p == null) continue;
+      if (!childrenOf.has(p)) childrenOf.set(p, []);
+      childrenOf.get(p).push(i);
+    }
+    const out = [];
+    for (let i = 0; i < tasks.length; i++) {
+      let cur = tasks[i].parent_idx, hidden = false;
+      while (cur != null) {
+        if (collapsed.has(cur)) { hidden = true; break; }
+        cur = tasks[cur] && tasks[cur].parent_idx;
+      }
+      if (!hidden) out.push({ idx: i, task: tasks[i], hasChildren: childrenOf.has(i) });
+    }
+    return { rows: out };
+  }
+
+  //--- 메인 빌더: 좌측 HTML 트리 + 우측 SVG 간트 ---
+  function buildGantt(host, opts) {
+    const { tasks, compareKeys, collapsed, showLinks, onToggle, forceRange, monthHighlight } = opts;
+    const { rows } = visibleTasks(tasks, collapsed);
+    const N = rows.length || 1;
+    const r0 = forceRange || rangeOf(tasks, compareKeys);
+    const lo = r0.lo, hi = r0.hi;
+    const dayMs = 86400000;
+    const lo2 = new Date(lo.getFullYear(), lo.getMonth(), 1);
+    const hi2 = new Date(hi.getFullYear(), hi.getMonth() + 1, 0);
+    const totalDays = Math.max(30, Math.round((hi2 - lo2) / dayMs));
+    const timelineW = Math.max(900, Math.round(totalDays * PX_PER_DAY));
+    const today = new Date();
+    const todayX = today >= lo2 && today <= hi2 ? Math.round((today - lo2) / dayMs * PX_PER_DAY) : null;
+
+    host.innerHTML = `
+      <div class="ms-grid" style="display:grid;grid-template-columns:${LABEL_W}px 1fr;grid-template-rows:${HEADER_H}px 1fr;height:100%;width:100%;background:#fff;">
+        <div class="ms-corner" style="border-right:1px solid #cdd5df;border-bottom:1px solid #cdd5df;display:flex;align-items:flex-end;padding:0 12px 8px;font-weight:700;color:#2c569f;font-size:13.5px;background:#f5f8fc;">공  종</div>
+        <div class="ms-timeaxis" style="overflow:hidden;border-bottom:1px solid #cdd5df;position:relative;background:#fafbfc;">
+          <svg class="ms-time-svg" width="${timelineW}" height="${HEADER_H}" style="display:block;"></svg>
+        </div>
+        <div class="ms-labels" style="overflow-y:auto;overflow-x:hidden;border-right:1px solid #cdd5df;background:#fafbfc;scrollbar-width:none;-ms-overflow-style:none;"></div>
+        <div class="ms-chart" style="overflow:auto;position:relative;">
+          <svg class="ms-chart-svg" width="${timelineW}" height="${ROW_H * N}" style="display:block;"></svg>
+        </div>
+      </div>
+    `;
+    const timeAxis = host.querySelector('.ms-timeaxis');
+    const timeSvg  = host.querySelector('.ms-time-svg');
+    const labelsBox = host.querySelector('.ms-labels');
+    const chartBox = host.querySelector('.ms-chart');
+    const chartSvg = host.querySelector('.ms-chart-svg');
+
+    //-- 시간축 (월/연도 + 오늘) --
+    const ticks = monthTicks(lo2, hi2);
+    const tparts = [];
+    let lastYear = null;
+    for (const t of ticks) {
+      const x = Math.round((t - lo2) / dayMs * PX_PER_DAY);
+      const m = t.getMonth() + 1;
+      const isJan = m === 1;
+      tparts.push(`<line x1="${x}" y1="${HEADER_H - 8}" x2="${x}" y2="${HEADER_H}" stroke="${isJan ? '#7a8694' : '#cdd5df'}" stroke-width="${isJan ? 1 : 0.5}"/>`);
+      tparts.push(`<text x="${x + 3}" y="${HEADER_H - 10}" font-size="11" fill="${isJan ? '#2c569f' : '#7a8694'}" font-family="Segoe UI">${m}월</text>`);
+      const y = t.getFullYear();
+      if (y !== lastYear) {
+        lastYear = y;
+        tparts.push(`<text x="${x + 3}" y="${HEADER_H - 28}" font-size="13" font-weight="700" fill="#2c569f" font-family="Segoe UI">${y}년</text>`);
+      }
+    }
+    if (todayX !== null) {
+      tparts.push(`<line x1="${todayX}" y1="0" x2="${todayX}" y2="${HEADER_H}" stroke="#c97070" stroke-width="2"/>`);
+      tparts.push(`<text x="${todayX + 4}" y="14" font-size="11" font-weight="700" fill="#c97070" font-family="Segoe UI">▼ 오늘</text>`);
+    }
+    // 월간공정: 직전/해당/다음월 배경 + 라벨
+    if (monthHighlight) {
+      const [hy, hm] = monthHighlight.split('-').map(Number);
+      const labels3 = [
+        { offs: -1, label: '직전월', bg: '#f1f5f9' },
+        { offs:  0, label: '✦ 해당월', bg: '#fff3d6' },
+        { offs:  1, label: '다음월',  bg: '#f1f5f9' },
+      ];
+      const headerStrips = [];
+      for (const m of labels3) {
+        const ms = new Date(hy, hm - 1 + m.offs, 1);
+        const me = new Date(hy, hm + m.offs, 0);
+        const xs = Math.round((ms - lo2) / dayMs * PX_PER_DAY);
+        const xe = Math.round((me - lo2) / dayMs * PX_PER_DAY) + Math.round(PX_PER_DAY);
+        if (xe < 0 || xs > timelineW) continue;
+        headerStrips.push(`<rect x="${xs}" y="0" width="${xe - xs}" height="${HEADER_H - 2}" fill="${m.bg}" opacity="0.55"/>`);
+        headerStrips.push(`<text x="${(xs + xe) / 2}" y="13" font-size="11.5" font-weight="700" fill="${m.offs === 0 ? '#a14d4d' : '#5a6677'}" text-anchor="middle" font-family="Segoe UI">${m.label}</text>`);
+      }
+      tparts.unshift(headerStrips.join(''));
+    }
+    timeSvg.innerHTML = tparts.join('');
+
+    //-- 좌측 라벨 (HTML 트리) --
+    const lbHtml = [];
+    rows.forEach((row) => {
+      const t = row.task;
+      const indent = (t.level || 0) * 16;
+      const isCollapsed = collapsed.has(row.idx);
+      const toggle = row.hasChildren
+        ? `<span class="ms-toggle" data-row="${row.idx}" style="display:inline-block;width:16px;height:16px;line-height:16px;cursor:pointer;color:#4a7bd1;font-size:11px;text-align:center;user-select:none;border-radius:2px;">${isCollapsed ? '▸' : '▾'}</span>`
+        : `<span style="display:inline-block;width:16px;"></span>`;
+      const isHeader = !hasDates(t, compareKeys);
+      const nameStyle = isHeader ? 'color:#2c569f;font-weight:700;' : 'color:#28323e;';
+      let prefix = '';
+      if (t.kind === 'subheader') prefix = '<span style="color:#bda790;margin-right:4px;font-size:11px;">▸</span>';
+      const name = escHtml(t.name || '');
+      lbHtml.push(`<div class="ms-row" data-row="${row.idx}" style="height:${ROW_H}px;display:flex;align-items:center;padding:0 8px 0 ${4 + indent}px;border-bottom:1px solid #eef1f5;font-size:13px;${isHeader ? 'background:#f5f8fc;' : ''}">${toggle}<span class="ms-name" style="${nameStyle}flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-left:4px;" title="${escAttr(t.name)}">${prefix}${name}</span></div>`);
+    });
+    labelsBox.innerHTML = lbHtml.join('');
+
+    //-- 우측 SVG 막대 --
+    const cparts = [];
+    // 월간공정: 직전/해당/다음월 배경 강조 (가장 먼저 그려서 깔리도록)
+    if (monthHighlight) {
+      const [hy, hm] = monthHighlight.split('-').map(Number);
+      const bgs = [
+        { offs: -1, fill: '#f1f5f9', op: 0.45 },
+        { offs:  0, fill: '#fff3d6', op: 0.55 },
+        { offs:  1, fill: '#f1f5f9', op: 0.45 },
+      ];
+      for (const b of bgs) {
+        const ms = new Date(hy, hm - 1 + b.offs, 1);
+        const me = new Date(hy, hm + b.offs, 0);
+        const xs = Math.round((ms - lo2) / dayMs * PX_PER_DAY);
+        const xe = Math.round((me - lo2) / dayMs * PX_PER_DAY) + Math.round(PX_PER_DAY);
+        cparts.push(`<rect x="${xs}" y="0" width="${xe - xs}" height="${ROW_H * N}" fill="${b.fill}" opacity="${b.op}"/>`);
+      }
+      // 월 사이 굵은 세로 구분선
+      const sep1 = new Date(hy, hm - 1, 1);
+      const sep2 = new Date(hy, hm, 1);
+      cparts.push(`<line x1="${Math.round((sep1 - lo2)/dayMs*PX_PER_DAY)}" y1="0" x2="${Math.round((sep1 - lo2)/dayMs*PX_PER_DAY)}" y2="${ROW_H*N}" stroke="#a14d4d" stroke-width="1.5" stroke-dasharray="3,3" opacity="0.55"/>`);
+      cparts.push(`<line x1="${Math.round((sep2 - lo2)/dayMs*PX_PER_DAY)}" y1="0" x2="${Math.round((sep2 - lo2)/dayMs*PX_PER_DAY)}" y2="${ROW_H*N}" stroke="#a14d4d" stroke-width="1.5" stroke-dasharray="3,3" opacity="0.55"/>`);
+    }
+    // 연도 구분선
+    for (const t of ticks) {
+      if (t.getMonth() === 0) {
+        const x = Math.round((t - lo2) / dayMs * PX_PER_DAY);
+        cparts.push(`<line x1="${x}" y1="0" x2="${x}" y2="${ROW_H*N}" stroke="#e8edf3" stroke-width="0.8"/>`);
+      }
+    }
+    // 짝수행 음영
+    rows.forEach((row, vi) => {
+      if (vi % 2 === 1) {
+        cparts.push(`<rect x="0" y="${vi*ROW_H}" width="${timelineW}" height="${ROW_H}" fill="#f7f9fc"/>`);
+      }
+    });
+    // 오늘 라인
+    if (todayX !== null) {
+      cparts.push(`<line x1="${todayX}" y1="0" x2="${todayX}" y2="${ROW_H*N}" stroke="#c97070" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.7"/>`);
+    }
+    // 막대 그리기 + 위치 기록
+    const barInfo = [];
+    rows.forEach((row, vi) => {
+      const t = row.task;
+      const y0 = vi * ROW_H;
+      if (compareKeys) {
+        const cnt = compareKeys.length;
+        const barH = Math.max(5, Math.floor((ROW_H - 6) / cnt));
+        compareKeys.forEach((ck, ki) => {
+          const sub = t[ck];
+          if (!sub || !sub.start || !sub.end) return;
+          const ds = new Date(sub.start), de = new Date(sub.end);
+          const x = Math.round((ds - lo2) / dayMs * PX_PER_DAY);
+          const w = Math.max(2, Math.round((de - ds) / dayMs * PX_PER_DAY) || 2);
+          const by = y0 + 3 + ki * (barH + 1);
+          const c = COMPARE_COLORS[ck] || { fill: '#2c569f', stroke: '#1d3d76' };
+          const tip = `${t.name}\n${c.label}: ${sub.start} ~ ${sub.end} (${sub.duration_days||'?'}일)`;
+          cparts.push(`<rect class="ms-bar" data-row="${row.idx}" data-ck="${ck}" x="${x}" y="${by}" width="${w}" height="${barH}" fill="${c.fill}" stroke="${c.stroke}" stroke-width="0.5" rx="2" data-tip="${escAttr(tip)}"/>`);
+          barInfo.push({ rowIdx: row.idx, vi, ck, x, w, cy: by + barH/2 });
+        });
+      } else {
+        if (!t.start || !t.end) return;
+        const ds = new Date(t.start), de = new Date(t.end);
+        const x = Math.round((ds - lo2) / dayMs * PX_PER_DAY);
+        const w = Math.max(2, Math.round((de - ds) / dayMs * PX_PER_DAY) || 2);
+        const by = y0 + 5;
+        const bh = ROW_H - 10;
+        const fill = LEVEL_FILLS[Math.min(t.level || 0, LEVEL_FILLS.length - 1)];
+        const tip = `${t.name}\n${t.start} ~ ${t.end} (${t.duration_days||'?'}일)`;
+        cparts.push(`<rect class="ms-bar" data-row="${row.idx}" x="${x}" y="${by}" width="${w}" height="${bh}" fill="${fill}" stroke="#1d3d76" stroke-width="0.5" rx="3" data-tip="${escAttr(tip)}"/>`);
+        barInfo.push({ rowIdx: row.idx, vi, x, w, cy: by + bh/2 });
+      }
+    });
+
+    // 화살표
+    let arrowsHtml = '';
+    if (showLinks) arrowsHtml = renderArrows(barInfo, rows, tasks, compareKeys);
+
+    chartSvg.innerHTML = `
+      <defs>
+        <marker id="ms-arr-default" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#c97070"/></marker>
+        <marker id="ms-arr-hover" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#a14d4d"/></marker>
+      </defs>
+      ${cparts.join('')}
+      ${arrowsHtml}
+    `;
+
+    //-- 스크롤 동기화 (양방향) + wheel forward --
+    let _syncing = false;
+    chartBox.addEventListener('scroll', () => {
+      if (_syncing) return;
+      _syncing = true;
+      labelsBox.scrollTop = chartBox.scrollTop;
+      timeAxis.scrollLeft = chartBox.scrollLeft;
+      _syncing = false;
+    });
+    labelsBox.addEventListener('scroll', () => {
+      if (_syncing) return;
+      _syncing = true;
+      chartBox.scrollTop = labelsBox.scrollTop;
+      _syncing = false;
+    });
+    function forwardWheel(srcEl) {
+      srcEl.addEventListener('wheel', e => {
+        const dy = e.deltaY, dx = e.deltaX;
+        if (dy !== 0) {
+          const maxY = chartBox.scrollHeight - chartBox.clientHeight;
+          const willMove = (dy > 0 && chartBox.scrollTop < maxY) || (dy < 0 && chartBox.scrollTop > 0);
+          if (willMove) {
+            e.preventDefault();
+            chartBox.scrollTop = Math.max(0, Math.min(maxY, chartBox.scrollTop + dy));
+            labelsBox.scrollTop = chartBox.scrollTop;  // 즉시 동기화
+          }
+        }
+        if (dx !== 0) {
+          const maxX = chartBox.scrollWidth - chartBox.clientWidth;
+          const willMove = (dx > 0 && chartBox.scrollLeft < maxX) || (dx < 0 && chartBox.scrollLeft > 0);
+          if (willMove) {
+            e.preventDefault();
+            chartBox.scrollLeft = Math.max(0, Math.min(maxX, chartBox.scrollLeft + dx));
+            timeAxis.scrollLeft = chartBox.scrollLeft;
+          }
+        }
+      }, { passive: false });
+    }
+    forwardWheel(labelsBox);
+    forwardWheel(host.querySelector('.ms-corner'));
+    forwardWheel(timeAxis);
+    // webkit 스크롤바 숨김 (1회만 inject)
+    if (!document.getElementById('ms-style')) {
+      const s = document.createElement('style');
+      s.id = 'ms-style';
+      s.textContent = '.ms-labels::-webkit-scrollbar{display:none;width:0;}.ms-cat-tabs button{padding:5px 12px;border:1px solid #cdd5df;border-radius:20px;background:#fff;cursor:pointer;font-size:12.5px;color:#28323e;transition:all 0.15s;}.ms-cat-tabs button:hover{background:#f0f4fa;border-color:#4a7bd1;}.ms-cat-tabs button.active{background:#2c569f;color:#fff;border-color:#2c569f;font-weight:600;}';
+      document.head.appendChild(s);
+    }
+
+    //-- 트리 토글 --
+    $$('.ms-toggle', labelsBox).forEach(el => {
+      el.addEventListener('click', e => {
+        e.stopPropagation();
+        const idx = Number(el.dataset.row);
+        if (collapsed.has(idx)) collapsed.delete(idx); else collapsed.add(idx);
+        onToggle && onToggle();
+      });
+      el.addEventListener('mouseenter', () => el.style.background = '#e8f0fc');
+      el.addEventListener('mouseleave', () => el.style.background = '');
+    });
+    $$('.ms-row', labelsBox).forEach(el => {
+      el.addEventListener('dblclick', () => {
+        const toggle = el.querySelector('.ms-toggle');
+        if (toggle) toggle.click();
+      });
+    });
+
+    //-- 막대 hover (툴팁 + 의존 화살표 강조) --
+    $$('rect.ms-bar', chartSvg).forEach(el => {
+      el.style.cursor = 'pointer';
+      el.addEventListener('mouseenter', e => {
+        showTip(e, el.getAttribute('data-tip'));
+        highlightLinks(chartSvg, Number(el.dataset.row), true);
+      });
+      el.addEventListener('mousemove', moveTip);
+      el.addEventListener('mouseleave', () => {
+        hideTip();
+        highlightLinks(chartSvg, Number(el.dataset.row), false);
+      });
+    });
+
+    // "오늘" 버튼 핸들러용 메서드
+    chartBox._scrollToToday = function() {
+      if (todayX != null && chartBox.clientWidth > 0) {
+        chartBox.scrollLeft = Math.max(0, todayX - chartBox.clientWidth / 2);
+      }
+    };
+    // 초기 가로 스크롤: 오늘 위치를 화면 중앙쯤으로
+    setTimeout(() => {
+      if (todayX !== null && chartBox.clientWidth > 0) {
+        chartBox.scrollLeft = Math.max(0, todayX - chartBox.clientWidth / 3);
+      }
+    }, 50);
+  }
+
+  //--- 같은 부모 형제 task의 시작일 순으로 화살표 ---
+  function renderArrows(barInfo, rows, tasks, compareKeys) {
+    const repByRow = new Map();
+    for (const b of barInfo) if (!repByRow.has(b.rowIdx)) repByRow.set(b.rowIdx, b);
+    const groups = new Map();
+    for (const row of rows) {
+      const t = row.task;
+      const b = repByRow.get(row.idx);
+      if (!b) continue;
+      let startStr = null;
+      if (compareKeys) {
+        for (const ck of compareKeys) if (t[ck] && t[ck].start) { startStr = t[ck].start; break; }
+      } else startStr = t.start;
+      if (!startStr) continue;
+      const p = t.parent_idx == null ? '_root' : String(t.parent_idx);
+      if (!groups.has(p)) groups.set(p, []);
+      groups.get(p).push({ rowIdx: row.idx, b, start: startStr });
+    }
+    const parts = [];
+    for (const [, arr] of groups) {
+      if (arr.length < 2) continue;
+      arr.sort((a, b) => a.start.localeCompare(b.start));
+      for (let i = 1; i < arr.length; i++) {
+        const a = arr[i-1].b, c = arr[i].b;
+        if (!a || !c) continue;
+        const x1 = a.x + a.w, y1 = a.cy;
+        const x2 = c.x, y2 = c.cy;
+        if (x2 <= x1 - 6) continue;
+        const midX = x1 + Math.max(10, Math.min(24, (x2 - x1) / 2));
+        parts.push(`<path class="ms-link" data-from="${arr[i-1].rowIdx}" data-to="${arr[i].rowIdx}" d="M${x1},${y1} L${midX},${y1} L${midX},${y2} L${x2},${y2}" fill="none" stroke="#c97070" stroke-width="2.4" marker-end="url(#ms-arr-default)" opacity="0.85"/>`);
+      }
+    }
+    return parts.join('');
+  }
+  function highlightLinks(svg, rowIdx, on) {
+    svg.querySelectorAll('path.ms-link').forEach(p => {
+      const isRel = Number(p.dataset.from) === rowIdx || Number(p.dataset.to) === rowIdx;
+      if (isRel) {
+        p.setAttribute('stroke', on ? '#a14d4d' : '#c97070');
+        p.setAttribute('stroke-width', on ? '3.6' : '2.4');
+        p.setAttribute('opacity', on ? '1' : '0.85');
+        p.setAttribute('marker-end', on ? 'url(#ms-arr-hover)' : 'url(#ms-arr-default)');
+      }
+    });
+  }
+
+  //--- 툴팁 ---
+  let __tip;
+  function ensureTip() {
+    if (__tip) return __tip;
+    __tip = document.createElement('div');
+    __tip.style.cssText = 'position:fixed;z-index:10000;background:#1d2733;color:#fff;padding:8px 11px;border-radius:5px;font-size:12.5px;font-family:Segoe UI,sans-serif;white-space:pre-line;pointer-events:none;box-shadow:0 4px 14px rgba(0,0,0,0.25);max-width:380px;display:none;line-height:1.45;';
+    document.body.appendChild(__tip);
+    return __tip;
+  }
+  function showTip(e, text) { const el = ensureTip(); el.textContent = text; el.style.display = 'block'; moveTip(e); }
+  function moveTip(e) {
+    if (!__tip || __tip.style.display === 'none') return;
+    const r = __tip.getBoundingClientRect();
+    let x = e.clientX + 14, y = e.clientY + 14;
+    if (x + r.width > window.innerWidth) x = e.clientX - r.width - 14;
+    if (y + r.height > window.innerHeight) y = e.clientY - r.height - 14;
+    __tip.style.left = x + 'px'; __tip.style.top = y + 'px';
+  }
+  function hideTip() { if (__tip) __tip.style.display = 'none'; }
+
+  //--- 범례 ---
+  function legendHtml(keys) {
+    return keys.map(k => {
+      const c = COMPARE_COLORS[k] || { fill: '#2c569f', label: k };
+      return `<span style="display:inline-flex;align-items:center;gap:5px;font-size:13px;color:#28323e;"><span style="display:inline-block;width:18px;height:10px;background:${c.fill};border:1px solid ${c.stroke||c.fill};border-radius:2px;"></span>${escHtml(c.label)}</span>`;
+    }).join('<span style="margin:0 6px;color:#cdd5df;">·</span>');
+  }
+
+  //============================================================
+  // PANELS
+  //============================================================
+
+  //--- 카테고리별 카드 색감 (절제된 4톤 + 회색) ---
+  const CAT_COLORS = {
+    ep:    '#2c569f',
+    civil: '#8a6e4b',
+    mech:  '#3f7a4f',
+    eib:   '#6b5b95',
+    misc:  '#7a8694',
+  };
+  // Process는 동적이라 4톤 순환
+  const PROC_PALETTE = ['#2c569f', '#8a6e4b', '#3f7a4f', '#6b5b95'];
+
+  //--- 레벨별 접기: maxVisibleLevel 이하만 보이도록 ---
+  function collapseToLevel(tasks, collapsedSet, maxVisibleLevel) {
+    collapsedSet.clear();
+    for (let i = 0; i < tasks.length; i++) {
+      if ((tasks[i].level || 0) >= maxVisibleLevel) {
+        if (tasks.some(t => t.parent_idx === i)) collapsedSet.add(i);
+      }
+    }
+  }
+  function collapseAll(tasks, collapsedSet) {
+    collapsedSet.clear();
+    for (let i = 0; i < tasks.length; i++) {
+      if (tasks.some(t => t.parent_idx === i)) collapsedSet.add(i);
+    }
+  }
+
+  //--- 카테고리 카드 분리 렌더 ---
+  // 모든 카드가 동일한 시간축(forceRange)을 공유하도록 통합 lo/hi 계산
+  function renderCategoryCards(host, cats, opts) {
+    host.innerHTML = '';
+    host.style.cssText = 'flex:1;overflow:auto;background:#eef2f7;border:1px solid #cdd5df;border-radius:6px;padding:8px;min-height:0;';
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'display:flex;flex-direction:column;gap:10px;';
+    host.appendChild(wrap);
+    // 통합 시간 범위 계산 — 모든 카드의 task를 합쳐 rangeOf
+    const allTasks = [];
+    for (const cat of cats) { if (cat.tasks) allTasks.push(...cat.tasks); }
+    const sharedRange = allTasks.length ? rangeOf(allTasks, opts.compareKeys) : null;
+    for (const cat of cats) {
+      if (!cat.tasks || cat.tasks.length === 0) continue;
+      const card = document.createElement('div');
+      card.style.cssText = `border:1px solid #cdd5df;border-radius:6px;background:#fff;overflow:hidden;display:flex;flex-direction:column;border-left:4px solid ${cat.color};`;
+      const headEl = document.createElement('div');
+      headEl.style.cssText = `padding:8px 14px;border-bottom:1px solid #e6eaf1;background:#f9fafc;display:flex;align-items:center;gap:10px;`;
+      headEl.innerHTML = `<strong style="color:${cat.color};font-size:13.5px;">${escHtml(cat.label)}</strong><span style="font-size:11.5px;color:#7a8694;">${cat.tasks.length}개 행</span>`;
+      const body = document.createElement('div');
+      body.style.cssText = 'height:460px;background:#fff;';
+      card.appendChild(headEl);
+      card.appendChild(body);
+      wrap.appendChild(card);
+      // 카드별 collapsed Set
+      if (!opts.collapsedMap.has(cat.key)) opts.collapsedMap.set(cat.key, new Set());
+      const cardCollapsed = opts.collapsedMap.get(cat.key);
+      buildGantt(body, {
+        tasks: cat.tasks,
+        compareKeys: opts.compareKeys,
+        collapsed: cardCollapsed,
+        showLinks: opts.showLinks,
+        onToggle: opts.onToggle,
+        forceRange: sharedRange,  // 모든 카드 시간축 통일 → today X 일렬
+      });
+    }
+  }
+
+  //--- Master Schedule (4개 카테고리 탭 + 리비전 드롭다운) ---
+  PANELS.schedule = () => {
+    const ms = SD.master_schedule || {};
+    const opts = [];
+    if (ms.rev6b)   opts.push('<option value="rev6b">📌 Rev.6B (최종 변경계약, 권장)</option>');
+    if (ms.rev3)    opts.push('<option value="rev3">Rev.3 (1차 변경계약)</option>');
+    if (ms.rev0)    opts.push('<option value="rev0">Rev.0 (최초 계약)</option>');
+    if (ms.updated) opts.push('<option value="updated">Updated Schedule (2024.07 만회 비교)</option>');
+    const catBtns = [
+      '<button class="ms-cat-btn active" data-cat="all">📋 전체</button>',
+      ...MASTER_CATS.map(c => `<button class="ms-cat-btn" data-cat="${c.key}">${escHtml(c.label)}</button>`),
+      '<button class="ms-cat-btn" data-cat="misc">기타</button>',
+    ];
+    const lvlBtnStyle = 'padding:5px 9px;border:1px solid #cdd5df;border-radius:5px;background:#fff;cursor:pointer;font-size:12px;';
+    return `
+      <div class="ms-wrap" style="padding:14px 18px 18px;height:100%;display:flex;flex-direction:column;background:#fafbfc;overflow:hidden;">
+        <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:10px;">
+          <label style="font-weight:600;color:#28323e;font-size:14px;">📅 리비전:</label>
+          <select id="ms-rev-select" style="padding:8px 12px;border:1px solid #cdd5df;border-radius:5px;background:#fff;font-size:14px;min-width:300px;cursor:pointer;">${opts.join('')}</select>
+          <button id="ms-today-btn" style="padding:7px 14px;border:1px solid #c97070;border-radius:5px;background:#fef2f2;color:#c97070;font-size:13px;font-weight:600;cursor:pointer;">📍 오늘로</button>
+          <span id="ms-meta" style="color:#7a8694;font-size:13px;"></span>
+          <label style="margin-left:auto;font-size:13px;display:flex;gap:6px;align-items:center;cursor:pointer;color:#28323e;">
+            <input type="checkbox" id="ms-show-links" checked> 선후 의존 화살표
+          </label>
+        </div>
+        <div class="ms-cat-tabs" id="ms-cat-tabs" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">${catBtns.join('')}</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;align-items:center;">
+          <label style="font-size:12px;color:#28323e;font-weight:600;">트리 깊이:</label>
+          <select id="ms-lvl-select" style="padding:5px 9px;border:1px solid #cdd5df;border-radius:5px;background:#fff;font-size:12.5px;cursor:pointer;min-width:200px;">
+            <option value="expand">전체 펼침 (모든 레벨)</option>
+            <option value="1">L1까지 (최상위만)</option>
+            <option value="2">L2까지</option>
+            <option value="3">L3까지</option>
+            <option value="4">L4까지</option>
+            <option value="5">L5까지</option>
+            <option value="collapse">모두 접기 (헤더만)</option>
+          </select>
+        </div>
+        <div id="ms-legend" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px;align-items:center;"></div>
+        <div id="ms-host" style="flex:1;border:1px solid #cdd5df;border-radius:6px;overflow:hidden;background:#fff;min-height:0;"></div>
+        <div style="margin-top:8px;font-size:11.5px;color:#7a8694;">카테고리 분류는 공종 이름 기반 추론 · '전체' 탭은 카테고리별 독립 셀로 분리 · 출처: ${escHtml(SD.source_file)} · 추출일: ${SD.extracted_at}</div>
+      </div>
+    `;
+  };
+  PANEL_INIT.schedule = () => {
+    const sel = document.getElementById('ms-rev-select');
+    const host = document.getElementById('ms-host');
+    const meta = document.getElementById('ms-meta');
+    const legend = document.getElementById('ms-legend');
+    const linksCb = document.getElementById('ms-show-links');
+    const catTabs = document.getElementById('ms-cat-tabs');
+    if (!sel || !host) return;
+    const collapsed = new Set();           // 단일 카테고리 모드
+    const collapsedMap = new Map();        // 'all' 모드: cat key → Set
+    let curKey = null;
+    let curCat = 'all';
+
+    function buildCatList(block) {
+      const all = block.tasks || [];
+      const cats = MASTER_CATS.map(c => ({
+        key: c.key, label: c.label, color: CAT_COLORS[c.key] || '#7a8694',
+        tasks: filterByCategory(all, masterCategoryOf, c.key),
+      }));
+      cats.push({
+        key: 'misc', label: '기타', color: CAT_COLORS.misc,
+        tasks: filterByCategory(all, masterCategoryOf, 'misc'),
+      });
+      return cats;
+    }
+
+    function render() {
+      curKey = sel.value;
+      const block = SD.master_schedule[curKey];
+      if (!block) { host.innerHTML = '<div style="padding:20px;color:#a14d4d;">선택한 리비전이 없습니다.</div>'; return; }
+      const allTasks = block.tasks || [];
+      if (block.compare) legend.innerHTML = legendHtml(block.compare);
+      else legend.innerHTML = `<span style="font-size:13px;color:#28323e;display:inline-flex;align-items:center;gap:5px;"><span style="display:inline-block;width:18px;height:10px;background:#2c569f;border-radius:2px;"></span>공정 막대 (들여쓰기 단계별 색)</span><span style="margin:0 6px;color:#cdd5df;">·</span><span style="font-size:13px;color:#c97070;">↗ 선후 의존</span><span style="margin:0 6px;color:#cdd5df;">·</span><span style="font-size:13px;color:#c97070;">▏ 오늘</span>`;
+
+      if (curCat === 'all') {
+        const cats = buildCatList(block);
+        const totalRows = cats.reduce((s, c) => s + c.tasks.length, 0);
+        meta.textContent = `${block.title}${block.period ? ' · ' + block.period : ''} · 전체 (${totalRows}/${allTasks.length}개, ${cats.filter(c => c.tasks.length).length}개 카테고리)`;
+        renderCategoryCards(host, cats, {
+          compareKeys: block.compare,
+          collapsedMap,
+          showLinks: linksCb.checked,
+          onToggle: render,
+        });
+      } else {
+        // 단일 카테고리 — 기존 동작 + host 스타일 복원
+        host.style.cssText = 'flex:1;border:1px solid #cdd5df;border-radius:6px;overflow:hidden;background:#fff;min-height:0;';
+        const filtered = filterByCategory(allTasks, masterCategoryOf, curCat);
+        const catLabel = (MASTER_CATS.find(c => c.key === curCat) || { label: '기타' }).label;
+        meta.textContent = `${block.title}${block.period ? ' · ' + block.period : ''} · ${catLabel} (${filtered.length}/${allTasks.length}개)`;
+        buildGantt(host, { tasks: filtered, compareKeys: block.compare, collapsed, showLinks: linksCb.checked, onToggle: render });
+      }
+    }
+
+    function applyLevelCollapse(maxLvl) {
+      const block = SD.master_schedule[curKey];
+      if (!block) return;
+      if (curCat === 'all') {
+        const cats = buildCatList(block);
+        for (const c of cats) {
+          if (!collapsedMap.has(c.key)) collapsedMap.set(c.key, new Set());
+          collapseToLevel(c.tasks, collapsedMap.get(c.key), maxLvl);
+        }
+      } else {
+        const filtered = filterByCategory(block.tasks, masterCategoryOf, curCat);
+        collapseToLevel(filtered, collapsed, maxLvl);
+      }
+      render();
+    }
+    function applyExpandAll() {
+      collapsed.clear();
+      for (const s of collapsedMap.values()) s.clear();
+      render();
+    }
+    function applyCollapseAll() {
+      const block = SD.master_schedule[curKey];
+      if (!block) return;
+      if (curCat === 'all') {
+        const cats = buildCatList(block);
+        for (const c of cats) {
+          if (!collapsedMap.has(c.key)) collapsedMap.set(c.key, new Set());
+          collapseAll(c.tasks, collapsedMap.get(c.key));
+        }
+      } else {
+        const filtered = filterByCategory(block.tasks, masterCategoryOf, curCat);
+        collapseAll(filtered, collapsed);
+      }
+      render();
+    }
+
+    sel.addEventListener('change', () => { collapsed.clear(); collapsedMap.clear(); render(); });
+    linksCb.addEventListener('change', render);
+    catTabs.addEventListener('click', e => {
+      const btn = e.target.closest('.ms-cat-btn');
+      if (!btn) return;
+      catTabs.querySelectorAll('.ms-cat-btn').forEach(b => b.classList.toggle('active', b === btn));
+      curCat = btn.dataset.cat;
+      collapsed.clear();
+      render();
+    });
+    const lvlSel = document.getElementById('ms-lvl-select');
+    if (lvlSel) lvlSel.addEventListener('change', () => {
+      const v = lvlSel.value;
+      if (v === 'expand') applyExpandAll();
+      else if (v === 'collapse') applyCollapseAll();
+      else applyLevelCollapse(Number(v));
+    });
+    const todayBtn = document.getElementById('ms-today-btn');
+    if (todayBtn) todayBtn.addEventListener('click', () => {
+      host.querySelectorAll('.ms-chart').forEach(cb => cb._scrollToToday && cb._scrollToToday());
+    });
+    render();
+    window.addEventListener('resize', debounce(render, 250));
+  };
+
+  //--- Process 공정표 (1~8 카테고리 탭) ---
+  // 카테고리는 데이터에서 동적 추출
+  function getProcessCategories() {
+    if (!SD.process_schedule) return [];
+    const out = [];
+    SD.process_schedule.tasks.forEach((t, i) => {
+      if (t.level === 1 && t.kind === 'header') out.push({ key: t.name, label: t.name });
+    });
+    return out;
+  }
+  PANELS.process = () => {
+    const ps = SD.process_schedule;
+    if (!ps) return '<div style="padding:24px;color:#a14d4d;">Process 공정표 데이터가 없습니다.</div>';
+    const cats = getProcessCategories();
+    const catBtns = [
+      '<button class="ms-cat-btn active" data-cat="all">📋 전체</button>',
+      ...cats.map(c => `<button class="ms-cat-btn" data-cat="${escAttr(c.key)}">${escHtml(c.label)}</button>`),
+    ];
+    const lvlBtnStyle = 'padding:5px 9px;border:1px solid #cdd5df;border-radius:5px;background:#fff;cursor:pointer;font-size:12px;';
+    return `
+      <div class="ms-wrap" style="padding:14px 18px 18px;height:100%;display:flex;flex-direction:column;background:#fafbfc;overflow:hidden;">
+        <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:8px;">
+          <strong style="color:#2c569f;font-size:15px;">🔗 ${escHtml(ps.title)}</strong>
+          <span style="color:#7a8694;font-size:12.5px;">'전체' 탭은 카테고리별 독립 셀로 분리 · ▾/▸ 클릭으로 트리 접기/펼치기</span>
+          <button id="ps-today-btn" style="margin-left:auto;padding:7px 14px;border:1px solid #c97070;border-radius:5px;background:#fef2f2;color:#c97070;font-size:13px;font-weight:600;cursor:pointer;">📍 오늘로</button>
+        </div>
+        <div class="ms-cat-tabs" id="ps-cat-tabs" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">${catBtns.join('')}</div>
+        <div id="ps-legend" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px;align-items:center;"></div>
+        <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-bottom:8px;">
+          <label style="font-size:13px;display:flex;gap:6px;align-items:center;cursor:pointer;color:#28323e;">
+            <input type="checkbox" id="ps-only-dated" checked> 날짜 있는 작업만
+          </label>
+          <label style="font-size:13px;display:flex;gap:6px;align-items:center;cursor:pointer;color:#28323e;">
+            <input type="checkbox" id="ps-show-links" checked> 선후 의존 화살표
+          </label>
+          <span style="margin:0 4px;color:#cdd5df;">|</span>
+          <label style="font-size:12px;color:#28323e;font-weight:600;">트리 깊이:</label>
+          <select id="ps-lvl-select" style="padding:5px 9px;border:1px solid #cdd5df;border-radius:5px;background:#fff;font-size:12.5px;cursor:pointer;min-width:200px;">
+            <option value="expand">전체 펼침 (모든 레벨)</option>
+            <option value="1">L1까지 (최상위만)</option>
+            <option value="2">L2까지</option>
+            <option value="3">L3까지</option>
+            <option value="4">L4까지</option>
+            <option value="5">L5까지</option>
+            <option value="collapse">모두 접기 (헤더만)</option>
+          </select>
+          <span id="ps-meta" style="color:#7a8694;font-size:12.5px;margin-left:auto;"></span>
+        </div>
+        <div id="ps-host" style="flex:1;border:1px solid #cdd5df;border-radius:6px;overflow:hidden;background:#fff;min-height:0;"></div>
+        <div style="margin-top:8px;font-size:11.5px;color:#7a8694;">※ 의존관계는 동일 부모 아래 형제 작업의 시작일 순으로 추론 · 추출일: ${SD.extracted_at}</div>
+      </div>
+    `;
+  };
+  PANEL_INIT.process = () => {
+    const ps = SD.process_schedule;
+    if (!ps) return;
+    const host = document.getElementById('ps-host');
+    const cbDated = document.getElementById('ps-only-dated');
+    const cbLinks = document.getElementById('ps-show-links');
+    const legend = document.getElementById('ps-legend');
+    const catTabs = document.getElementById('ps-cat-tabs');
+    const meta = document.getElementById('ps-meta');
+    if (!host) return;
+    legend.innerHTML = legendHtml(ps.compare) + '<span style="margin:0 6px;color:#cdd5df;">·</span><span style="font-size:13px;color:#c97070;">↗ 선후 의존</span><span style="margin:0 6px;color:#cdd5df;">·</span><span style="font-size:13px;color:#c97070;">▏ 오늘</span>';
+    const collapsed = new Set();
+    const collapsedMap = new Map();
+    let curCat = 'all';
+
+    // tasks → 날짜 필터 적용 (parent_idx 재계산)
+    function applyDateFilter(arr) {
+      if (!cbDated.checked) return arr;
+      const keep = new Set();
+      for (let i = 0; i < arr.length; i++) {
+        const t = arr[i];
+        if ((t.rev1 && t.rev1.start) || (t.rev2b && t.rev2b.start)) {
+          keep.add(i);
+          let cur = t.parent_idx;
+          while (cur != null) { keep.add(cur); cur = arr[cur].parent_idx; }
+        }
+      }
+      const oldToNew = new Map();
+      const out = [];
+      for (let i = 0; i < arr.length; i++) {
+        if (keep.has(i)) { oldToNew.set(i, out.length); out.push({ ...arr[i] }); }
+      }
+      for (const t of out) if (t.parent_idx != null) t.parent_idx = oldToNew.get(t.parent_idx);
+      return out;
+    }
+
+    function getTasksForCat(catKey) {
+      let arr = ps.tasks;
+      if (catKey !== 'all') arr = filterByCategory(arr, processCategoryOf, catKey);
+      return applyDateFilter(arr);
+    }
+
+    function buildCatList() {
+      const procCats = getProcessCategories();
+      return procCats.map((c, i) => ({
+        key: c.key, label: c.label,
+        color: PROC_PALETTE[i % PROC_PALETTE.length],
+        tasks: applyDateFilter(filterByCategory(ps.tasks, processCategoryOf, c.key)),
+      }));
+    }
+
+    function render() {
+      if (curCat === 'all') {
+        const cats = buildCatList();
+        const total = cats.reduce((s, c) => s + c.tasks.length, 0);
+        meta.textContent = `전체 ${total}개 행 · ${cats.filter(c => c.tasks.length).length}개 카테고리 카드`;
+        renderCategoryCards(host, cats, {
+          compareKeys: ps.compare,
+          collapsedMap,
+          showLinks: cbLinks.checked,
+          onToggle: render,
+        });
+      } else {
+        host.style.cssText = 'flex:1;border:1px solid #cdd5df;border-radius:6px;overflow:hidden;background:#fff;min-height:0;';
+        const tasks = getTasksForCat(curCat);
+        meta.textContent = `${tasks.length}개 행 표시`;
+        buildGantt(host, { tasks, compareKeys: ps.compare, collapsed, showLinks: cbLinks.checked, onToggle: render });
+      }
+    }
+
+    function applyLevelCollapse(maxLvl) {
+      if (curCat === 'all') {
+        const cats = buildCatList();
+        for (const c of cats) {
+          if (!collapsedMap.has(c.key)) collapsedMap.set(c.key, new Set());
+          collapseToLevel(c.tasks, collapsedMap.get(c.key), maxLvl);
+        }
+      } else {
+        const tasks = getTasksForCat(curCat);
+        collapseToLevel(tasks, collapsed, maxLvl);
+      }
+      render();
+    }
+    function applyExpandAll() {
+      collapsed.clear();
+      for (const s of collapsedMap.values()) s.clear();
+      render();
+    }
+    function applyCollapseAll() {
+      if (curCat === 'all') {
+        const cats = buildCatList();
+        for (const c of cats) {
+          if (!collapsedMap.has(c.key)) collapsedMap.set(c.key, new Set());
+          collapseAll(c.tasks, collapsedMap.get(c.key));
+        }
+      } else {
+        const tasks = getTasksForCat(curCat);
+        collapseAll(tasks, collapsed);
+      }
+      render();
+    }
+
+    cbDated.addEventListener('change', () => { collapsed.clear(); collapsedMap.clear(); render(); });
+    cbLinks.addEventListener('change', render);
+    catTabs.addEventListener('click', e => {
+      const btn = e.target.closest('.ms-cat-btn');
+      if (!btn) return;
+      catTabs.querySelectorAll('.ms-cat-btn').forEach(b => b.classList.toggle('active', b === btn));
+      curCat = btn.dataset.cat;
+      collapsed.clear();
+      render();
+    });
+    const psLvlSel = document.getElementById('ps-lvl-select');
+    if (psLvlSel) psLvlSel.addEventListener('change', () => {
+      const v = psLvlSel.value;
+      if (v === 'expand') applyExpandAll();
+      else if (v === 'collapse') applyCollapseAll();
+      else applyLevelCollapse(Number(v));
+    });
+    const psTodayBtn = document.getElementById('ps-today-btn');
+    if (psTodayBtn) psTodayBtn.addEventListener('click', () => {
+      host.querySelectorAll('.ms-chart').forEach(cb => cb._scrollToToday && cb._scrollToToday());
+    });
+    render();
+    window.addEventListener('resize', debounce(render, 250));
+  };
+
+  //--- 월간 공정 (기준월 + 직전 3개월) ---
+  // 활동에서 (시점 정보가 있는) 월 목록을 추출
+  function getMonthlyMonths() {
+    if (!SD.monthly_schedule) return [];
+    const s = new Set();
+    for (const t of SD.monthly_schedule.tasks) {
+      for (const k of ['plan', 'change', 'actual']) {
+        const v = t[k] && t[k].start;
+        if (typeof v === 'string') s.add(v.slice(0, 7));
+      }
+    }
+    return Array.from(s).sort();
+  }
+  function shiftMonth(ym, delta) {
+    const [y, m] = ym.split('-').map(Number);
+    const d = new Date(y, m - 1 + delta, 1);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+  }
+  // 활동이 [from, to] 월 범위 (inclusive)에 겹치는가
+  function activityInRange(a, fromYm, toYm) {
+    for (const k of ['plan', 'change', 'actual']) {
+      const sub = a[k];
+      if (!sub || !sub.start) continue;
+      const s = sub.start.slice(0, 7);
+      const e = (sub.end || sub.start).slice(0, 7);
+      // [s, e] vs [fromYm, toYm] 겹침
+      if (e >= fromYm && s <= toYm) return true;
+    }
+    return false;
+  }
+
+  PANELS.monthly = () => {
+    const mo = SD.monthly_schedule;
+    if (!mo) return '<div style="padding:24px;color:#a14d4d;">월간 공정 데이터가 없습니다.</div>';
+    const months = getMonthlyMonths();
+    const defaultBase = months[months.length - 1] || '2026-01';
+    // 기준월 옵션: 최신부터 역순
+    const monthOpts = months.slice().reverse().map(m => `<option value="${m}"${m === defaultBase ? ' selected' : ''}>${m.replace('-', '년 ')}월</option>`).join('');
+    return `
+      <div class="ms-wrap" style="padding:14px 18px 18px;height:100%;display:flex;flex-direction:column;background:#fafbfc;overflow:hidden;">
+        <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:10px;">
+          <strong style="color:#2c569f;font-size:15px;">📆 ${escHtml(mo.title)}</strong>
+          <span style="color:#7a8694;font-size:12.5px;">직전 2개월 / 해당월 / 차후 3개월 (6개월 윈도우) · 계획·변경·실적 3중 비교</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:10px;">
+          <label style="font-weight:600;color:#28323e;font-size:14px;">📅 기준월:</label>
+          <select id="mo-base-month" style="padding:8px 12px;border:1px solid #cdd5df;border-radius:5px;background:#fff;font-size:14px;min-width:180px;cursor:pointer;">${monthOpts}</select>
+          <label style="font-weight:600;color:#28323e;font-size:14px;margin-left:8px;">활동 그룹:</label>
+          <select id="mo-group-select" style="padding:8px 12px;border:1px solid #cdd5df;border-radius:5px;background:#fff;font-size:14px;min-width:260px;cursor:pointer;"></select>
+          <span id="mo-meta" style="color:#7a8694;font-size:13px;"></span>
+          <label style="margin-left:auto;font-size:13px;display:flex;gap:6px;align-items:center;cursor:pointer;color:#28323e;">
+            <input type="checkbox" id="mo-show-links"> 선후 의존 화살표
+          </label>
+          <button id="mo-expand-all" style="padding:5px 10px;border:1px solid #cdd5df;border-radius:5px;background:#fff;cursor:pointer;font-size:12.5px;">모두 펼침</button>
+          <button id="mo-collapse-all" style="padding:5px 10px;border:1px solid #cdd5df;border-radius:5px;background:#fff;cursor:pointer;font-size:12.5px;">모두 접기</button>
+        </div>
+        <div id="mo-legend" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px;align-items:center;"></div>
+        <div id="mo-window" style="display:flex;gap:8px;align-items:center;margin-bottom:8px;font-size:12.5px;"></div>
+        <div id="mo-host" style="flex:1;border:1px solid #cdd5df;border-radius:6px;overflow:hidden;background:#fff;min-height:0;"></div>
+        <div style="margin-top:8px;font-size:11.5px;color:#7a8694;">※ 6개월 윈도우(직전 2개월·해당월·차후 3개월)에 일정이 겹치는 활동만 표시 · 회색=계획, 주황=변경, 남색=실적</div>
+      </div>
+    `;
+  };
+  PANEL_INIT.monthly = () => {
+    const mo = SD.monthly_schedule;
+    if (!mo) return;
+    const baseSel = document.getElementById('mo-base-month');
+    const grpSel = document.getElementById('mo-group-select');
+    const host = document.getElementById('mo-host');
+    const meta = document.getElementById('mo-meta');
+    const legend = document.getElementById('mo-legend');
+    const linksCb = document.getElementById('mo-show-links');
+    if (!baseSel || !host) return;
+    legend.innerHTML = legendHtml(mo.compare);
+    const collapsed = new Set();
+
+    // 기준월에 따라 group 옵션을 동적으로 채움
+    function refreshGroupOptions() {
+      const baseYm = baseSel.value;
+      const fromYm = shiftMonth(baseYm, -2);
+      const toYm   = shiftMonth(baseYm, +3);
+      const filtered = mo.tasks.filter(a => activityInRange(a, fromYm, toYm));
+      const groups = new Map();
+      for (const t of filtered) {
+        const k = `${t.category}|${t.subgroup}`;
+        if (!groups.has(k)) groups.set(k, { category: t.category, subgroup: t.subgroup, count: 0 });
+        groups.get(k).count++;
+      }
+      const opts = [`<option value="__all__">전체 보기 (${filtered.length}건)</option>`];
+      let lastCat = null;
+      for (const [k, g] of groups) {
+        if (g.category !== lastCat) {
+          if (lastCat !== null) opts.push('</optgroup>');
+          opts.push(`<optgroup label="${escAttr(g.category)}">`);
+          lastCat = g.category;
+        }
+        opts.push(`<option value="${escAttr(k)}">${escHtml(g.subgroup || '(미분류)')} (${g.count}건)</option>`);
+      }
+      if (lastCat !== null) opts.push('</optgroup>');
+      grpSel.innerHTML = opts.join('');
+    }
+
+    function buildTreeTasks() {
+      const baseYm = baseSel.value;
+      const fromYm = shiftMonth(baseYm, -2);
+      const toYm   = shiftMonth(baseYm, +3);
+      let activities = mo.tasks.filter(a => activityInRange(a, fromYm, toYm));
+      const key = grpSel.value;
+      if (key && key !== '__all__') activities = activities.filter(t => `${t.category}|${t.subgroup}` === key);
+      const tasks = [];
+      const catIdx = new Map();
+      const subIdx = new Map();
+      for (const a of activities) {
+        if (!catIdx.has(a.category)) {
+          catIdx.set(a.category, tasks.length);
+          tasks.push({ level: 0, name: a.category, parent_idx: null, kind: 'header' });
+        }
+        const sk = `${a.category}|${a.subgroup}`;
+        if (!subIdx.has(sk)) {
+          subIdx.set(sk, tasks.length);
+          tasks.push({ level: 1, name: a.subgroup || '(미분류)', parent_idx: catIdx.get(a.category), kind: 'header' });
+        }
+        tasks.push({
+          level: 2,
+          name: a.activity || '(활동명 없음)',
+          parent_idx: subIdx.get(sk),
+          kind: 'task',
+          plan: a.plan, change: a.change, actual: a.actual,
+        });
+      }
+      return { tasks, fromYm, toYm };
+    }
+
+    function render() {
+      const { tasks, fromYm, toYm } = buildTreeTasks();
+      const actCount = tasks.filter(t => t.kind === 'task').length;
+      const baseYm = baseSel.value;
+      meta.textContent = `${fromYm} ~ ${toYm} · ${actCount}개 활동`;
+      // 6개월 윈도우 시각화 (직전2 / 직전1 / 해당월 / +1 / +2 / +3)
+      const winEl = document.getElementById('mo-window');
+      if (winEl) {
+        const pill = (label, ym, accent) => `<span style="display:inline-flex;flex-direction:column;align-items:center;padding:4px 10px;border-radius:6px;background:${accent === 'on' ? '#2c569f' : '#fff'};color:${accent === 'on' ? '#fff' : '#28323e'};border:1px solid ${accent === 'on' ? '#2c569f' : '#cdd5df'};">
+          <span style="font-size:10px;${accent === 'on' ? 'color:#cfd8e8;' : 'color:#7a8694;'}">${label}</span>
+          <span style="font-size:12.5px;font-weight:700;">${ym.replace('-', '년 ')}월</span>
+        </span>`;
+        const offsets = [
+          { off: -2, label: '직전 2' },
+          { off: -1, label: '직전 1' },
+          { off:  0, label: '✦ 해당월' },
+          { off: +1, label: '+1' },
+          { off: +2, label: '+2' },
+          { off: +3, label: '+3' },
+        ];
+        winEl.innerHTML = offsets.map(o => pill(o.label, shiftMonth(baseYm, o.off), o.off === 0 ? 'on' : 'off')).join('<span style="color:#cdd5df;font-size:10px;">→</span>');
+      }
+      // 시간축을 정확히 3개월 윈도우로 강제 + 활동 일정을 윈도우로 클리핑
+      const [fy, fm] = fromYm.split('-').map(Number);
+      const [ty, tm] = toYm.split('-').map(Number);
+      const winLo = new Date(fy, fm - 1, 1);
+      const winHi = new Date(ty, tm, 0); // toYm 말일
+      function clipDate(iso, lo, hi) {
+        if (!iso) return null;
+        const d = new Date(iso);
+        if (d < lo) return lo.toISOString().slice(0, 10);
+        if (d > hi) return hi.toISOString().slice(0, 10);
+        return iso;
+      }
+      const clippedTasks = tasks.map(t => {
+        if (t.kind !== 'task') return t;
+        const out = { ...t };
+        for (const k of ['plan', 'change', 'actual']) {
+          const sub = t[k];
+          if (!sub || !sub.start) continue;
+          const sIso = new Date(sub.start);
+          const eIso = sub.end ? new Date(sub.end) : sIso;
+          if (eIso < winLo || sIso > winHi) {
+            out[k] = { start: null, end: null };
+          } else {
+            out[k] = {
+              start: clipDate(sub.start, winLo, winHi),
+              end:   clipDate(sub.end || sub.start, winLo, winHi),
+            };
+          }
+        }
+        return out;
+      });
+      buildGantt(host, {
+        tasks: clippedTasks, compareKeys: mo.compare, collapsed,
+        showLinks: linksCb.checked, onToggle: render,
+        forceRange: { lo: winLo, hi: winHi },
+        monthHighlight: baseYm,
+      });
+    }
+
+    refreshGroupOptions();
+    baseSel.addEventListener('change', () => { collapsed.clear(); refreshGroupOptions(); render(); });
+    grpSel.addEventListener('change', () => { collapsed.clear(); render(); });
+    linksCb.addEventListener('change', render);
+    document.getElementById('mo-expand-all').addEventListener('click', () => { collapsed.clear(); render(); });
+    document.getElementById('mo-collapse-all').addEventListener('click', () => {
+      const { tasks } = buildTreeTasks();
+      collapsed.clear();
+      for (let i = 0; i < tasks.length; i++) {
+        if (tasks.some(t => t.parent_idx === i)) collapsed.add(i);
+      }
+      render();
+    });
+    render();
+    window.addEventListener('resize', debounce(render, 250));
+  };
+
+  //============================================================
+  // 기자재 발주현황 (10번 시트)
+  //============================================================
+  const STAGE_ORDER = ['미발행', 'RFQ', 'TBE', 'PO', '제작', 'FOB', 'OnSite'];
+  const STAGE_RANK  = { '미발행': 0, 'RFQ': 1, 'TBE': 2, 'PO': 3, '제작': 4, 'FOB': 5, 'OnSite': 6 };
+  const STAGE_COLORS = {
+    '미발행': '#9aa6b4', 'RFQ': '#6b8db8', 'TBE': '#4a7bd1', 'PO': '#2c569f',
+    '제작': '#d49462', 'FOB': '#7aa860', 'OnSite': '#3f8a3f',
+  };
+  function fmtDate(iso) { return iso ? iso : '–'; }
+  function fmtDelay(d) {
+    if (d == null) return '<span style="color:#9aa6b4;">–</span>';
+    if (d <= 0) return `<span style="color:#3f8a3f;font-weight:600;">${d}일</span>`;
+    if (d <= 30) return `<span style="color:#d49462;font-weight:600;">+${d}일</span>`;
+    return `<span style="color:#c14a4a;font-weight:700;">+${d}일</span>`;
+  }
+  function stageBadge(stage) {
+    const c = STAGE_COLORS[stage] || '#9aa6b4';
+    return `<span style="display:inline-block;padding:3px 9px;border-radius:11px;background:${c};color:#fff;font-size:11.5px;font-weight:600;white-space:nowrap;">${escHtml(stage)}</span>`;
+  }
+  function dayDiff(a, b) {
+    if (!a || !b) return null;
+    return Math.round((new Date(b) - new Date(a)) / 86400000);
+  }
+
+  PANELS.orders = () => {
+    const od = SD.orders;
+    if (!od) return '<div style="padding:24px;color:#a14d4d;">기자재 발주현황 데이터가 없습니다 (schedule_data.js 재생성 필요).</div>';
+    return `
+      <div id="ord-root" style="padding:14px 18px 18px;height:100%;overflow:auto;background:#fafbfc;">
+        <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:10px;">
+          <strong style="color:#2c569f;font-size:15px;">📦 ${escHtml(od.title)}</strong>
+          <span style="color:#7a8694;font-size:12.5px;">${escHtml(od.sheet)} · ${(od.lots || []).length}개 LOT</span>
+        </div>
+        <div id="ord-kpis"></div>
+        <div id="ord-funnel"></div>
+        <div id="ord-discipline"></div>
+        <div id="ord-gantt"></div>
+        <div id="ord-table-section"></div>
+      </div>
+    `;
+  };
+
+  PANEL_INIT.orders = () => {
+    const od = SD.orders;
+    if (!od) return;
+    const lots = (od.lots || []).map(l => ({ ...l, _rank: STAGE_RANK[l.stage] ?? 0 }));
+    const TODAY = new Date();
+    const todayIso = TODAY.toISOString().slice(0, 10);
+
+    // ===== 집계 =====
+    const total = lots.length;
+    const onSiteDone = lots.filter(l => l.stage === 'OnSite').length;
+    const pecCounts = {};
+    for (const l of lots) pecCounts[l.pec || '미분류'] = (pecCounts[l.pec || '미분류'] || 0) + 1;
+    // 납기 지연 의심 = onSitePlan < today && stage != OnSite
+    const delaySuspect = lots.filter(l => l.stage !== 'OnSite' && l.onSitePlan && l.onSitePlan < todayIso);
+    // 평균 LT
+    const ltVals = lots.map(l => l.leadTimeDays).filter(v => typeof v === 'number' && v > 0);
+    const avgLT = ltVals.length ? Math.round(ltVals.reduce((a, b) => a + b, 0) / ltVals.length) : null;
+    // 계약업체 수
+    const vendorCounts = {};
+    for (const l of lots) {
+      const v = (l.vendor || '').trim();
+      if (!v) continue;
+      vendorCounts[v] = (vendorCounts[v] || 0) + 1;
+    }
+    const vendorList = Object.entries(vendorCounts).sort((a, b) => b[1] - a[1]);
+    const vendorTop5 = vendorList.slice(0, 5).reduce((s, [, n]) => s + n, 0);
+    const vendorTop5Pct = total ? Math.round(vendorTop5 / total * 100) : 0;
+
+    // ===== 1) KPI 6칸 =====
+    const kpi = (label, val, sub, accent) => `
+      <div style="flex:1;min-width:130px;background:#fff;border:1px solid #cdd5df;border-radius:8px;padding:12px 14px;">
+        <div style="font-size:11.5px;color:#7a8694;margin-bottom:4px;">${label}</div>
+        <div style="font-size:24px;font-weight:700;color:${accent || '#28323e'};line-height:1.1;">${val}</div>
+        <div style="font-size:11px;color:#7a8694;margin-top:4px;">${sub}</div>
+      </div>`;
+    const pctDone = total ? (onSiteDone / total * 100).toFixed(1) : '0.0';
+    const inProgress = lots.filter(l => l.stage === '제작' || l.stage === 'FOB').length;
+    const inProgressPct = total ? (inProgress / total * 100).toFixed(1) : '0.0';
+    const pecSummary = Object.entries(pecCounts).map(([k, v]) => `${escHtml(k)} ${v}`).join(' · ');
+    document.getElementById('ord-kpis').innerHTML = `
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;">
+        ${kpi('총 발주 LOT', total, pecSummary, '#2c569f')}
+        ${kpi('납품 완료율', `${pctDone}%`, `${onSiteDone} / ${total} LOT`, '#3f8a3f')}
+        ${kpi('제작/운송 중', inProgress, `${inProgressPct}%`, '#d49462')}
+        ${kpi('납기 지연 의심', delaySuspect.length, 'P_OnSite 경과 + 미입고', delaySuspect.length ? '#c14a4a' : '#3f8a3f')}
+        ${kpi('평균 LT (RFQ→P/O)', avgLT != null ? `${avgLT}일` : '–', `실측 ${ltVals.length}건 평균`, '#2c569f')}
+        ${kpi('계약업체 수', vendorList.length, `Top 5 = ${vendorTop5Pct}% 점유`, '#28323e')}
+      </div>
+    `;
+
+    // ===== 2) Funnel + 도넛 =====
+    const funnelSteps = [
+      { key: 'RFQ',    label: 'RFQ 발행',   minRank: STAGE_RANK['RFQ'] },
+      { key: 'TBE',    label: 'TBE 승인',   minRank: STAGE_RANK['TBE'] },
+      { key: 'PO',     label: 'P/O 발주',   minRank: STAGE_RANK['PO']  },
+      { key: 'MAKE',   label: '제작/FOB',   minRank: STAGE_RANK['제작'] },
+      { key: 'ONSITE', label: 'On-Site 입고', minRank: STAGE_RANK['OnSite'] },
+    ];
+    const funnelCounts = funnelSteps.map(s => lots.filter(l => l._rank >= s.minRank).length);
+    const funnelPcts = funnelCounts.map(n => total ? Math.round(n / total * 1000) / 10 : 0);
+    // 도넛: OnSite 안 된 LOT의 단계 분포
+    const remain = lots.filter(l => l.stage !== 'OnSite');
+    const remainGroups = [
+      { key: '제작중',      color: '#d49462', count: remain.filter(l => l.stage === '제작').length },
+      { key: 'FOB·운송',    color: '#a48cc4', count: remain.filter(l => l.stage === 'FOB').length },
+      { key: '지연·미발주', color: '#c14a4a', count: remain.filter(l => l.stage === '미발행' || l.stage === 'RFQ' || l.stage === 'TBE' || l.stage === 'PO').length },
+    ];
+    const remainTotal = remainGroups.reduce((s, g) => s + g.count, 0);
+
+    const funnelHtml = `
+      <div style="background:#fff;border:1px solid #cdd5df;border-radius:8px;padding:14px 18px;margin-bottom:14px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+          <span style="font-size:13.5px;font-weight:700;color:#2c569f;">발주 진행단계 Funnel</span>
+          <span style="font-size:11.5px;color:#7a8694;">RFQ → P/O → 제작 → On-Site</span>
+        </div>
+        <div style="display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap;">
+          <div style="flex:1;min-width:420px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;position:relative;padding:0 8px;">
+              <div style="position:absolute;top:26px;left:36px;right:36px;height:2px;background:#dee3eb;z-index:0;"></div>
+              ${funnelSteps.map((s, i) => {
+                const isLast = i === funnelSteps.length - 1;
+                const isActive = !isLast && funnelCounts[i] > funnelCounts[i + 1];
+                const color = isLast ? '#3f8a3f' : (isActive ? '#d49462' : '#2c569f');
+                return `<div style="display:flex;flex-direction:column;align-items:center;z-index:1;flex:1;">
+                  <div style="width:54px;height:54px;border-radius:50%;background:${color};color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;box-shadow:0 2px 6px rgba(44,86,159,0.15);">${funnelCounts[i]}</div>
+                  <div style="margin-top:6px;font-size:12px;font-weight:600;color:#28323e;text-align:center;">${s.label}</div>
+                </div>`;
+              }).join('')}
+            </div>
+            <div style="margin-top:14px;font-size:11.5px;color:#7a8694;line-height:1.6;">
+              단계별 누적 통과 LOT: ${funnelSteps.map((s, i) => `<b style="color:#2c569f;">${s.label} ${funnelPcts[i]}%</b>`).join(' · ')}
+            </div>
+            <div style="margin-top:10px;padding:8px 12px;background:#f4f6fa;border-left:3px solid #4a7bd1;border-radius:4px;font-size:11.5px;color:#5a6677;">
+              💡 OnSite 미입고 ${remainTotal}건의 단계 분포가 우측 도넛에 표시됩니다. 하단 분야별 진행률과 함께 보세요.
+            </div>
+          </div>
+          <div style="width:260px;min-width:240px;">
+            <div style="font-size:12px;color:#28323e;font-weight:600;margin-bottom:6px;text-align:center;">현재 잔여 ${remainTotal}건의 단계 분포</div>
+            <div style="position:relative;width:200px;height:200px;margin:0 auto;">
+              <canvas id="ord-donut" width="200" height="200"></canvas>
+              <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;">
+                <div style="font-size:26px;font-weight:700;color:#28323e;line-height:1;">${remainTotal}</div>
+                <div style="font-size:11px;color:#7a8694;margin-top:2px;">미입고 LOT</div>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:4px;margin-top:8px;">
+              ${remainGroups.map(g => `<div style="display:flex;align-items:center;gap:6px;font-size:12px;color:#28323e;">
+                <span style="width:10px;height:10px;border-radius:2px;background:${g.color};"></span>${g.key} <b style="margin-left:auto;">${g.count}</b>
+              </div>`).join('')}
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+    document.getElementById('ord-funnel').innerHTML = funnelHtml;
+
+    // 도넛 그리기 (Canvas 직접)
+    (function drawDonut() {
+      const c = document.getElementById('ord-donut');
+      if (!c) return;
+      const ctx = c.getContext('2d');
+      const cx = 100, cy = 100, rOut = 90, rIn = 56;
+      ctx.clearRect(0, 0, 200, 200);
+      if (remainTotal === 0) {
+        ctx.beginPath(); ctx.arc(cx, cy, rOut, 0, Math.PI * 2); ctx.fillStyle = '#eef0f4'; ctx.fill();
+        ctx.beginPath(); ctx.arc(cx, cy, rIn, 0, Math.PI * 2); ctx.fillStyle = '#fff'; ctx.fill();
+        return;
+      }
+      let acc = -Math.PI / 2;
+      for (const g of remainGroups) {
+        if (g.count === 0) continue;
+        const ang = (g.count / remainTotal) * Math.PI * 2;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.arc(cx, cy, rOut, acc, acc + ang);
+        ctx.closePath();
+        ctx.fillStyle = g.color;
+        ctx.fill();
+        acc += ang;
+      }
+      ctx.beginPath(); ctx.arc(cx, cy, rIn, 0, Math.PI * 2); ctx.fillStyle = '#fff'; ctx.fill();
+    })();
+
+    // ===== 3) 분야별 진행단계 Stacked Bar + 인사이트 =====
+    const byDisc = new Map();
+    for (const l of lots) {
+      const d = l.discipline || '미분류';
+      if (!byDisc.has(d)) byDisc.set(d, { total: 0, done: 0 });
+      const e = byDisc.get(d);
+      e.total++;
+      if (l.stage === 'OnSite') e.done++;
+    }
+    const discRows = Array.from(byDisc.entries())
+      .map(([k, v]) => ({ name: k, total: v.total, done: v.done, pct: v.total ? v.done / v.total : 0 }))
+      .sort((a, b) => b.pct - a.pct);
+    const slowest = discRows.length ? discRows[discRows.length - 1] : null;
+    const largest = discRows.slice().sort((a, b) => b.total - a.total)[0] || null;
+
+    const barHtml = discRows.map(r => {
+      const pct = Math.round(r.pct * 100);
+      const isSlowest = slowest && r.name === slowest.name && r.pct < 0.7;
+      const isLargest = largest && r.name === largest.name && r.total > 5;
+      const barColor = isSlowest ? '#c14a4a' : (r.pct >= 0.9 ? '#3f8a3f' : '#4a7bd1');
+      const tag = [];
+      if (isSlowest) tag.push('<span style="background:#fbe6e6;color:#c14a4a;padding:1px 6px;border-radius:8px;font-size:10.5px;font-weight:600;margin-left:6px;">⚠ 최저</span>');
+      if (isLargest) tag.push('<span style="background:#e8efff;color:#2c569f;padding:1px 6px;border-radius:8px;font-size:10.5px;font-weight:600;margin-left:4px;">핵심</span>');
+      return `<div style="display:flex;align-items:center;gap:10px;margin:6px 0;">
+        <div style="width:64px;font-size:12.5px;color:#28323e;font-weight:600;">${escHtml(r.name)}${tag.join('')}</div>
+        <div style="flex:1;height:18px;background:#eef0f4;border-radius:9px;overflow:hidden;position:relative;">
+          <div style="height:100%;width:${pct}%;background:${barColor};transition:width 0.3s;"></div>
+        </div>
+        <div style="width:90px;text-align:right;font-size:12px;"><b style="color:${barColor};">${pct}%</b> <span style="color:#7a8694;">${r.done}/${r.total}</span></div>
+      </div>`;
+    }).join('');
+
+    let insightTxt;
+    if (slowest && largest) {
+      insightTxt = `가장 진행이 느린 분야는 <b style="color:#c14a4a;">${escHtml(slowest.name)} (${Math.round(slowest.pct * 100)}%)</b>, LOT 수가 가장 많은 핵심 분야는 <b style="color:#2c569f;">${escHtml(largest.name)} (${largest.total}건)</b> 입니다. 다음 1개월 안에 이 두 분야의 미입고 LOT을 우선 집중관리하는 것을 권장합니다.`;
+    } else {
+      insightTxt = '데이터가 부족하여 자동 인사이트를 생성하지 못했습니다.';
+    }
+
+    document.getElementById('ord-discipline').innerHTML = `
+      <div style="background:#fff;border:1px solid #cdd5df;border-radius:8px;padding:14px 18px;margin-bottom:14px;">
+        <div style="font-size:13.5px;font-weight:700;color:#2c569f;margin-bottom:10px;">분야별 진행단계 <span style="font-size:11.5px;font-weight:400;color:#7a8694;margin-left:6px;">(완료율 = OnSite 입고 LOT 비율)</span></div>
+        ${barHtml}
+        <div style="margin-top:12px;padding:10px 14px;background:#fef9ee;border-left:3px solid #d49462;border-radius:4px;font-size:12.5px;color:#5a6677;line-height:1.6;">
+          💡 <b>자동 인사이트:</b> ${insightTxt}
+        </div>
+      </div>
+    `;
+
+    // ===== 4) On-Site 납기 Gantt =====
+    drawOrdersGantt(lots, TODAY);
+
+    // ===== 5) 상세 테이블 (필터 포함) =====
+    const disciplines = Array.from(new Set(lots.map(l => l.discipline).filter(Boolean))).sort();
+    const pecs = Array.from(new Set(lots.map(l => l.pec).filter(Boolean))).sort();
+    document.getElementById('ord-table-section').innerHTML = `
+      <div style="background:#fff;border:1px solid #cdd5df;border-radius:8px;padding:14px 18px;">
+        <div style="font-size:13.5px;font-weight:700;color:#2c569f;margin-bottom:10px;">📋 LOT 상세 (전체 ${total}건)</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:10px;">
+          <label style="font-size:13px;color:#28323e;font-weight:600;">분야:</label>
+          <select id="ord-disc" style="padding:6px 10px;border:1px solid #cdd5df;border-radius:5px;background:#fff;font-size:13px;">
+            <option value="">전체</option>
+            ${disciplines.map(d => `<option value="${escAttr(d)}">${escHtml(d)}</option>`).join('')}
+          </select>
+          <label style="font-size:13px;color:#28323e;font-weight:600;">구분:</label>
+          <select id="ord-pec" style="padding:6px 10px;border:1px solid #cdd5df;border-radius:5px;background:#fff;font-size:13px;">
+            <option value="">전체</option>
+            ${pecs.map(p => `<option value="${escAttr(p)}">${escHtml(p)}</option>`).join('')}
+          </select>
+          <label style="font-size:13px;color:#28323e;font-weight:600;">단계:</label>
+          <select id="ord-stage" style="padding:6px 10px;border:1px solid #cdd5df;border-radius:5px;background:#fff;font-size:13px;">
+            <option value="">전체</option>
+            ${STAGE_ORDER.map(s => `<option value="${s}">${s}</option>`).join('')}
+          </select>
+          <label style="font-size:13px;color:#28323e;font-weight:600;margin-left:6px;display:flex;align-items:center;gap:6px;cursor:pointer;">
+            <input type="checkbox" id="ord-delayed-only"> 지연만 보기
+          </label>
+          <input id="ord-search" type="search" placeholder="🔍 품목/Vendor/담당자 검색" style="flex:1;min-width:220px;padding:6px 10px;border:1px solid #cdd5df;border-radius:5px;font-size:13px;">
+          <span id="ord-count" style="font-size:12.5px;color:#7a8694;"></span>
+        </div>
+        <div id="ord-host" style="border:1px solid #cdd5df;border-radius:6px;overflow:auto;background:#fff;max-height:600px;"></div>
+        <div style="margin-top:6px;font-size:11.5px;color:#7a8694;">※ 행을 클릭하면 RFQ/TBE/PO/Key VP/FOB/On Site 전체 단계의 계획·실적 일정이 펼쳐집니다.</div>
+      </div>
+    `;
+    initOrdersTable(lots);
+  };
+
+  // ----------- OnSite 납기 Gantt (Plan vs Actual) -----------
+  function drawOrdersGantt(lots, today) {
+    const host = document.getElementById('ord-gantt');
+    if (!host) return;
+    // 표시 대상: onSitePlan 또는 onSiteActual 있는 LOT
+    let items = lots.filter(l => l.onSitePlan || l.onSiteActual).map(l => {
+      const plan = l.onSitePlan ? new Date(l.onSitePlan) : null;
+      const act  = l.onSiteActual ? new Date(l.onSiteActual) : null;
+      const isDelay = (l.stage !== 'OnSite') && plan && plan < today;
+      return { l, plan, act, isDelay, sortKey: act ? act.getTime() : (plan ? plan.getTime() : 0) };
+    });
+    // 우선순위: 지연 > 향후 6개월 OnSite Plan > 그 외 — 너무 많으면 상위 18개만
+    items.sort((a, b) => {
+      if (a.isDelay !== b.isDelay) return a.isDelay ? -1 : 1;
+      return a.sortKey - b.sortKey;
+    });
+    const MAX_ROWS = 18;
+    const showAll = host.dataset.showAll === '1';
+    const visible = showAll ? items : items.slice(0, MAX_ROWS);
+
+    // 시간축: 표시 항목 기준 min~max, 단 today ± 1개월 포함
+    let minT = Math.min(...visible.map(v => Math.min(v.plan ? v.plan.getTime() : Infinity, v.act ? v.act.getTime() : Infinity)));
+    let maxT = Math.max(...visible.map(v => Math.max(v.plan ? v.plan.getTime() : -Infinity, v.act ? v.act.getTime() : -Infinity)));
+    const todayT = today.getTime();
+    if (!isFinite(minT)) minT = todayT - 86400000 * 180;
+    if (!isFinite(maxT)) maxT = todayT + 86400000 * 180;
+    minT = Math.min(minT, todayT - 86400000 * 30);
+    maxT = Math.max(maxT, todayT + 86400000 * 30);
+
+    const LABEL_W = 220;
+    const ROW_H = 26;
+    const HEADER_H = 32;
+    const PAD_R = 16;
+    const totalDays = Math.ceil((maxT - minT) / 86400000) + 1;
+    const minPxPerDay = 1.5;
+    const widthBody = Math.max(560, totalDays * minPxPerDay);
+    const svgH = HEADER_H + visible.length * ROW_H + 12;
+    const svgW = LABEL_W + widthBody + PAD_R;
+
+    function xOf(t) {
+      return LABEL_W + ((t - minT) / 86400000) * (widthBody / totalDays);
+    }
+    // 월 경계
+    const monthTicks = [];
+    const m0 = new Date(minT);
+    const d = new Date(m0.getFullYear(), m0.getMonth(), 1);
+    while (d.getTime() <= maxT) {
+      monthTicks.push(new Date(d));
+      d.setMonth(d.getMonth() + 1);
+    }
+    let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${svgW}" height="${svgH}" style="font-family:'Pretendard','Inter',sans-serif;display:block;">`;
+    // 헤더 배경
+    svg += `<rect x="0" y="0" width="${svgW}" height="${HEADER_H}" fill="#eef2f7"/>`;
+    // 월 라벨/세로선
+    for (const m of monthTicks) {
+      const x = xOf(m.getTime());
+      svg += `<line x1="${x}" y1="${HEADER_H}" x2="${x}" y2="${svgH}" stroke="#e6eaf1" stroke-width="1"/>`;
+      const yr = String(m.getFullYear()).slice(2);
+      const mo = String(m.getMonth() + 1).padStart(2, '0');
+      const label = m.getMonth() === 0 ? `${yr}.${mo}` : mo;
+      svg += `<text x="${x + 3}" y="20" font-size="10.5" fill="#5a6677">${label}</text>`;
+    }
+    // 행
+    visible.forEach((v, i) => {
+      const y = HEADER_H + i * ROW_H;
+      const l = v.l;
+      // 라벨 배경 alternating
+      if (i % 2 === 1) svg += `<rect x="0" y="${y}" width="${svgW}" height="${ROW_H}" fill="#fafbfc"/>`;
+      // 라벨
+      const label = (l.itemName || '').slice(0, 28);
+      svg += `<text x="10" y="${y + 17}" font-size="11.5" fill="#28323e">${escHtml(label)}</text>`;
+      // 지연 배지
+      if (v.isDelay) {
+        const days = Math.round((today - v.plan) / 86400000);
+        svg += `<rect x="${LABEL_W - 60}" y="${y + 6}" width="50" height="14" rx="7" fill="#c14a4a"/>`;
+        svg += `<text x="${LABEL_W - 35}" y="${y + 16}" font-size="9.5" fill="#fff" text-anchor="middle" font-weight="700">지연 ${days}d</text>`;
+      } else if (v.plan && v.act && v.act < v.plan) {
+        const days = Math.round((v.plan - v.act) / 86400000);
+        svg += `<rect x="${LABEL_W - 60}" y="${y + 6}" width="50" height="14" rx="7" fill="#3f8a3f"/>`;
+        svg += `<text x="${LABEL_W - 35}" y="${y + 16}" font-size="9.5" fill="#fff" text-anchor="middle" font-weight="700">조기 ${days}d</text>`;
+      }
+      // Plan bar (회색)
+      if (v.plan) {
+        const x = xOf(v.plan.getTime());
+        svg += `<rect x="${x - 3}" y="${y + 8}" width="6" height="10" fill="#cdd5df" rx="1"/>`;
+        // plan 기준 60일 전~plan 까지 회색 막대 (대략)
+        const span = 50;
+        svg += `<rect x="${x - span}" y="${y + 14}" width="${span}" height="4" fill="#cdd5df" rx="1.5"/>`;
+      }
+      // Actual bar (녹색) — 있으면 plan 위에 덮어쓰기
+      if (v.act) {
+        const x = xOf(v.act.getTime());
+        svg += `<rect x="${x - 3}" y="${y + 8}" width="6" height="10" fill="#3f8a3f" rx="1"/>`;
+        const xp = v.plan ? xOf(v.plan.getTime()) : x - 50;
+        const x1 = Math.min(x, xp);
+        const x2 = Math.max(x, xp);
+        svg += `<rect x="${x1}" y="${y + 9}" width="${x2 - x1}" height="8" fill="#3f8a3f" opacity="0.7" rx="2"/>`;
+      }
+      // 지연: Plan~today를 주황으로
+      if (v.isDelay) {
+        const xp = xOf(v.plan.getTime());
+        const xn = xOf(todayT);
+        svg += `<rect x="${xp}" y="${y + 9}" width="${Math.max(2, xn - xp)}" height="8" fill="#d49462" opacity="0.9" rx="2"/>`;
+        svg += `<rect x="${xn - 3}" y="${y + 6}" width="6" height="14" fill="#c14a4a" rx="1"/>`;
+      }
+    });
+    // TODAY 세로선
+    const tx = xOf(todayT);
+    svg += `<line x1="${tx}" y1="${HEADER_H}" x2="${tx}" y2="${svgH}" stroke="#c14a4a" stroke-width="1.5" stroke-dasharray="4 3"/>`;
+    svg += `<rect x="${tx - 22}" y="${svgH - 18}" width="44" height="14" rx="3" fill="#c14a4a"/>`;
+    svg += `<text x="${tx}" y="${svgH - 8}" font-size="9.5" fill="#fff" text-anchor="middle" font-weight="700">TODAY</text>`;
+    svg += `</svg>`;
+
+    const legendHtml = `<div style="display:flex;gap:14px;align-items:center;margin-top:8px;font-size:11.5px;color:#5a6677;flex-wrap:wrap;">
+      <span style="display:inline-flex;align-items:center;gap:5px;"><span style="width:14px;height:8px;background:#cdd5df;border-radius:2px;"></span>Plan</span>
+      <span style="display:inline-flex;align-items:center;gap:5px;"><span style="width:14px;height:8px;background:#3f8a3f;border-radius:2px;"></span>Actual (완료)</span>
+      <span style="display:inline-flex;align-items:center;gap:5px;"><span style="width:14px;height:8px;background:#d49462;border-radius:2px;"></span>지연 (P_OnSite 경과+미입고)</span>
+      <span style="display:inline-flex;align-items:center;gap:5px;"><span style="width:2px;height:12px;background:#c14a4a;"></span>TODAY 라인</span>
+    </div>`;
+
+    host.innerHTML = `
+      <div style="background:#fff;border:1px solid #cdd5df;border-radius:8px;padding:14px 18px;margin-bottom:14px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+          <span style="font-size:13.5px;font-weight:700;color:#2c569f;">On-Site 납기 Gantt — Plan vs Actual</span>
+          <span style="font-size:11.5px;color:#7a8694;">${visible.length} / ${items.length} 표시</span>
+          <button id="ord-gantt-toggle" style="margin-left:auto;padding:4px 10px;border:1px solid #cdd5df;background:#fff;border-radius:5px;font-size:12px;cursor:pointer;">${showAll ? '상위 18개만' : `전체 ${items.length}건 보기`}</button>
+        </div>
+        <div style="overflow-x:auto;border:1px solid #eef0f4;border-radius:6px;background:#fff;">${svg}</div>
+        ${legendHtml}
+      </div>
+    `;
+    const btn = document.getElementById('ord-gantt-toggle');
+    btn.addEventListener('click', () => {
+      host.dataset.showAll = showAll ? '' : '1';
+      drawOrdersGantt(lots, today);
+    });
+  }
+
+  // ----------- 상세 테이블 (구 버전 유지) -----------
+  function initOrdersTable(lots) {
+    const host = document.getElementById('ord-host');
+    const disc = document.getElementById('ord-disc');
+    const pec = document.getElementById('ord-pec');
+    const stg = document.getElementById('ord-stage');
+    const del = document.getElementById('ord-delayed-only');
+    const search = document.getElementById('ord-search');
+    const cnt = document.getElementById('ord-count');
+    if (!host) return;
+    const expanded = new Set();
+
+    function filtered() {
+      const q = (search.value || '').trim().toLowerCase();
+      return lots.filter(l => {
+        if (disc.value && l.discipline !== disc.value) return false;
+        if (pec.value && l.pec !== pec.value) return false;
+        if (stg.value && l.stage !== stg.value) return false;
+        if (del.checked && !(l.delayDays != null && l.delayDays > 0)) return false;
+        if (q) {
+          const hay = [l.itemName, l.itemNameDetail, l.vendor, l.pmSales, l.pmDesign, l.remarks, l.statusText].join(' ').toLowerCase();
+          if (!hay.includes(q)) return false;
+        }
+        return true;
+      });
+    }
+
+    function rowDetail(l) {
+      const row = (label, plan, actual) => `
+        <tr>
+          <td style="padding:4px 10px;color:#7a8694;font-size:12px;white-space:nowrap;">${label}</td>
+          <td style="padding:4px 10px;font-size:12.5px;color:#28323e;">${fmtDate(plan)}</td>
+          <td style="padding:4px 10px;font-size:12.5px;color:#2c569f;font-weight:600;">${fmtDate(actual)}</td>
+        </tr>`;
+      return `
+        <tr class="ord-detail"><td colspan="9" style="background:#f4f6fa;padding:10px 14px;">
+          <div style="display:flex;gap:24px;flex-wrap:wrap;">
+            <table style="border-collapse:collapse;">
+              <thead><tr>
+                <th style="padding:4px 10px;text-align:left;font-size:11.5px;color:#7a8694;font-weight:600;">단계</th>
+                <th style="padding:4px 10px;text-align:left;font-size:11.5px;color:#7a8694;font-weight:600;">계획</th>
+                <th style="padding:4px 10px;text-align:left;font-size:11.5px;color:#7a8694;font-weight:600;">실적</th>
+              </tr></thead>
+              <tbody>
+                ${row('RFQ 이슈', l.rfqIssuePlan, l.rfqIssueActual)}
+                ${row('RFQ 승인', l.rfqApprovalPlan, l.rfqApprovalActual)}
+                ${row('TBE 이슈', l.tbeIssuePlan, l.tbeIssueActual)}
+                ${row('TBE 승인', l.tbeApprovalPlan, l.tbeApprovalActual)}
+                ${row('P/O', l.poPlan, l.poActual)}
+                ${row('Key VP 접수', l.keyVpPlan, l.keyVpActual)}
+                ${row('FOB (선적)', l.fobPlan, l.fobActual)}
+                ${row('On Site', l.onSitePlan, l.onSiteActual)}
+              </tbody>
+            </table>
+            <div style="flex:1;min-width:240px;">
+              <div style="font-size:11.5px;color:#7a8694;margin-bottom:4px;">담당</div>
+              <div style="font-size:13px;color:#28323e;margin-bottom:8px;">사업: <b>${escHtml(l.pmSales || '–')}</b> · 설계: <b>${escHtml(l.pmDesign || '–')}</b> · 납기: ${escHtml(l.deliveryPeriod || '–')} · 수량: ${escHtml(l.qty || '–')} ${escHtml(l.unit || '')}</div>
+              ${l.itemNameDetail ? `<div style="font-size:11.5px;color:#7a8694;margin-bottom:2px;">상세 품명</div><div style="font-size:13px;color:#28323e;margin-bottom:8px;white-space:pre-wrap;">${escHtml(l.itemNameDetail)}</div>` : ''}
+              ${l.statusText ? `<div style="font-size:11.5px;color:#7a8694;margin-bottom:2px;">진행현황</div><div style="font-size:13px;color:#28323e;margin-bottom:8px;white-space:pre-wrap;">${escHtml(l.statusText)}</div>` : ''}
+              ${l.remarks ? `<div style="font-size:11.5px;color:#7a8694;margin-bottom:2px;">비고</div><div style="font-size:13px;color:#28323e;white-space:pre-wrap;">${escHtml(l.remarks)}</div>` : ''}
+              ${l.leadTimeDays != null ? `<div style="margin-top:8px;font-size:12px;color:#7a8694;">리드타임 (RFQ 계획 → P/O 실적): <b style="color:#2c569f;">${l.leadTimeDays}일</b></div>` : ''}
+            </div>
+          </div>
+        </td></tr>`;
+    }
+
+    // 컬럼 정의 + 정렬 상태
+    const STAGE_RANK_LOCAL = { '미발행': 0, 'RFQ': 1, 'TBE': 2, 'PO': 3, '제작': 4, 'FOB': 5, 'OnSite': 6 };
+    const cols = [
+      { key: 'lotNo',         label: 'No',          width: '52px',  align: 'left',  sortable: true,
+        get: l => l.lotNo, render: l => `<b style="color:#2c569f;">${expanded.has(l.lotNo) ? '▼' : '▶'} ${l.lotNo}</b>` },
+      { key: 'delayDays',     label: '지연일',      width: '90px',  align: 'right', sortable: true,
+        get: l => l.delayDays == null ? -99999 : l.delayDays, render: l => fmtDelay(l.delayDays) },
+      { key: 'pec',           label: '구분',        width: '95px',  align: 'left',  sortable: true,
+        get: l => l.pec || '', render: l => `<span style="color:#5a6677;font-size:12.5px;">${escHtml(l.pec || '–')}</span>` },
+      { key: 'discipline',    label: '분야',        width: '64px',  align: 'left',  sortable: true,
+        get: l => l.discipline || '', render: l => escHtml(l.discipline || '–') },
+      { key: 'itemName',      label: '품목',        width: '',      align: 'left',  sortable: true,
+        get: l => (l.itemName || '').toLowerCase(),
+        render: l => `<b>${escHtml(l.itemName || '–')}</b>${l.itemNameDetail && l.itemNameDetail !== l.itemName ? `<br><span style="font-size:12px;color:#7a8694;">${escHtml(l.itemNameDetail.split('\n')[0])}</span>` : ''}` },
+      { key: 'vendor',        label: 'Vendor',      width: '180px', align: 'left',  sortable: true,
+        get: l => (l.vendor || '').toLowerCase(), render: l => `<span style="font-size:13px;">${escHtml(l.vendor || '–')}</span>` },
+      { key: 'stage',         label: '단계',        width: '78px',  align: 'center', sortable: true,
+        get: l => STAGE_RANK_LOCAL[l.stage] ?? 0, render: l => stageBadge(l.stage) },
+      { key: 'poActual',      label: 'P/O 실적',    width: '110px', align: 'left',  sortable: true,
+        get: l => l.poActual || '', render: l => `<span style="font-size:12.5px;">${fmtDate(l.poActual)}</span>` },
+      { key: 'onSiteActual',  label: 'On Site 실적', width: '120px', align: 'left',  sortable: true,
+        get: l => l.onSiteActual || l.onSitePlan || '',
+        render: l => `<span style="font-size:12.5px;">${fmtDate(l.onSiteActual)}</span>${l.onSitePlan && l.onSiteActual !== l.onSitePlan ? `<br><span style="color:#9aa6b4;font-size:11px;">계획: ${l.onSitePlan}</span>` : ''}` },
+    ];
+    let sortBy = { col: 'delayDays', dir: 'desc' };  // 지연 큰 순으로 기본 정렬
+
+    function sortRows(rows) {
+      const c = cols.find(x => x.key === sortBy.col);
+      if (!c) return rows;
+      const mul = sortBy.dir === 'asc' ? 1 : -1;
+      return rows.slice().sort((a, b) => {
+        const va = c.get(a), vb = c.get(b);
+        if (va < vb) return -1 * mul;
+        if (va > vb) return  1 * mul;
+        return 0;
+      });
+    }
+
+    function render() {
+      const rowsAll = filtered();
+      const rows = sortRows(rowsAll);
+      cnt.textContent = `${rows.length}건 / 전체 ${lots.length}건 · 정렬: ${cols.find(c=>c.key===sortBy.col).label} ${sortBy.dir === 'asc' ? '↑' : '↓'}`;
+      const thStyle = 'padding:10px 11px;text-align:left;font-size:14px;color:#28323e;font-weight:700;background:#eef2f7;border-bottom:1px solid #cdd5df;position:sticky;top:0;z-index:1;cursor:pointer;user-select:none;';
+      const tdStyle = 'padding:10px 11px;font-size:14.5px;color:#28323e;border-bottom:1px solid #eef0f4;vertical-align:top;';
+      const headHtml = cols.map(c => {
+        const arrow = sortBy.col === c.key ? (sortBy.dir === 'asc' ? ' ▲' : ' ▼') : '';
+        const align = c.align === 'right' ? 'text-align:right;' : (c.align === 'center' ? 'text-align:center;' : '');
+        const w = c.width ? `width:${c.width};` : '';
+        return `<th data-sort="${c.key}" style="${thStyle}${align}${w}">${c.label}${arrow}</th>`;
+      }).join('');
+      let html = `<table style="width:100%;border-collapse:collapse;"><thead><tr>${headHtml}</tr></thead><tbody>`;
+      for (const l of rows) {
+        const isOpen = expanded.has(l.lotNo);
+        const rowBg = isOpen ? 'background:#f4f6fa;' : '';
+        html += `<tr data-lot="${l.lotNo}" style="cursor:pointer;${rowBg}">`;
+        for (const c of cols) {
+          const align = c.align === 'right' ? 'text-align:right;' : (c.align === 'center' ? 'text-align:center;' : '');
+          html += `<td style="${tdStyle}${align}">${c.render(l)}</td>`;
+        }
+        html += '</tr>';
+        if (isOpen) html += rowDetail(l);
+      }
+      html += '</tbody></table>';
+      host.innerHTML = html;
+      // 행 클릭 = 펼치기
+      host.querySelectorAll('tr[data-lot]').forEach(tr => {
+        tr.addEventListener('click', e => {
+          if (e.target.closest('th')) return;
+          const no = Number(tr.dataset.lot);
+          if (expanded.has(no)) expanded.delete(no); else expanded.add(no);
+          render();
+        });
+      });
+      // 헤더 클릭 = 정렬
+      host.querySelectorAll('th[data-sort]').forEach(th => {
+        th.addEventListener('click', () => {
+          const k = th.dataset.sort;
+          if (sortBy.col === k) sortBy.dir = sortBy.dir === 'asc' ? 'desc' : 'asc';
+          else { sortBy = { col: k, dir: (k === 'delayDays' || k === 'stage' || k === 'poActual' || k === 'onSiteActual') ? 'desc' : 'asc' }; }
+          render();
+        });
+        th.addEventListener('mouseenter', () => th.style.background = '#dde6f0');
+        th.addEventListener('mouseleave', () => th.style.background = '#eef2f7');
+      });
+    }
+
+    [disc, pec, stg, del].forEach(el => el.addEventListener('change', render));
+    search.addEventListener('input', debounce(render, 180));
+    render();
+  }
+})();
+
 </script>
 
 </body>

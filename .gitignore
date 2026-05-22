@@ -39,3 +39,18 @@ node_modules/
 # 임시 파일
 *.tmp
 *.bak
+
+# 정리 보관함 (2026-05-21 루트 클린업) — git 추적 제외, OneDrive 로컬 보존
+_archive/
+
+# 월간회의 원본 엑셀 (대용량, 내부 자료 — 추출 결과인 schedule_data.js만 배포)
+*.xlsx
+*.xls
+
+# 디버그/탐색용 임시 스크립트 (추적 제외)
+_probe_*.py
+_probe_*.out.txt
+make_icons.py
+
+# 사용자 노트
+기대효과*.txt
