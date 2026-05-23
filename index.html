@@ -1629,8 +1629,9 @@ table.editable td.num input {
   grid-template-rows: 0.95fr 1.05fr;
   gap: 14px;
 }
+/* 마일스톤 컬럼만: 핵심 마일스톤(첫 서브)을 추가로 살짝 축소 — 스크롤 없이 두 서브 다 보이도록 */
 .panel[data-tab="overview"] .ov-col-ms .ov-group-body {
-  grid-template-rows: 0.95fr 1.05fr;
+  grid-template-rows: 0.85fr 1.15fr;
 }
 /* 마일스톤 리스트는 max-height + overflow로 길어지면 스크롤 */
 .panel[data-tab="overview"] .ov-sub-ms .ov-ms-list {
@@ -5054,90 +5055,145 @@ PANEL_INIT.quality = () => {
   const QL_COLORS = { primary: '#2c569f', good: '#3f8a3f', warn: '#d49462', bad: '#c25656', neutral: '#7a8694' };
   document.getElementById('ql-asof').textContent = `엑셀 출처: ${Q.source_file} · ${Q.source_sheet}`;
 
-  // ── KPI 계산 ──
-  const civilExec = Q.civil_tests.reduce((s, r) => s + (r.cum_exec || 0), 0);
-  const civilOk = Q.civil_tests.reduce((s, r) => s + (r.cum_ok || 0), 0);
-  const civilNg = Q.civil_tests.reduce((s, r) => s + (r.cum_ng || 0), 0);
-  const civilPassRate = civilExec > 0 ? civilOk / civilExec * 100 : 0;
-  // 용접: 누계 수행 합계 (단위 통일 안되므로 단순합)
+  // ── KPI 계산 (단위 혼합 문제 회피 — 회 / M 분리 + 항목 단위) ──
+  // 토목·건축: 단위가 회/M 혼합이라 합산 % 의미 없음. 대신:
+  //   1) 시험 항목 수 + 불합격 발생 항목 수
+  //   2) 평균 불량률 = 각 항목 cum_reject_rate 의 가중평균(수행량 가중)
+  const civilTotalItems = Q.civil_tests.length;
+  const civilItemsWithNg = Q.civil_tests.filter(r => (r.cum_ng || 0) > 0).length;
+  const civilOkSum = Q.civil_tests.reduce((s, r) => s + (r.cum_ok || 0), 0);
+  const civilNgSum = Q.civil_tests.reduce((s, r) => s + (r.cum_ng || 0), 0);
+  // 가중 평균 불량률 = Σ(ng) / Σ(exec) 인데 단위 혼합이므로 단순 평균 사용
+  const civilRejRates = Q.civil_tests.map(r => r.cum_reject_rate || 0).filter(v => v > 0);
+  const civilAvgRej = civilRejRates.length
+    ? civilRejRates.reduce((s, v) => s + v, 0) / civilRejRates.length * 100
+    : 0;
+  // 용접: 단위 (매·M) 다소 혼합되지만 영역별로는 동일 단위. 합산은 단위 명시.
+  const weldByUnit = {};
+  for (const r of Q.welding) {
+    const u = r.unit || '?';
+    if (!weldByUnit[u]) weldByUnit[u] = { exec: 0, ok: 0, ng: 0 };
+    weldByUnit[u].exec += (r.cum_exec || 0);
+    weldByUnit[u].ok   += (r.cum_ok || 0);
+    weldByUnit[u].ng   += (r.cum_ng || 0);
+  }
   const weldExec = Q.welding.reduce((s, r) => s + (r.cum_exec || 0), 0);
   const weldOk = Q.welding.reduce((s, r) => s + (r.cum_ok || 0), 0);
   const weldNg = Q.welding.reduce((s, r) => s + (r.cum_ng || 0), 0);
   const weldPassRate = weldExec > 0 ? weldOk / weldExec * 100 : 0;
+  const weldRejPct = weldExec > 0 ? weldNg / weldExec * 100 : 0;
 
+  // KPI 1: 토목·건축 시험 항목 현황
   document.getElementById('ql-kpi-civil-exec').innerHTML = `
-    <span class="lbl">🧪 토목·건축 시험 누계</span>
-    <span class="val" style="color:${QL_COLORS.primary};">${Math.round(civilExec).toLocaleString()}</span>
-    <span class="sub">${Q.civil_tests.length}개 항목 · 단위 혼합(회/M)</span>
+    <span class="lbl">🧪 토목·건축 시험 항목</span>
+    <span class="val" style="color:${QL_COLORS.primary};">${civilTotalItems}<span style="font-size:18px;">개</span></span>
+    <span class="sub">불합격 발생 <b style="color:${civilItemsWithNg > 0 ? QL_COLORS.warn : QL_COLORS.good};">${civilItemsWithNg}</b>개 · 양호 ${civilTotalItems - civilItemsWithNg}개</span>
   `;
+  // KPI 2: 토목·건축 평균 불량률 + 절대 카운트
   document.getElementById('ql-kpi-civil-pass').innerHTML = `
-    <span class="lbl">✅ 토목·건축 합격률</span>
-    <span class="val" style="color:${civilPassRate >= 95 ? QL_COLORS.good : (civilPassRate >= 90 ? QL_COLORS.warn : QL_COLORS.bad)};">${civilPassRate.toFixed(1)}<span style="font-size:18px;">%</span></span>
-    <span class="sub">합격 ${Math.round(civilOk).toLocaleString()} / 불합격 ${Math.round(civilNg).toLocaleString()}</span>
+    <span class="lbl">⚠ 토목·건축 평균 불량률</span>
+    <span class="val" style="color:${civilAvgRej >= 10 ? QL_COLORS.bad : (civilAvgRej >= 3 ? QL_COLORS.warn : QL_COLORS.good)};">${civilAvgRej.toFixed(2)}<span style="font-size:18px;">%</span></span>
+    <span class="sub">합격 ${Math.round(civilOkSum).toLocaleString()} · 불합격 <b style="color:${QL_COLORS.bad};">${Math.round(civilNgSum).toLocaleString()}</b> (불합격 발생 항목 평균)</span>
   `;
+  // KPI 3: 용접 검사 누계 (단위별 분리)
+  const weldUnitStr = Object.entries(weldByUnit)
+    .filter(([, v]) => v.exec > 0)
+    .map(([u, v]) => `${Math.round(v.exec).toLocaleString()}${u}`)
+    .join(' · ');
   document.getElementById('ql-kpi-weld-exec').innerHTML = `
     <span class="lbl">🛠 용접 검사 누계</span>
     <span class="val" style="color:${QL_COLORS.primary};">${Math.round(weldExec).toLocaleString()}</span>
-    <span class="sub">${Q.welding.length}개 항목 · TK-207·208 외</span>
+    <span class="sub">${weldUnitStr || (Q.welding.length + '개 항목')}</span>
   `;
+  // KPI 4: 용접 합격률 (단위가 비슷해서 의미 있음)
   document.getElementById('ql-kpi-weld-pass').innerHTML = `
     <span class="lbl">✅ 용접 합격률</span>
-    <span class="val" style="color:${weldPassRate >= 95 ? QL_COLORS.good : (weldPassRate >= 90 ? QL_COLORS.warn : QL_COLORS.bad)};">${weldPassRate.toFixed(2)}<span style="font-size:18px;">%</span></span>
-    <span class="sub">합격 ${Math.round(weldOk).toLocaleString()} / 불합격 ${Math.round(weldNg).toLocaleString()}</span>
+    <span class="val" style="color:${weldPassRate >= 99 ? QL_COLORS.good : (weldPassRate >= 95 ? QL_COLORS.warn : QL_COLORS.bad)};">${weldPassRate.toFixed(2)}<span style="font-size:18px;">%</span></span>
+    <span class="sub">합격 ${Math.round(weldOk).toLocaleString()} · 불합격 <b style="color:${QL_COLORS.bad};">${Math.round(weldNg).toLocaleString()}</b> (불량률 ${weldRejPct.toFixed(2)}%)</span>
   `;
 
-  // ── 토목·건축 누계 막대 ──
-  const civilByGroup = {};
-  for (const r of Q.civil_tests) {
-    const g = r.section || '기타';
-    if (!civilByGroup[g]) civilByGroup[g] = { exec: 0, ok: 0, ng: 0 };
-    civilByGroup[g].exec += (r.cum_exec || 0);
-    civilByGroup[g].ok   += (r.cum_ok || 0);
-    civilByGroup[g].ng   += (r.cum_ng || 0);
-  }
-  const cgLabels = Object.keys(civilByGroup);
-  const cgOk = cgLabels.map(k => Math.round(civilByGroup[k].ok));
-  const cgNg = cgLabels.map(k => Math.round(civilByGroup[k].ng));
+  // ── 토목·건축 항목별 불합격 카운트 (단위 명시) ──
+  // 단위 혼합 문제로 % 대신 항목별 절대값(합격/불합격)을 표시
+  // 모든 항목을 절대값으로 표시, 단위 함께 명시
+  const civilSortedItems = Q.civil_tests
+    .slice()
+    .sort((a, b) => (b.cum_exec || 0) - (a.cum_exec || 0))
+    .filter(r => (r.cum_exec || 0) > 0)
+    .slice(0, 10);
+  const civilLabels = civilSortedItems.map(r => `${r.item} (${r.unit || '–'})`);
+  const civilOks = civilSortedItems.map(r => +(r.cum_ok || 0).toFixed(2));
+  const civilNgs = civilSortedItems.map(r => +(r.cum_ng || 0).toFixed(2));
   const civilBars = echarts.init(document.getElementById('ql-civil-bars'));
   civilBars.setOption({
-    grid: { left: 140, right: 30, top: 30, bottom: 50 },
+    grid: { left: 200, right: 50, top: 30, bottom: 50 },
     tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' },
       formatter: ps => {
         const i = ps[0].dataIndex;
-        const e = civilByGroup[cgLabels[i]];
-        const rate = e.exec > 0 ? (e.ok / e.exec * 100).toFixed(2) : '–';
-        return `<b>${cgLabels[i]}</b><br>수행 ${Math.round(e.exec)}<br>합격 ${Math.round(e.ok)}<br>불합격 ${Math.round(e.ng)}<br>합격률 <b>${rate}%</b>`;
+        const r = civilSortedItems[i];
+        const rate = r.cum_reject_rate != null ? (r.cum_reject_rate * 100).toFixed(2) + '%' : '–';
+        return `<b>${escHtml(r.section || '')} · ${escHtml(r.item)}</b><br>수행 ${(r.cum_exec||0).toFixed(2)} ${r.unit||''}<br>합격 ${(r.cum_ok||0).toFixed(2)}<br>불합격 <b style="color:#c25656;">${(r.cum_ng||0).toFixed(2)}</b><br>불량률 <b>${rate}</b>`;
       } },
     legend: { bottom: 4, icon: 'roundRect', itemHeight: 10, textStyle: { fontSize: 13 } },
     xAxis: { type: 'value', axisLabel: { fontSize: 11.5 } },
-    yAxis: { type: 'category', data: cgLabels, axisLabel: { fontSize: 13, fontWeight: 600 } },
+    yAxis: { type: 'category', data: civilLabels, axisLabel: { fontSize: 11.5, fontWeight: 600,
+      formatter: v => v.length > 26 ? v.slice(0, 25) + '…' : v } },
     series: [
-      { name: '합격', type: 'bar', stack: 's', data: cgOk, itemStyle: { color: QL_COLORS.good },
-        label: { show: true, position: 'insideRight', fontSize: 11, color: '#fff', fontWeight: 700 } },
-      { name: '불합격', type: 'bar', stack: 's', data: cgNg, itemStyle: { color: QL_COLORS.bad },
+      { name: '합격', type: 'bar', stack: 's', data: civilOks, itemStyle: { color: QL_COLORS.good },
+        label: { show: false } },
+      { name: '불합격', type: 'bar', stack: 's', data: civilNgs, itemStyle: { color: QL_COLORS.bad },
         label: { show: true, position: 'right', fontSize: 11.5, fontWeight: 700, color: QL_COLORS.bad,
           formatter: p => p.value > 0 ? p.value : '' } },
     ],
   });
 
-  // ── 토목·건축 불량률 Top 5 ──
+  // ── 토목·건축 불량 항목 Top 5 — % 대신 절대값(불합격 N건, 단위 명시) + 불량률 부가 ──
   const civilReject = Q.civil_tests
-    .filter(r => r.cum_reject_rate != null && r.cum_reject_rate > 0)
-    .sort((a, b) => b.cum_reject_rate - a.cum_reject_rate)
+    .filter(r => (r.cum_ng || 0) > 0)
+    .sort((a, b) => {
+      // 불량률(%) 우선, 동률시 불합격 절대값
+      const rA = a.cum_reject_rate || 0, rB = b.cum_reject_rate || 0;
+      if (rB !== rA) return rB - rA;
+      return (b.cum_ng || 0) - (a.cum_ng || 0);
+    })
     .slice(0, 5);
   const civilRejectHost = document.getElementById('ql-civil-reject');
   if (civilReject.length === 0) {
     civilRejectHost.innerHTML = '<div style="padding:20px;text-align:center;color:#3f8a3f;font-size:13.5px;">✓ 불량 항목 없음</div>';
   } else {
-    civilRejectHost.innerHTML = civilReject.map(r => `
-      <div class="ql-list-row">
-        <div class="ql-list-name" title="${escAttr(r.section + ' · ' + r.item)}">
-          <div style="font-size:11.5px;color:#7a8694;">${escHtml(r.section || '–')}</div>
-          <div>${escHtml(r.item)}</div>
-        </div>
-        <div class="ql-list-val" style="color:${r.cum_reject_rate >= 0.1 ? '#c25656' : '#d49462'};">${(r.cum_reject_rate * 100).toFixed(2)}%</div>
+    civilRejectHost.innerHTML = `
+      <table style="width:100%;border-collapse:collapse;font-size:13px;">
+        <thead>
+          <tr style="background:#f5f8fc;border-bottom:1px solid #e6eaf1;">
+            <th style="padding:8px 10px;text-align:left;font-size:12px;color:#5a6677;font-weight:700;">시험 항목</th>
+            <th style="padding:8px 10px;text-align:right;font-size:12px;color:#5a6677;font-weight:700;width:80px;">불합격</th>
+            <th style="padding:8px 10px;text-align:right;font-size:12px;color:#5a6677;font-weight:700;width:90px;">불량률</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${civilReject.map(r => {
+            const rate = (r.cum_reject_rate || 0) * 100;
+            const rateColor = rate >= 10 ? '#c25656' : (rate >= 3 ? '#d49462' : '#7a8694');
+            return `
+              <tr style="border-bottom:1px solid #eef0f4;">
+                <td style="padding:9px 10px;color:#28323e;">
+                  <div style="font-size:11.5px;color:#7a8694;font-weight:500;">${escHtml(r.section || '')}</div>
+                  <div style="font-weight:600;">${escHtml(r.item)} <span style="color:#9aa6b4;font-weight:400;font-size:11.5px;">(${r.unit || '–'})</span></div>
+                </td>
+                <td style="padding:9px 10px;text-align:right;font-variant-numeric:tabular-nums;">
+                  <b style="color:#c25656;font-size:15px;">${(r.cum_ng || 0).toFixed(2)}</b>
+                  <div style="font-size:10.5px;color:#9aa6b4;">/ 합 ${(r.cum_exec || 0).toFixed(0)}</div>
+                </td>
+                <td style="padding:9px 10px;text-align:right;font-variant-numeric:tabular-nums;">
+                  <b style="color:${rateColor};font-size:15px;">${rate.toFixed(2)}%</b>
+                </td>
+              </tr>`;
+          }).join('')}
+        </tbody>
+      </table>
+      <div style="margin-top:10px;padding:8px 12px;background:#f5f8fc;border-left:3px solid #4a7bd1;border-radius:4px;font-size:11.5px;color:#5a6677;line-height:1.5;">
+        💡 단위가 다른 항목들을 동일 % 로 비교할 수 없어, <b>불량률(%)</b> 과 <b>절대 불합격 수</b> 를 함께 표시했습니다.
       </div>
-    `).join('');
+    `;
   }
 
   // ── 용접 영역별 비교 ──
@@ -6998,8 +7054,9 @@ openTab('overview');
       }
     }
     if (todayX !== null) {
-      tparts.push(`<line x1="${todayX}" y1="0" x2="${todayX}" y2="${HEADER_H}" stroke="#c97070" stroke-width="2"/>`);
-      tparts.push(`<text x="${todayX + 4}" y="14" font-size="11" font-weight="700" fill="#c97070" font-family="Segoe UI">▼ 오늘</text>`);
+      // 헤더(timeaxis): 실선 + 라벨. shape-rendering 으로 sub-pixel 정렬 강제.
+      tparts.push(`<line x1="${todayX}" y1="0" x2="${todayX}" y2="${HEADER_H}" stroke="#c97070" stroke-width="1.5" shape-rendering="crispEdges"/>`);
+      tparts.push(`<text x="${todayX + 5}" y="14" font-size="11" font-weight="700" fill="#c97070" font-family="Segoe UI">▼ 오늘</text>`);
     }
     // 월간공정: 직전/해당/다음월 배경 + 라벨
     if (monthHighlight) {
@@ -7077,9 +7134,9 @@ openTab('overview');
         cparts.push(`<rect x="0" y="${vi*ROW_H}" width="${timelineW}" height="${ROW_H}" fill="#f7f9fc"/>`);
       }
     });
-    // 오늘 라인
+    // 오늘 라인 — 헤더의 실선과 X 좌표 + 두께를 정확히 일치 (점선만 다르게)
     if (todayX !== null) {
-      cparts.push(`<line x1="${todayX}" y1="0" x2="${todayX}" y2="${ROW_H*N}" stroke="#c97070" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.7"/>`);
+      cparts.push(`<line x1="${todayX}" y1="0" x2="${todayX}" y2="${ROW_H*N}" stroke="#c97070" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.7" shape-rendering="crispEdges"/>`);
     }
     // 막대 그리기 + 위치 기록
     const barInfo = [];

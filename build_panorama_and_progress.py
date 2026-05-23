@@ -287,18 +287,20 @@ def parse_quality():
             })
 
     # 6.2 토목/건축공사 품질시험 실적 (행 42~60)
+    # 컬럼 layout: B=section, C=item, D=unit, E=plan,
+    #              F~I=전월누계, J~M=금월, N~Q=총누계
     civil_sections = []
     cur_section = None
     for r in range(42, 65):
-        a = ws.cell(r, 2).value   # 구분 (대분류)
-        b = ws.cell(r, 3).value   # 세부 항목
-        unit = ws.cell(r, 4).value
-        plan = ws.cell(r, 5).value
-        # 총 누계 실적: 컬럼 13~16 (수행, 합격, 불합격, 불량률)
-        cum_exec = _float(ws.cell(r, 13).value)
-        cum_ok   = _float(ws.cell(r, 14).value)
-        cum_ng   = _float(ws.cell(r, 15).value)
-        cum_rej  = _float(ws.cell(r, 16).value)
+        a = ws.cell(r, 2).value   # B - 구분 (대분류)
+        b = ws.cell(r, 3).value   # C - 세부 항목
+        unit = ws.cell(r, 4).value   # D - 단위
+        plan = ws.cell(r, 5).value   # E - 계획
+        # 총 누계 실적: 컬럼 14~17 (N~Q)
+        cum_exec = _float(ws.cell(r, 14).value)  # N - 누계 수행
+        cum_ok   = _float(ws.cell(r, 15).value)  # O - 누계 합격
+        cum_ng   = _float(ws.cell(r, 16).value)  # P - 누계 불합격
+        cum_rej  = _float(ws.cell(r, 17).value)  # Q - 누계 불량률
         if a:
             cur_section = str(a).strip()
         if not b: continue

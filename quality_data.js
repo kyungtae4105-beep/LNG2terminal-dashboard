@@ -160,9 +160,9 @@ window.QUALITY_DATA = {
       "item": "SAND MAT",
       "unit": "회",
       "plan": 130,
-      "cum_exec": null,
+      "cum_exec": 59.0,
       "cum_ok": 59.0,
-      "cum_ng": 59.0,
+      "cum_ng": 0.0,
       "cum_reject_rate": 0.0
     },
     {
@@ -170,9 +170,9 @@ window.QUALITY_DATA = {
       "item": "SCP(액상화)",
       "unit": "회",
       "plan": 58,
-      "cum_exec": null,
+      "cum_exec": 19.0,
       "cum_ok": 19.0,
-      "cum_ng": 19.0,
+      "cum_ng": 0.0,
       "cum_reject_rate": 0.0
     },
     {
@@ -180,9 +180,9 @@ window.QUALITY_DATA = {
       "item": "PBD",
       "unit": "회",
       "plan": 12,
-      "cum_exec": null,
+      "cum_exec": 8.0,
       "cum_ok": 8.0,
-      "cum_ng": 8.0,
+      "cum_ng": 0.0,
       "cum_reject_rate": 0.0
     },
     {
@@ -190,9 +190,9 @@ window.QUALITY_DATA = {
       "item": "PET MAT(현장봉합)",
       "unit": "회",
       "plan": 4,
-      "cum_exec": null,
+      "cum_exec": 4.0,
       "cum_ok": 4.0,
-      "cum_ng": 4.0,
+      "cum_ng": 0.0,
       "cum_reject_rate": 0.0
     },
     {
@@ -200,9 +200,9 @@ window.QUALITY_DATA = {
       "item": "PP MAT(현장봉합)",
       "unit": "회",
       "plan": 3,
-      "cum_exec": null,
+      "cum_exec": 3.0,
       "cum_ok": 3.0,
-      "cum_ng": 3.0,
+      "cum_ng": 0.0,
       "cum_reject_rate": 0.0
     },
     {
@@ -210,9 +210,9 @@ window.QUALITY_DATA = {
       "item": "쇄석",
       "unit": "회",
       "plan": 1,
-      "cum_exec": null,
+      "cum_exec": 1.0,
       "cum_ok": 1.0,
-      "cum_ng": 1.0,
+      "cum_ng": 0.0,
       "cum_reject_rate": 0.0
     },
     {
@@ -220,9 +220,9 @@ window.QUALITY_DATA = {
       "item": "WING HORIZ DRAIN(W.H.D)",
       "unit": "회",
       "plan": 1,
-      "cum_exec": null,
+      "cum_exec": 1.0,
       "cum_ok": 1.0,
-      "cum_ng": 1.0,
+      "cum_ng": 0.0,
       "cum_reject_rate": 0.0
     },
     {
@@ -230,19 +230,19 @@ window.QUALITY_DATA = {
       "item": "용접사 기량 Test",
       "unit": "회",
       "plan": 10,
-      "cum_exec": null,
-      "cum_ok": 28.0,
-      "cum_ng": 19.0,
-      "cum_reject_rate": 9.0
+      "cum_exec": 28.0,
+      "cum_ok": 19.0,
+      "cum_ng": 9.0,
+      "cum_reject_rate": 0.32142857142857145
     },
     {
       "section": "파일항타공사",
       "item": "동재하 시험",
       "unit": "회",
       "plan": 18,
-      "cum_exec": null,
+      "cum_exec": 23.0,
       "cum_ok": 23.0,
-      "cum_ng": 23.0,
+      "cum_ng": 0.0,
       "cum_reject_rate": 0.0
     },
     {
@@ -250,9 +250,9 @@ window.QUALITY_DATA = {
       "item": "정재하시험(압축/수평)",
       "unit": "회",
       "plan": 2,
-      "cum_exec": null,
+      "cum_exec": 2.0,
       "cum_ok": 2.0,
-      "cum_ng": 2.0,
+      "cum_ng": 0.0,
       "cum_reject_rate": 0.0
     },
     {
@@ -260,9 +260,9 @@ window.QUALITY_DATA = {
       "item": "정재하시험(수평)",
       "unit": "회",
       "plan": 2,
-      "cum_exec": null,
+      "cum_exec": 2.0,
       "cum_ok": 2.0,
-      "cum_ng": 2.0,
+      "cum_ng": 0.0,
       "cum_reject_rate": 0.0
     },
     {
@@ -270,39 +270,39 @@ window.QUALITY_DATA = {
       "item": "비파괴검사(UT)7TK",
       "unit": "M",
       "plan": null,
-      "cum_exec": null,
-      "cum_ok": 110.37,
-      "cum_ng": 108.5,
-      "cum_reject_rate": 1.87
+      "cum_exec": 110.37,
+      "cum_ok": 108.5,
+      "cum_ng": 1.87,
+      "cum_reject_rate": 0.016943009875872068
     },
     {
       "section": "파일항타공사",
       "item": "비파괴검사(UT)8TK",
       "unit": "M",
       "plan": null,
-      "cum_exec": null,
-      "cum_ok": 77.7,
-      "cum_ng": 69.3,
-      "cum_reject_rate": 8.4
+      "cum_exec": 77.7,
+      "cum_ok": 69.3,
+      "cum_ng": 8.4,
+      "cum_reject_rate": 0.10810810810810811
     },
     {
       "section": "파일항타공사",
       "item": "비파괴검사(UT)Process Area 외",
       "unit": "M",
       "plan": null,
-      "cum_exec": null,
-      "cum_ok": 48.9,
-      "cum_ng": 48.0,
-      "cum_reject_rate": 0.9
+      "cum_exec": 48.9,
+      "cum_ok": 48.0,
+      "cum_ng": 0.9,
+      "cum_reject_rate": 0.018404907975460124
     },
     {
       "section": "파일항타공사",
       "item": "강관파일",
       "unit": "회",
       "plan": null,
-      "cum_exec": null,
+      "cum_exec": 2.0,
       "cum_ok": 2.0,
-      "cum_ng": 2.0,
+      "cum_ng": 0.0,
       "cum_reject_rate": 0.0
     },
     {
@@ -310,9 +310,9 @@ window.QUALITY_DATA = {
       "item": "콘크리트 실내배합",
       "unit": "회",
       "plan": 16,
-      "cum_exec": null,
+      "cum_exec": 16.0,
       "cum_ok": 16.0,
-      "cum_ng": 16.0,
+      "cum_ng": 0.0,
       "cum_reject_rate": 0.0
     },
     {
@@ -320,19 +320,19 @@ window.QUALITY_DATA = {
       "item": "콘크리트 현장시험",
       "unit": "회",
       "plan": null,
-      "cum_exec": 0.125,
-      "cum_ok": 627.0,
-      "cum_ng": 599.0,
-      "cum_reject_rate": 28.0
+      "cum_exec": 627.0,
+      "cum_ok": 599.0,
+      "cum_ng": 28.0,
+      "cum_reject_rate": 0.044657097288676235
     },
     {
       "section": "철근콘크리트공사",
       "item": "철근콘크리트용 봉강",
       "unit": "회",
       "plan": 1,
-      "cum_exec": null,
+      "cum_exec": 1.0,
       "cum_ok": 1.0,
-      "cum_ng": 1.0,
+      "cum_ng": 0.0,
       "cum_reject_rate": 0.0
     },
     {
@@ -340,9 +340,9 @@ window.QUALITY_DATA = {
       "item": "기타",
       "unit": "회",
       "plan": 3,
-      "cum_exec": null,
+      "cum_exec": 3.0,
       "cum_ok": 3.0,
-      "cum_ng": 3.0,
+      "cum_ng": 0.0,
       "cum_reject_rate": 0.0
     }
   ],
