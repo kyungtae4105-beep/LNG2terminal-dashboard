@@ -1629,9 +1629,9 @@ table.editable td.num input {
   grid-template-rows: 0.95fr 1.05fr;
   gap: 14px;
 }
-/* 마일스톤 컬럼: 핵심 마일스톤(첫 서브) 더 줄이고 특이사항(둘째)을 시공지연/현장전경 비율에 맞춤 */
+/* 마일스톤 컬럼: 카드 자체가 컴팩트해졌으므로 다른 컬럼과 동일 비율 */
 .panel[data-tab="overview"] .ov-col-ms .ov-group-body {
-  grid-template-rows: 0.65fr 1.35fr;
+  grid-template-rows: 0.95fr 1.05fr;
 }
 /* 마일스톤 리스트는 max-height + overflow로 길어지면 스크롤 */
 .panel[data-tab="overview"] .ov-sub-ms .ov-ms-list {
@@ -1766,9 +1766,9 @@ table.editable td.num input {
   margin-bottom: 7px;
   flex-shrink: 0;
 }
-.ov-sub-ms .ov-ms-list { gap: 9px; }
-.ov-sub-ms .ov-ms-item { padding: 13px 15px 14px; }
-.ov-sub-ms .ov-ms-item-title { font-size: 17px; }
+.ov-sub-ms .ov-ms-list { gap: 6px; }
+.ov-sub-ms .ov-ms-item { padding: 8px 12px 9px; }
+.ov-sub-ms .ov-ms-item-title { font-size: 14.5px; line-height: 1.35; }
 .ov-ms-tab {
   flex: 1;
   padding: 11px 14px;
@@ -1800,9 +1800,9 @@ table.editable td.num input {
 }
 .ov-ms-item {
   border: 1px solid var(--border-soft);
-  border-left: 4px solid var(--primary);
+  border-left: 3px solid var(--primary);
   border-radius: var(--radius-sm);
-  padding: 9px 12px 10px;
+  padding: 6px 10px 7px;
   background: var(--surface-3);
 }
 .ov-ms-item.ok { border-left-color: var(--success); }
@@ -1816,8 +1816,8 @@ table.editable td.num input {
   margin-bottom: 3px;
 }
 .ov-ms-item-cat {
-  font-size: 12.5px;
-  padding: 3px 10px;
+  font-size: 11px;
+  padding: 2px 8px;
   background: var(--primary-soft);
   color: var(--primary-dark);
   border-radius: 999px;
@@ -1828,25 +1828,25 @@ table.editable td.num input {
 .ov-ms-item.warn .ov-ms-item-cat { background: var(--warning-soft); color: var(--warning); }
 .ov-ms-item.risk .ov-ms-item-cat { background: var(--danger-soft); color: var(--danger); }
 .ov-ms-item-date {
-  font-size: 13px;
+  font-size: 11.5px;
   color: var(--text-soft);
   font-weight: 600;
   font-variant-numeric: tabular-nums;
   margin-left: auto;
 }
 .ov-ms-item-title {
-  font-size: 16.5px;
+  font-size: 13.5px;
   color: var(--text-strong);
   font-weight: 600;
-  line-height: 1.4;
+  line-height: 1.35;
 }
 .ov-ms-item-meta {
-  font-size: 13px;
+  font-size: 11px;
   color: var(--text-muted);
-  margin-top: 5px;
+  margin-top: 3px;
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: 6px;
 }
 .ov-ms-empty {
   padding: 14px 8px;
@@ -3046,6 +3046,39 @@ function renderInlineEditTables(tabKey) {
       tgtD.innerHTML = h;
     }
   }
+  // ── 기자재발주현황 (orders) — 엑셀 자동 추출 ──
+  if (tabKey === 'orders') {
+    const tgt = document.getElementById('ord-edit-info');
+    if (tgt) {
+      const od = (window.SCHEDULE_DATA || {}).orders || {};
+      tgt.innerHTML = `
+        <div style="padding:14px 18px;background:#f5f8fc;border-left:4px solid #4a7bd1;border-radius:6px;color:#28323e;font-size:13.5px;line-height:1.7;">
+          <div style="font-weight:700;color:#2c569f;margin-bottom:6px;">📦 발주현황 데이터 — 자동 추출</div>
+          이 탭의 데이터는 월간 엑셀 <b>${escHtml(od.sheet || '10.기자재발주현황')}</b> 시트에서 자동 추출됩니다.<br>
+          <b>총 ${(od.lots || []).length}개 LOT</b> · 출처: <code style="background:#fff;padding:2px 6px;border-radius:3px;font-size:12.5px;">${escHtml(od.source_file || 'schedule_data.js')}</code><br><br>
+          <b>📝 데이터 갱신 방법:</b><br>
+          <code style="background:#fff;padding:3px 8px;border-radius:3px;font-size:12.5px;display:inline-block;margin:2px 0;">py extract_schedule.py</code>
+          를 실행하면 최신 월간 엑셀에서 발주 LOT 정보가 자동으로 <code>schedule_data.js</code> 에 반영됩니다.
+        </div>`;
+    }
+  }
+  // ── 품질이행관리 (quality) — 엑셀 자동 추출 ──
+  if (tabKey === 'quality') {
+    const tgt = document.getElementById('ql-edit-info');
+    if (tgt) {
+      const Q = window.QUALITY_DATA || {};
+      tgt.innerHTML = `
+        <div style="padding:14px 18px;background:#f5f8fc;border-left:4px solid #56a06a;border-radius:6px;color:#28323e;font-size:13.5px;line-height:1.7;">
+          <div style="font-weight:700;color:#3f8a3f;margin-bottom:6px;">🔍 품질 이행관리 데이터 — 자동 추출</div>
+          이 탭의 데이터는 월간 엑셀 <b>${escHtml(Q.source_sheet || '6.품질관리이행실적')}</b> 시트에서 자동 추출됩니다.<br>
+          <b>월간 텍스트 ${(Q.text_items||[]).length}항목 · 토목·건축 시험 ${(Q.civil_tests||[]).length}항목 · 용접 ${(Q.welding||[]).length}항목</b><br>
+          출처: <code style="background:#fff;padding:2px 6px;border-radius:3px;font-size:12.5px;">${escHtml(Q.source_file || 'quality_data.js')}</code><br><br>
+          <b>📝 데이터 갱신 방법:</b><br>
+          <code style="background:#fff;padding:3px 8px;border-radius:3px;font-size:12.5px;display:inline-block;margin:2px 0;">py build_panorama_and_progress.py</code>
+          를 실행하면 최신 월간 엑셀에서 품질 데이터가 자동으로 <code>quality_data.js</code> 에 반영됩니다.
+        </div>`;
+    }
+  }
 }
 
 function saveTabEdits(tabKey) {
@@ -3900,45 +3933,73 @@ PANEL_INIT.progress = () => {
       emphasis: { itemStyle: { borderColor: '#28323e', borderWidth: 2 } } }],
   });
 
-  // ===== ④ 지연 기여도 분석 (Waterfall 대체) =====
-  // 분야별 갭 (Actual - Plan)을 가로 막대로. 종합 = 다른 분야의 합 (대조용 헤더).
-  const contribItems = qty && qty.rows ? [
-    { name: '시공',  row: qty.rows.find(r => r.name === 'CONSTRUCTION') },
-    { name: '구매',  row: qty.rows.find(r => r.name === 'PROCUREMENT') },
-    { name: '설계',  row: qty.rows.find(r => r.name === 'ENGINEERING') },
-    { name: '종합',  row: qty.rows.find(r => r.name === '종합 공정률 (EPC)'), isSum: true },
-  ].filter(it => it.row) : [];
-  const contribLabels = contribItems.map(it => it.name);
-  const contribValues = contribItems.map(it => {
-    const g = (it.row.expect_may - it.row.plan_may) * 100;
-    return +g.toFixed(2);
-  });
+  // ===== ④ 지연 기여도 분석 — Waterfall(폭포) 차트 =====
+  // 설계 → 구매 → 시공 기여를 누적해서 종합 EPC 갭에 도달하는 시각화
+  const epcRow  = qty && qty.rows && qty.rows.find(r => r.name === '종합 공정률 (EPC)');
+  const consRow_c = qty && qty.rows && qty.rows.find(r => r.name === 'CONSTRUCTION');
+  const procRow_c = qty && qty.rows && qty.rows.find(r => r.name === 'PROCUREMENT');
+  const engRow_c  = qty && qty.rows && qty.rows.find(r => r.name === 'ENGINEERING');
+  const gapOf = (r) => r ? +((r.expect_may - r.plan_may) * 100).toFixed(2) : 0;
+  const engGap_c  = gapOf(engRow_c);
+  const procGap_c = gapOf(procRow_c);
+  const consGap_c = gapOf(consRow_c);
+  const epcGap_c  = gapOf(epcRow);
+
+  // Waterfall 데이터
+  const wfSteps = [
+    { name: '설계',     value: engGap_c,  type: 'segment', color: '#56a06a', row: engRow_c },
+    { name: '구매',     value: procGap_c, type: 'segment', color: '#a48cc4', row: procRow_c },
+    { name: '시공',     value: consGap_c, type: 'segment', color: '#4a7bd1', row: consRow_c },
+    { name: '종합 EPC', value: epcGap_c,  type: 'total',   color: epcGap_c < 0 ? PG_COLORS.bad : PG_COLORS.good },
+  ];
+  // 누적 위치 계산 (음수 갭은 0 → 왼쪽 확장)
+  let acc = 0;
+  for (const s of wfSteps) {
+    if (s.type === 'segment') {
+      const prev = acc;
+      const next = acc + s.value;
+      s.bar = [Math.min(prev, next), Math.max(prev, next)];
+      acc = next;
+    } else {
+      s.bar = [Math.min(0, epcGap_c), Math.max(0, epcGap_c)];
+    }
+  }
   const contribChart = echarts.init(document.getElementById('pg-contrib'));
   contribChart.setOption({
-    grid: { left: 60, right: 70, top: 30, bottom: 40 },
+    grid: { left: 100, right: 100, top: 30, bottom: 60 },
     tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' },
       formatter: ps => {
         const i = ps[0].dataIndex;
-        const it = contribItems[i];
-        return `<b>${it.name}</b><br>계획: ${(it.row.plan_may*100).toFixed(2)}%<br>실적: ${(it.row.expect_may*100).toFixed(2)}%<br>갭: <b style="color:${contribValues[i] < 0 ? PG_COLORS.bad : PG_COLORS.good};">${contribValues[i] >= 0 ? '+' : ''}${contribValues[i].toFixed(2)}%p</b>`;
+        const s = wfSteps[i];
+        if (s.type === 'total') return `<b>종합 EPC 갭</b><br>= 설계 + 구매 + 시공 누적<br><b style="color:${epcGap_c < 0 ? PG_COLORS.bad : PG_COLORS.good};">${epcGap_c >= 0 ? '+' : ''}${epcGap_c}%p</b>`;
+        return `<b>${s.name} 기여</b><br>계획: ${(s.row.plan_may*100).toFixed(2)}%<br>실적: ${(s.row.expect_may*100).toFixed(2)}%<br>EPC 갭 기여: <b style="color:${s.value < 0 ? PG_COLORS.bad : PG_COLORS.good};">${s.value >= 0 ? '+' : ''}${s.value}%p</b>`;
       } },
-    xAxis: { type: 'value', name: 'Actual − Plan (%p)', nameGap: 22, nameTextStyle: { fontSize: 11.5, color: '#7a8694' },
-      axisLabel: { fontSize: 11.5, formatter: v => (v > 0 ? '+' : '') + v } },
-    yAxis: { type: 'category', data: contribLabels, axisLabel: { fontSize: 14, fontWeight: 600 } },
-    series: [{
-      type: 'bar', data: contribValues.map((v, i) => ({
-        value: v,
-        itemStyle: {
-          color: contribItems[i].isSum
-            ? (v < 0 ? PG_COLORS.bad : PG_COLORS.good)
-            : (v <= -3 ? PG_COLORS.bad : (v < 0 ? '#d49462' : (v > 0 ? PG_COLORS.good : '#cdd5df'))),
-          borderRadius: 3,
-        },
-      })),
-      barWidth: '55%',
-      label: { show: true, position: 'right', formatter: p => (p.value >= 0 ? '+' : '') + p.value.toFixed(2) + '%p', fontSize: 13, fontWeight: 700, color: '#28323e' },
-      markLine: { silent: true, symbol: 'none', lineStyle: { color: '#cdd5df' }, data: [{ xAxis: 0 }] },
-    }],
+    xAxis: { type: 'value',
+      name: 'EPC 갭 누적 (%p)', nameLocation: 'middle', nameGap: 32, nameTextStyle: { fontSize: 12, color: '#7a8694' },
+      axisLabel: { fontSize: 11.5, formatter: v => (v > 0 ? '+' : '') + v },
+      splitLine: { lineStyle: { type: 'dashed', color: '#e6eaf1' } },
+    },
+    yAxis: { type: 'category', data: wfSteps.map(s => s.name),
+      axisLabel: { fontSize: 14, fontWeight: 700, color: (v, i) => wfSteps[i].type === 'total' ? '#1f2c3f' : '#28323e' },
+      axisLine: { show: false }, axisTick: { show: false } },
+    series: [
+      // 투명 base
+      { name: 'base', type: 'bar', stack: 'w', barWidth: '55%',
+        itemStyle: { color: 'transparent' },
+        data: wfSteps.map(s => s.bar[0]),
+      },
+      // 실제 segment 막대
+      { name: 'value', type: 'bar', stack: 'w', barWidth: '55%',
+        itemStyle: { color: (p) => wfSteps[p.dataIndex].color, borderRadius: 4 },
+        label: { show: true, position: 'right', fontSize: 13.5, fontWeight: 700, color: '#28323e',
+          formatter: p => {
+            const s = wfSteps[p.dataIndex];
+            const v = s.type === 'total' ? epcGap_c : s.value;
+            return (v >= 0 ? '+' : '') + v.toFixed(2) + '%p';
+          } },
+        data: wfSteps.map(s => Math.max(0.001, s.bar[1] - s.bar[0])),  // 0 길이는 안 보이므로 미세값
+      },
+    ],
   });
 
   // ===== ⑤ Manpower Stack (최근 6개월) =====
@@ -4530,18 +4591,22 @@ PANEL_INIT.resource = () => {
     window.__rsCharts.push(eqTop);
   }
 
-  // ===== 월별 인력 추이 (data.js, 최근 24개월) =====
+  // ===== 월별 인력 추이 (data.js · 실제 데이터 있는 구간만) =====
   const months = d.manpower.months;
-  const last = Math.max(0, months.length - 24);
-  const monthsRecent = months.slice(last);
   const subs = ['육상부','해상부','154kV'];
   const subColors = [RS_COLORS.primary, RS_COLORS.secondary, RS_COLORS.accent1];
+  // 데이터가 있는 첫 월 인덱스 찾기 (manager 또는 partner 가 양수인 첫 월)
+  const firstIdx = months.findIndex((_, i) =>
+    subs.some(s => (d.manpower[s].manager[i] || 0) > 0 || (d.manpower[s].partner[i] || 0) > 0)
+  );
+  const startIdx = firstIdx >= 0 ? firstIdx : 0;
+  const monthsRecent = months.slice(startIdx);
   const series = [];
   subs.forEach((sub, i) => {
     series.push({ name: `${sub}-관리`, type: 'bar', stack: sub,
-      data: monthsRecent.map((_, j) => d.manpower[sub].manager[last + j] || 0), itemStyle: { color: subColors[i] } });
+      data: monthsRecent.map((_, j) => d.manpower[sub].manager[startIdx + j] || 0), itemStyle: { color: subColors[i] } });
     series.push({ name: `${sub}-협력`, type: 'bar', stack: sub,
-      data: monthsRecent.map((_, j) => d.manpower[sub].partner[last + j] || 0), itemStyle: { color: subColors[i], opacity: 0.55 } });
+      data: monthsRecent.map((_, j) => d.manpower[sub].partner[startIdx + j] || 0), itemStyle: { color: subColors[i], opacity: 0.55 } });
   });
   const mpTrend = echarts.init(document.getElementById('rs-mp-trend'));
   mpTrend.setOption({
@@ -5022,6 +5087,13 @@ PANEL_INIT.safety = () => {
 //------------------------------------------------------------
 PANELS.quality = () => {
   return `
+    ${tabToolbar('quality')}
+    <div class="inline-edit-area" data-edit="quality">
+      <div class="editor-section">
+        <div class="section-header"><span class="arrow">▼</span><h3>🔍 품질 이행관리 데이터 안내</h3></div>
+        <div class="section-body" id="ql-edit-info"></div>
+      </div>
+    </div>
     <div id="ql-root" style="padding:18px 22px 28px;background:#f5f8fc;">
       <style>
         #ql-root .ql-grid { display:grid; grid-template-columns:repeat(12, 1fr); gap:16px; }
@@ -5096,6 +5168,7 @@ PANELS.quality = () => {
 };
 
 PANEL_INIT.quality = () => {
+  bindTabToolbar('quality');
   if (typeof echarts === 'undefined') {
     document.getElementById('ql-root').innerHTML = '<div style="padding:40px;color:#a14d4d;">ECharts 로딩 실패</div>';
     return;
@@ -7242,12 +7315,26 @@ openTab('overview');
     `;
 
     //-- 스크롤 동기화 (chartBox→timeAxis 가로 sync 보장) --
-    // 핵심: chartBox 의 scrollLeft 변화는 반드시 timeAxis.scrollLeft 에 즉시 반영
+    // chartBox 는 overflow:auto (가로/세로 scrollbar 표시될 수 있음),
+    // timeAxis 는 overflow:hidden 이라 client 영역 너비가 다름.
+    // chartBox.scrollLeft 가 max 일 때 timeAxis 의 SVG 우측 끝이 chartBox 영역 바깥에 있을 수 있어 어긋남.
+    // → timeAxis 컨테이너에 chartBox 의 vertical scrollbar 너비만큼 padding-right 부여
     let _syncing = false;
+    const _applyScrollbarPad = () => {
+      const sbW = chartBox.offsetWidth - chartBox.clientWidth;  // vertical scrollbar 너비 (0 또는 ~15-17px)
+      if (sbW > 0) {
+        timeAxis.style.paddingRight = sbW + 'px';
+      } else {
+        timeAxis.style.paddingRight = '';
+      }
+    };
+    _applyScrollbarPad();
     const syncTimeAxis = () => {
       if (timeAxis.scrollLeft !== chartBox.scrollLeft) {
         timeAxis.scrollLeft = chartBox.scrollLeft;
       }
+      // 동기화할 때마다 scrollbar pad 도 함께 점검 (scrollbar 출현/사라짐 대응)
+      _applyScrollbarPad();
     };
     chartBox.addEventListener('scroll', () => {
       // 가로 sync 는 _syncing 플래그와 무관하게 항상 수행 → align 보장
@@ -8144,6 +8231,13 @@ openTab('overview');
     const od = SD.orders;
     if (!od) return '<div style="padding:24px;color:#a14d4d;">기자재 발주현황 데이터가 없습니다 (schedule_data.js 재생성 필요).</div>';
     return `
+      ${tabToolbar('orders')}
+      <div class="inline-edit-area" data-edit="orders">
+        <div class="editor-section">
+          <div class="section-header"><span class="arrow">▼</span><h3>📦 기자재 발주현황 데이터 안내</h3></div>
+          <div class="section-body" id="ord-edit-info"></div>
+        </div>
+      </div>
       <div id="ord-root" style="padding:18px 22px 28px;height:100%;overflow:auto;background:#f5f8fc;">
         <style>
           #ord-root .ord-card {
@@ -8214,6 +8308,7 @@ openTab('overview');
   };
 
   PANEL_INIT.orders = () => {
+    bindTabToolbar('orders');
     const od = SD.orders;
     if (!od) return;
     const lots = (od.lots || []).map(l => ({ ...l, _rank: STAGE_RANK[l.stage] ?? 0 }));
@@ -8302,26 +8397,33 @@ openTab('overview');
             </div>`;
           }).join('')}
         </div>
-        <!-- 미입고 분포: 라벨 (왼쪽) + 도넛 (오른쪽) — 폰트 강화 -->
-        <div style="display:flex;gap:20px;align-items:center;">
-          <div style="flex:1;min-width:0;">
-            <div style="font-size:16px;color:#28323e;font-weight:800;margin-bottom:12px;letter-spacing:-0.01em;">📦 미입고 <span style="color:#c25656;">${remainTotal}</span>건 단계 분포</div>
-            <div style="display:flex;flex-direction:column;gap:10px;">
+        <!-- 미입고 분포: 라벨 (왼쪽 카드) + 화살표 + 도넛 (오른쪽) -->
+        <div style="display:grid;grid-template-columns:1fr auto auto;gap:20px;align-items:center;">
+          <!-- 좌: 라벨 카드 -->
+          <div style="background:#fafbfd;border:1px solid #e6eaf1;border-radius:8px;padding:14px 18px;">
+            <div style="font-size:15px;color:#28323e;font-weight:800;margin-bottom:12px;letter-spacing:-0.01em;display:flex;align-items:center;gap:6px;">
+              <span>📦</span>
+              <span>미입고 <span style="color:#c25656;">${remainTotal}</span>건 단계 분포</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:9px;">
               ${remainGroups.map(g => {
                 const pct = remainTotal ? (g.count / remainTotal * 100).toFixed(1) : '0.0';
-                return `<div style="display:flex;align-items:center;gap:10px;font-size:15.5px;color:#28323e;">
+                return `<div style="display:flex;align-items:center;gap:10px;font-size:14.5px;color:#28323e;">
                   <span style="width:14px;height:14px;border-radius:3px;background:${g.color};flex-shrink:0;"></span>
                   <span style="flex:1;font-weight:600;">${g.key}</span>
-                  <b style="font-variant-numeric:tabular-nums;font-size:18px;color:#1f2c3f;min-width:30px;text-align:right;">${g.count}</b>
-                  <span style="color:#7a8694;font-size:13.5px;width:56px;text-align:right;font-variant-numeric:tabular-nums;font-weight:600;">${pct}%</span>
+                  <b style="font-variant-numeric:tabular-nums;font-size:17px;color:#1f2c3f;min-width:28px;text-align:right;">${g.count}</b>
+                  <span style="color:#7a8694;font-size:13px;width:52px;text-align:right;font-variant-numeric:tabular-nums;font-weight:600;">${pct}%</span>
                 </div>`;
               }).join('')}
             </div>
           </div>
-          <div style="position:relative;width:150px;height:150px;flex-shrink:0;">
-            <canvas id="ord-donut" width="150" height="150"></canvas>
+          <!-- 중간: 화살표 -->
+          <div style="display:flex;align-items:center;justify-content:center;color:#cdd5df;font-size:24px;font-weight:300;">→</div>
+          <!-- 우: 도넛 -->
+          <div style="position:relative;width:160px;height:160px;flex-shrink:0;">
+            <canvas id="ord-donut" width="160" height="160"></canvas>
             <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;">
-              <div style="font-size:28px;font-weight:800;color:#28323e;line-height:1;letter-spacing:-0.02em;">${remainTotal}</div>
+              <div style="font-size:30px;font-weight:800;color:#28323e;line-height:1;letter-spacing:-0.02em;">${remainTotal}</div>
               <div style="font-size:12px;color:#7a8694;margin-top:4px;font-weight:600;">미입고</div>
             </div>
           </div>
@@ -8330,13 +8432,13 @@ openTab('overview');
     `;
     document.getElementById('ord-funnel').innerHTML = funnelHtml;
 
-    // 도넛 그리기 (Canvas 직접) — 150x150
+    // 도넛 그리기 (Canvas 직접) — 160x160
     (function drawDonut() {
       const c = document.getElementById('ord-donut');
       if (!c) return;
       const ctx = c.getContext('2d');
-      const cx = 75, cy = 75, rOut = 70, rIn = 44;
-      ctx.clearRect(0, 0, 150, 150);
+      const cx = 80, cy = 80, rOut = 75, rIn = 48;
+      ctx.clearRect(0, 0, 160, 160);
       if (remainTotal === 0) {
         ctx.beginPath(); ctx.arc(cx, cy, rOut, 0, Math.PI * 2); ctx.fillStyle = '#eef0f4'; ctx.fill();
         ctx.beginPath(); ctx.arc(cx, cy, rIn, 0, Math.PI * 2); ctx.fillStyle = '#fff'; ctx.fill();
