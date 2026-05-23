@@ -59,6 +59,12 @@ make_icons.py
 _xlsx_converted/
 _xlsx_converted2/
 
+# wrangler 배포용 임시 폴더 (필요 시 재생성)
+_deploy/
+
+# wrangler 로컬 상태 디렉토리
+.wrangler/
+
 # 임시 로그
 _com_log.txt
 _check.js

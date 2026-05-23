@@ -1948,7 +1948,7 @@ window.PHOTOS_DATA = {
       "type": "공사사진",
       "items": [
         {
-          "file": "photos/2025-06/cnstr_토목_ee2d05be39ef.png",
+          "file": "photos/2025-06/cnstr_토목_ee2d05be39ef.jpg",
           "caption": "#8탱크 Step 2 수직 그라우트 (25/05/07)"
         },
         {
@@ -4512,7 +4512,7 @@ window.PHOTOS_DATA = {
           "caption": "7TK Wall Water Jet Cleaning 작업(26/04/14)"
         },
         {
-          "file": "photos/2026-05/cnstr_토목_74b5d4163860.png",
+          "file": "photos/2026-05/cnstr_토목_74b5d4163860.jpg",
           "caption": "8TK 수평강선 삽입(26/04/20)"
         },
         {
@@ -4650,7 +4650,7 @@ window.PHOTOS_DATA = {
           "caption": "7TK 수평강선 삽입 (26/03/01)"
         },
         {
-          "file": "photos/2026-04/cnstr_토목_3dd9dbf71de8.png",
+          "file": "photos/2026-04/cnstr_토목_3dd9dbf71de8.jpg",
           "caption": "7TK 수평강선 인장 (26/03/11)"
         },
         {
