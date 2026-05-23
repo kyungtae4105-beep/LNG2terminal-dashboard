@@ -1629,9 +1629,9 @@ table.editable td.num input {
   grid-template-rows: 0.95fr 1.05fr;
   gap: 14px;
 }
-/* 마일스톤 컬럼만: 핵심 마일스톤(첫 서브)을 추가로 살짝 축소 — 스크롤 없이 두 서브 다 보이도록 */
+/* 마일스톤 컬럼: 핵심 마일스톤(첫 서브) 더 줄이고 특이사항(둘째)을 시공지연/현장전경 비율에 맞춤 */
 .panel[data-tab="overview"] .ov-col-ms .ov-group-body {
-  grid-template-rows: 0.85fr 1.15fr;
+  grid-template-rows: 0.65fr 1.35fr;
 }
 /* 마일스톤 리스트는 max-height + overflow로 길어지면 스크롤 */
 .panel[data-tab="overview"] .ov-sub-ms .ov-ms-list {
@@ -3748,14 +3748,17 @@ PANELS.progress = () => `
       <div class="pg-card col-12">
         <h3 class="pg-title">🗺 공종 가중치 × 진척률 트리맵 <span class="pg-sub">📦 박스 크기 = EPC 점유 가중치 · 🎨 색상 = 달성률(계획대비 실적)</span></h3>
         <div id="pg-treemap-summary" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:14px;"></div>
-        <div id="pg-treemap-legend" style="display:flex;align-items:center;gap:18px;flex-wrap:wrap;padding:10px 14px;background:#f5f8fc;border-radius:8px;margin-bottom:12px;font-size:12.5px;color:#28323e;">
-          <span style="font-weight:700;color:#2c569f;">📊 달성률 범례:</span>
-          <span style="display:inline-flex;align-items:center;gap:6px;"><span style="width:18px;height:14px;background:#c25656;border-radius:3px;"></span>50% 미만 (심각)</span>
-          <span style="display:inline-flex;align-items:center;gap:6px;"><span style="width:18px;height:14px;background:#d49462;border-radius:3px;"></span>50~70% (주의)</span>
-          <span style="display:inline-flex;align-items:center;gap:6px;"><span style="width:18px;height:14px;background:#7ba6c9;border-radius:3px;"></span>70~90% (양호)</span>
-          <span style="display:inline-flex;align-items:center;gap:6px;"><span style="width:18px;height:14px;background:#4a7bd1;border-radius:3px;"></span>90~100% (우수)</span>
-          <span style="display:inline-flex;align-items:center;gap:6px;"><span style="width:18px;height:14px;background:#3f8a3f;border-radius:3px;"></span>100% 이상 (완료)</span>
-          <span style="margin-left:auto;color:#7a8694;">박스 클릭으로 하위 공종 드릴다운</span>
+        <div id="pg-treemap-legend" style="display:flex;align-items:center;gap:18px;flex-wrap:wrap;padding:12px 16px;background:#f5f8fc;border-radius:8px;margin-bottom:12px;font-size:13px;color:#28323e;">
+          <span style="font-weight:700;color:#2c569f;">🎨 영역 색상:</span>
+          <span style="display:inline-flex;align-items:center;gap:6px;"><span style="width:18px;height:14px;background:#56a06a;border-radius:3px;"></span>설계 (그린 톤)</span>
+          <span style="display:inline-flex;align-items:center;gap:6px;"><span style="width:18px;height:14px;background:#a48cc4;border-radius:3px;"></span>구매 (퍼플 톤)</span>
+          <span style="display:inline-flex;align-items:center;gap:6px;"><span style="width:18px;height:14px;background:#4a7bd1;border-radius:3px;"></span>시공 (블루 톤)</span>
+          <span style="margin:0 4px;color:#cdd5df;">|</span>
+          <span style="font-weight:700;color:#28323e;">📐 달성률 테두리:</span>
+          <span style="display:inline-flex;align-items:center;gap:6px;"><span style="width:18px;height:14px;background:#fff;border:2px solid #fff;outline:1px dashed #ccc;border-radius:3px;"></span>97%↑ 양호</span>
+          <span style="display:inline-flex;align-items:center;gap:6px;"><span style="width:18px;height:14px;background:#fff;border:3px solid #d49462;border-radius:3px;"></span>85~97% 주의</span>
+          <span style="display:inline-flex;align-items:center;gap:6px;"><span style="width:18px;height:14px;background:#fff;border:4px solid #c25656;border-radius:3px;"></span>85% 미만 지연</span>
+          <span style="margin-left:auto;color:#7a8694;font-size:12px;">박스 클릭 → 드릴다운 · 박스 크기 = EPC 점유 가중치</span>
         </div>
         <div class="ec-chart" id="pg-pstatus-treemap" style="height:560px;"></div>
       </div>
@@ -4060,27 +4063,46 @@ PANEL_INIT.progress = () => {
       }).join('');
     }
 
-    // (b2) Treemap : 가중치(EPC %) × 진척률
+    // (b2) Treemap : 가중치(EPC %) × 진척률 — 영역별 색상 팔레트 + 달성률 외곽 테두리
+    // color 는 카테고리 구분(설계 그린/구매 퍼플/시공 블루), 달성률은 라벨에 명시 + 미달 항목은 빨간 테두리
+    const PALETTES = {
+      ENGINEERING: '#56a06a',
+      PROCUREMENT: '#a48cc4',
+      CONSTRUCTION: '#4a7bd1',
+    };
+    // 미달 정도에 따른 테두리 색
+    const _borderByRatio = (r) => {
+      if (r == null || isNaN(r)) return '#fff';
+      if (r >= 0.97) return '#fff';
+      if (r >= 0.85) return '#d49462';
+      return '#c25656';
+    };
+    const _borderWByRatio = (r) => {
+      if (r == null || isNaN(r) || r >= 0.97) return 2;
+      if (r >= 0.85) return 3;
+      return 4;
+    };
     const treeData = topRows.map(t => {
+      const baseColor = PALETTES[t.name] || '#7a8694';
       const subs = ps.rows.filter(r => r.top === t.name && r.kind === 'sub' && r.weight != null && r.weight > 0 && r.name.trim() !== '계');
       const children = subs.map(s => {
         const ratio = s.plan > 0 ? s.actual / s.plan : (s.actual > 0 ? 1 : 0);
         const cleanName = s.name.replace(/^[IVX]+\.\s*/, '');
-        // 더 깊이 (item 단위까지) 펼치기
         const items = ps.rows.filter(r => r.sub === s.name && r.top === t.name && r.kind === 'item' && r.weight != null && r.weight > 0);
         const itemChildren = items.map(it => {
           const r2 = it.plan > 0 ? it.actual / it.plan : (it.actual > 0 ? 1 : 0);
           return {
             name: it.name,
             value: it.weight * 100,
-            itemStyle: { color: _ratioColor(r2) },
+            // 색은 colorMappingBy:'index' 가 자동 할당 (levels[3])
+            itemStyle: { borderColor: _borderByRatio(r2), borderWidth: _borderWByRatio(r2) },
             extra: { ratio: r2, plan: it.plan, actual: it.actual, weight: it.weight }
           };
         });
         return {
           name: cleanName,
           value: s.weight * 100,
-          itemStyle: { color: _ratioColor(ratio) },
+          itemStyle: { borderColor: _borderByRatio(ratio), borderWidth: _borderWByRatio(ratio) },
           extra: { ratio, plan: s.plan, actual: s.actual, weight: s.weight },
           children: itemChildren.length ? itemChildren : undefined,
         };
@@ -4089,7 +4111,7 @@ PANEL_INIT.progress = () => {
       return {
         name: t.name === 'ENGINEERING' ? '설계' : (t.name === 'PROCUREMENT' ? '구매' : '시공'),
         value: t.weight * 100,
-        itemStyle: { color: _ratioColor(topRatio) },
+        itemStyle: { color: baseColor },
         extra: { ratio: topRatio, plan: t.plan, actual: t.actual, weight: t.weight },
         children,
       };
@@ -4137,22 +4159,27 @@ PANEL_INIT.progress = () => {
               return `${p.name}   ·   달성률 ${ratio}   ·   가중치 ${(x.weight*100).toFixed(1)}%`;
             },
           },
-          itemStyle: { borderColor: '#fff', borderWidth: 2, gapWidth: 3, borderRadius: 4 },
+          itemStyle: { gapWidth: 3, borderRadius: 4 },
           emphasis: { itemStyle: { borderColor: '#28323e', borderWidth: 3 } },
           levels: [
             // Level 0 (루트 — 보이지 않음): 그저 자식들을 묶음
-            { itemStyle: { borderColor: '#fff', borderWidth: 0, gapWidth: 8 }, upperLabel: { show: false } },
-            // Level 1 (설계/구매/시공): 큰 부모 박스 - 상단 헤더 검정 배경 (40px)
+            { itemStyle: { borderColor: '#fff', borderWidth: 0, gapWidth: 10 }, upperLabel: { show: false } },
+            // Level 1 (설계/구매/시공): 큰 부모 박스 - 상단 헤더 검정 배경
             { itemStyle: { borderColor: '#fff', borderWidth: 4, gapWidth: 4, borderRadius: 8 },
               upperLabel: { show: true, height: 40, backgroundColor: '#1a2331', color: '#fff',
-                fontWeight: 800, fontSize: 17, padding: [10, 16, 10, 16], borderRadius: 6 },
-              color: ['#4a7bd1','#a48cc4','#56a06a','#d49462','#c25656','#7ba6c9'] },
-            // Level 2 (중분류): 자식 박스 - 헤더 진한 회색
-            { itemStyle: { borderColor: '#fff', borderWidth: 2, gapWidth: 2, borderRadius: 4 },
+                fontWeight: 800, fontSize: 17, padding: [10, 16, 10, 16], borderRadius: 6 } },
+            // Level 2 (중분류): 부모 색의 명도/채도 자동 변환 → 자식들이 서로 다른 톤으로 자동 구분
+            { colorSaturation: [0.3, 0.6],
+              colorAlpha: [0.55, 1.0],
+              colorMappingBy: 'index',
+              itemStyle: { gapWidth: 3, borderRadius: 5 },
               upperLabel: { show: true, height: 30, backgroundColor: 'rgba(20,30,46,0.78)', color: '#fff',
                 fontWeight: 700, fontSize: 13.5, padding: [6, 10, 6, 10], borderRadius: 4 } },
-            // Level 3 (item):
-            { itemStyle: { borderColor: '#fff', borderWidth: 1.5, gapWidth: 1, borderRadius: 3 } },
+            // Level 3 (item) — 더 옅게, 인덱스 기반 자동 변환
+            { colorSaturation: [0.2, 0.45],
+              colorAlpha: [0.4, 0.75],
+              colorMappingBy: 'index',
+              itemStyle: { gapWidth: 2, borderRadius: 3 } },
           ],
         }],
       });
@@ -4790,6 +4817,14 @@ PANELS.safety = () => {
         </div>
       </div>
 
+      <!-- 데이터 누락 안내 (계산은 init 단계에서) -->
+      <div class="card col-12" id="sf-data-notice" style="display:none;background:#fef9ee;border-left:4px solid #d49462;padding:12px 16px;">
+        <div style="font-size:14px;color:#28323e;">
+          <b style="color:#a36b3e;">📌 안내:</b> <span id="sf-missing-months"></span> 안전점검 지적·교육 누계 데이터가 미입력 상태입니다.
+          <span style="color:#7a8694;">데이터 편집 탭에서 직접 입력 가능합니다.</span>
+        </div>
+      </div>
+
       <!-- Charts — Row 1: 무재해일수 + 지적항목별 추이 한 행 -->
       <div class="card col-6">
         <h3>📈 무재해 일수 추이 (월별)</h3>
@@ -4864,16 +4899,34 @@ PANEL_INIT.safety = () => {
   });
 
   // 안전 차트(지적 합계/안전교육/지적 항목별 추이): 직전 6개월 윈도우
-  // 마지막 데이터 시점 기준 6개월 (현재 데이터는 2026-01~03 만 채워져 있음)
   const lastSafetyMonth = months[months.length - 1] || '2026-03';
-  // 6개월 전 시작점 계산
   const [_ly, _lm] = lastSafetyMonth.split('-').map(Number);
-  const startDate = new Date(_ly, _lm - 1 - 5, 1);  // 5개월 전 → 총 6개월
+  const startDate = new Date(_ly, _lm - 1 - 5, 1);
   const startYm = `${startDate.getFullYear()}-${String(startDate.getMonth()+1).padStart(2,'0')}`;
   const safetyStartIdx = Math.max(0, months.findIndex(m => m >= startYm));
   const safetyMonths = months.slice(safetyStartIdx);
   const safetyMonthsShort = safetyMonths.map(fmtMonthCompact);
   const safetySliceStart = safetyStartIdx;
+
+  // 데이터 누락 월 감지 (안전점검 지적 9 카테고리가 모두 null 인 월)
+  const _auditAllCats = ['추락','전도','낙하/비래','감전','충돌/협착','붕괴/도괴','화재/폭발','질식','기타'];
+  const missingMonths = safetyMonths.filter((ym, k) => {
+    const i = safetyStartIdx + k;
+    return _auditAllCats.every(c => d.safety_audit_land[c][i] == null);
+  });
+  const notice = document.getElementById('sf-data-notice');
+  const noticeText = document.getElementById('sf-missing-months');
+  if (notice && noticeText) {
+    if (missingMonths.length > 0) {
+      notice.style.display = '';
+      const range = missingMonths.length === 1
+        ? fmtMonthShort(missingMonths[0])
+        : `${fmtMonthShort(missingMonths[0])} ~ ${fmtMonthShort(missingMonths[missingMonths.length-1])}`;
+      noticeText.textContent = `${range} (${missingMonths.length}개월)`;
+    } else {
+      notice.style.display = 'none';
+    }
+  }
 
   // Audit trend (sum of all categories per month)
   destroyChart('sf-audit-trend');
@@ -7188,13 +7241,20 @@ openTab('overview');
       ${arrowsHtml}
     `;
 
-    //-- 스크롤 동기화 (양방향) + wheel forward --
+    //-- 스크롤 동기화 (chartBox→timeAxis 가로 sync 보장) --
+    // 핵심: chartBox 의 scrollLeft 변화는 반드시 timeAxis.scrollLeft 에 즉시 반영
     let _syncing = false;
+    const syncTimeAxis = () => {
+      if (timeAxis.scrollLeft !== chartBox.scrollLeft) {
+        timeAxis.scrollLeft = chartBox.scrollLeft;
+      }
+    };
     chartBox.addEventListener('scroll', () => {
+      // 가로 sync 는 _syncing 플래그와 무관하게 항상 수행 → align 보장
+      syncTimeAxis();
       if (_syncing) return;
       _syncing = true;
       labelsBox.scrollTop = chartBox.scrollTop;
-      timeAxis.scrollLeft = chartBox.scrollLeft;
       _syncing = false;
     });
     labelsBox.addEventListener('scroll', () => {
@@ -7203,6 +7263,14 @@ openTab('overview');
       chartBox.scrollTop = labelsBox.scrollTop;
       _syncing = false;
     });
+    // window.resize: chartBox 크기 변경 시 timeAxis 와 재정렬
+    window.addEventListener('resize', syncTimeAxis);
+    // ResizeObserver: chartBox 컨테이너 사이즈 변화 (split pane, vertical scrollbar 출현 등)
+    if (typeof ResizeObserver !== 'undefined' && !chartBox._resizeObs) {
+      const ro = new ResizeObserver(syncTimeAxis);
+      ro.observe(chartBox);
+      chartBox._resizeObs = ro;
+    }
     function forwardWheel(srcEl) {
       srcEl.addEventListener('wheel', e => {
         const dy = e.deltaY, dx = e.deltaX;
@@ -7285,17 +7353,20 @@ openTab('overview');
         timeAxis.scrollLeft = target;
       }
     };
-    // 초기 가로 스크롤: 오늘 위치를 화면 중앙쯤으로 + timeaxis 동기화
-    setTimeout(() => {
+    // 초기 가로 스크롤: 오늘 위치를 화면 1/3 쯤으로 + 여러 시점에 동기화 (안전망)
+    const _initScroll = (offsetRatio) => {
       if (todayX !== null && chartBox.clientWidth > 0) {
-        const target = Math.max(0, todayX - chartBox.clientWidth / 3);
+        const target = Math.max(0, todayX - chartBox.clientWidth * offsetRatio);
         chartBox.scrollLeft = target;
         timeAxis.scrollLeft = target;
       } else {
-        // 오늘 위치가 범위 밖이어도 둘의 scrollLeft 는 일치시킴
         timeAxis.scrollLeft = chartBox.scrollLeft;
       }
-    }, 50);
+    };
+    requestAnimationFrame(() => _initScroll(1/3));
+    setTimeout(() => _initScroll(1/3), 50);
+    setTimeout(() => _initScroll(1/3), 200);
+    setTimeout(() => syncTimeAxis(), 400);
   }
 
   //--- 같은 부모 형제 task의 시작일 순으로 화살표 ---
