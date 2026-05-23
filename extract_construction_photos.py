@@ -41,9 +41,12 @@ PHOTOS_JS = ROOT / "photos.js"
 
 # 처리할 엑셀 파일 (월별)
 EXCEL_FILES = [
+    # 24.1월 ~ 24.11월: Fasoo DRM 보호로 openpyxl 불가 → 스킵
+    ("2024-12", "광)7,8탱크_월간안전공정회의_24.12월_Final.xlsx"),
     ("2025-01", "광)LNG #7,8탱크_월간안전공정회의_25.1월_Final_R3.xlsx"),
     ("2025-02", "광)LNG #7,8탱크_월간안전공정회의_25.2월_Final_R1.xlsx"),
-    # 25.3월, 25.4월: OLE2 (구버전 .xls 헤더로 저장됨) — openpyxl 불가 → 스킵
+    ("2025-03", "광)LNG #7,8탱크_월간안전공정회의_25.03월_Final_R1.xlsx"),
+    ("2025-04", "광)LNG #7,8탱크_월간안전공정회의_25.04월_Final.xlsx"),
     ("2025-05", "터미널건설추진반_광) LNG 7,8탱크_월간안전공정회의_25.05월_Final_R2_20250513_김중혁(j-hyeok.kim)_사외비A.xlsx"),
     ("2025-06", "광)LNG #7,8탱크_월간안전공정회의_25.6월_Final_R1.xlsx"),
     ("2025-07", "광)LNG #7,8탱크_월간안전공정회의_25.7월_Final.xlsx"),
@@ -127,15 +130,28 @@ def main():
     # 사진 binary hash → 기존 파일 경로 캐시 (중복 binary 재사용)
     binary_cache = {}
 
-    converted_dir = ROOT / "_xlsx_converted"
+    converted_dirs = [ROOT / "_xlsx_converted_all", ROOT / "_xlsx_converted"]
     for ym, fname in EXCEL_FILES:
-        # 변환된 .xlsx 가 있으면 그것을 우선 사용
-        candidates = [converted_dir / fname, ROOT / fname]
+        # 원본이 정상 zip(.xlsx)이면 원본 우선, 아니면 변환본 (헤더가 정상인 것) 사용
+        primary = ROOT / fname
         path = None
-        for c in candidates:
-            if c.exists():
-                path = c
-                break
+
+        def _is_zip(p):
+            try:
+                return open(p, "rb").read(4).startswith(b"PK\x03\x04")
+            except Exception:
+                return False
+
+        if primary.exists() and _is_zip(primary):
+            path = primary
+        else:
+            for d in converted_dirs:
+                cand = d / fname
+                if cand.exists() and _is_zip(cand):
+                    path = cand
+                    break
+            if path is None and primary.exists():
+                path = primary  # 마지막 fallback (어차피 BadZipFile 로 skip 됨)
         if path is None:
             print(f"[SKIP] {ym}: 파일 없음 ({fname})")
             continue
