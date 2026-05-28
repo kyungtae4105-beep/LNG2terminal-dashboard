@@ -129,8 +129,8 @@ window.PANORAMA_DATA = [
     "year": 2024,
     "month": 11,
     "ym": "2024-11",
-    "file": "photos/2024-11/s6_1_image1.jpeg",
-    "caption": "■ #7,8탱크 외부전경"
+    "file": "photos/2024-11/s6_2_image8.jpeg",
+    "caption": "#7,8탱크 외부전경 (’24.11.21)"
   },
   {
     "year": 2025,

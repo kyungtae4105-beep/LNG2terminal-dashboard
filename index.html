@@ -4472,14 +4472,6 @@ PANELS.resource = () => {
         <div class="rs-ec" id="rs-eq-top" style="height:360px;"></div>
       </div>
 
-      <!-- Row 4 (NEW): 효율성 인사이트 — 시공률 vs 투입인원 상관 + 자동 인사이트 (1:1 반반) -->
-      <div class="rs-card col-12">
-        <h3 class="rs-title">💡 효율성 인사이트 <span class="rs-sub">시공률 추세 vs 일평균 인원 · 자동 분석</span></h3>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:stretch;">
-          <div class="rs-ec" id="rs-efficiency" style="height:340px;"></div>
-          <div id="rs-insights" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:13.5px;color:#2c3a52;line-height:1.55;"></div>
-        </div>
-      </div>
     </div>
   </div>
 `;
@@ -4619,10 +4611,10 @@ PANEL_INIT.resource = () => {
   });
   window.__rsCharts.push(mpTrend);
 
-  // ===== 효율성 인사이트: 시공률 누계(좌축) vs 월 일평균 인원(우축) =====
+  // ===== 효율성 인사이트 섹션 제거됨 (사용자 요청 2026-05-28) =====
   const effHost = document.getElementById('rs-efficiency');
   const effInsights = document.getElementById('rs-insights');
-  if (effHost) {
+  if (false && effHost) {
     // 시공률은 SD.epc_series.rows에서 cons.actual, 인원은 data.js manpower 월별 합
     const epcRows = (SD.epc_series && SD.epc_series.rows) || [];
     // 정렬: 동일한 ym 기준
@@ -4946,32 +4938,38 @@ PANEL_INIT.safety = () => {
     }
   });
 
+  // 직전 6개월 윈도우 — 안전점검 지적 분류 외 모든 안전 차트가 공통 사용
+  // (마지막 데이터 보유 월 기준 6개월; 26.4/26.5처럼 데이터 비어 있는 월은 제외)
   destroyChart('sf-audit');
   const cats = ['추락','전도','낙하/비래','감전','충돌/협착','붕괴/도괴','화재/폭발','기타'];
-  const auditMonths = d.safety_audit_land.months.map((m,i) => ({m, i})).filter(({i}) => cats.some(c => d.safety_audit_land[c][i] != null));
+  // 데이터가 있는 마지막 월 찾기 (모든 카테고리가 null 인 월은 제외)
+  let _lastDataIdx = -1;
+  for (let i = months.length - 1; i >= 0; i--) {
+    if (cats.some(c => d.safety_audit_land[c][i] != null)) { _lastDataIdx = i; break; }
+  }
+  if (_lastDataIdx < 0) _lastDataIdx = months.length - 1;
+  const safetyEndIdx = _lastDataIdx;
+  const safetyStartIdx = Math.max(0, safetyEndIdx - 5);  // 6개월 윈도우
+  const safetyMonths = months.slice(safetyStartIdx, safetyEndIdx + 1);
+  const safetyMonthsShort = safetyMonths.map(fmtMonthCompact);
+  const safetySliceStart = safetyStartIdx;
+  // 사용자 요청: 6개월 데이터 표시 (3개월 → 6개월). 데이터가 없는 월은 0으로 표시
   charts['sf-audit'] = new Chart(document.getElementById('sf-audit'), {
     type: 'bar',
     data: {
       labels: cats,
-      datasets: auditMonths.map(({m, i}, k) => ({
-        label: fmtMonthShort(m),
-        data: cats.map(c => d.safety_audit_land[c][i]),
-        backgroundColor: monthColor(k),
-        borderRadius: 3,
-      }))
+      datasets: safetyMonths.map((m, k) => {
+        const i = safetyStartIdx + k;
+        return {
+          label: fmtMonthShort(m),
+          data: cats.map(c => d.safety_audit_land[c][i] ?? 0),
+          backgroundColor: monthColor(k),
+          borderRadius: 3,
+        };
+      })
     },
     options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 11 } } } }, scales: { y: { beginAtZero: true }, x: { grid: { display: false } } } }
   });
-
-  // 안전 차트(지적 합계/안전교육/지적 항목별 추이): 직전 6개월 윈도우
-  const lastSafetyMonth = months[months.length - 1] || '2026-03';
-  const [_ly, _lm] = lastSafetyMonth.split('-').map(Number);
-  const startDate = new Date(_ly, _lm - 1 - 5, 1);
-  const startYm = `${startDate.getFullYear()}-${String(startDate.getMonth()+1).padStart(2,'0')}`;
-  const safetyStartIdx = Math.max(0, months.findIndex(m => m >= startYm));
-  const safetyMonths = months.slice(safetyStartIdx);
-  const safetyMonthsShort = safetyMonths.map(fmtMonthCompact);
-  const safetySliceStart = safetyStartIdx;
 
   // 데이터 누락 월 감지 (안전점검 지적 9 카테고리가 모두 null 인 월)
   const _auditAllCats = ['추락','전도','낙하/비래','감전','충돌/협착','붕괴/도괴','화재/폭발','질식','기타'];
@@ -5388,73 +5386,144 @@ PANEL_INIT.quality = () => {
     ],
   });
 
-  // ── 텍스트 영역: 4개 그룹 × (실적/계획) 카드 ──
+  // ── 텍스트 영역: 4개 그룹 × (실적/계획) — 카드 구조 개선 v2 ──
+  // 각 항목을 "체크리스트 행"으로 시각화: ✅ 실적 / ➜ 계획 + 상태 배지 + sub-item 들여쓰기
   const textHost = document.getElementById('ql-text');
   const items = Q.text_items;
-  // 카테고리 carry-forward
-  const grouped = {};   // cat → [{actual, plan}, ...]
+  const grouped = {};
   let lastCat = null;
   for (const it of items) {
     const cat = (it.category || lastCat || '기타').replace(/\\n/g, ' ').trim();
     if (it.category) lastCat = it.category;
     if (!grouped[cat]) grouped[cat] = [];
-    grouped[cat].push({
-      actual: it.actual_apr || '',
-      plan:   it.plan_may || '',
-    });
+    grouped[cat].push({ actual: it.actual_apr || '', plan: it.plan_may || '' });
   }
-  // 그룹별 색·아이콘 (없으면 기본)
   const groupStyles = {
-    '토목 / 건축': { color: '#4a7bd1', icon: '🏗️' },
-    '기계 (Tank)': { color: '#56a06a', icon: '🛢️' },
-    '기계 (Insulation)': { color: '#a48cc4', icon: '🧊' },
-    '기계 (배관)':   { color: '#d49462', icon: '🔧' },
+    '토목 / 건축':       { color: '#4a7bd1', accent: '#dbe6f6', icon: '🏗️' },
+    '기계 (Tank)':       { color: '#56a06a', accent: '#dceadf', icon: '🛢️' },
+    '기계 (Insulation)': { color: '#a48cc4', accent: '#e5dbef', icon: '🧊' },
+    '기계 (배관)':       { color: '#d49462', accent: '#f4e2d2', icon: '🔧' },
   };
-  // 행 렌더: 번호로 시작('1.','2.')하면 강조, '→'/공백으로 시작하면 들여쓰기 — 폰트 크기 ↑
-  const renderTextItem = (txt) => {
-    if (!txt) return '<span style="color:#cdd5df;font-size:14px;">—</span>';
+
+  // 결과(실적) 행 — 키워드로 완료/검사/시험을 자동 인식해 상태 배지 부여
+  const renderResultItem = (txt, color) => {
+    if (!txt) return '';
     const t = txt.trim();
     const isMain = /^[0-9]+[.)]/.test(t);
-    const isSub = /^[→•·]/.test(t) || /^[ \t]{2,}/.test(txt);
-    if (isMain) {
-      return `<div style="font-weight:700;color:#28323e;font-size:14.5px;padding:5px 0;line-height:1.5;">${escHtml(t)}</div>`;
-    }
+    const isSub = /^[→•·↳]/.test(t) || /^[ \t]+/.test(txt);
+    // 키워드 → 배지
+    const hasDone = /완료/.test(t);
+    const hasTest = /시험|검사|test|TEST|Test/.test(t);
+    let badge = '';
+    if (hasDone) badge = `<span style="display:inline-block;flex:none;padding:2px 7px;background:#3f8a3f;color:#fff;border-radius:9px;font-size:10.5px;font-weight:700;letter-spacing:0.02em;">✓ 완료</span>`;
+    else if (hasTest) badge = `<span style="display:inline-block;flex:none;padding:2px 7px;background:#7a8694;color:#fff;border-radius:9px;font-size:10.5px;font-weight:600;">검사</span>`;
     if (isSub) {
-      const stripped = t.replace(/^[→•·\s]+/, '');
-      return `<div style="font-size:13.5px;color:#5a6677;padding:3px 0 3px 16px;border-left:2px solid #e6eaf1;margin-left:4px;line-height:1.5;">↳ ${escHtml(stripped)}</div>`;
+      const stripped = t.replace(/^[→•·↳\s]+/, '');
+      return `<div style="display:flex;gap:6px;align-items:flex-start;padding:3px 0 3px 18px;border-left:2px solid ${color}22;margin-left:8px;font-size:13px;color:#5a6677;line-height:1.5;">
+        <span style="color:#9aa6b4;flex:none;">↳</span>
+        <span style="flex:1;min-width:0;">${escHtml(stripped)}</span>
+        ${badge}
+      </div>`;
     }
-    return `<div style="font-size:14px;color:#28323e;padding:4px 0;line-height:1.5;">${escHtml(t)}</div>`;
+    if (isMain) {
+      const m = t.match(/^(\d+[.)])\s*(.+)$/);
+      const num = m ? m[1] : '';
+      const rest = m ? m[2] : t;
+      return `<div style="display:flex;gap:8px;align-items:flex-start;padding:6px 0;font-size:14px;line-height:1.5;">
+        <span style="display:inline-flex;flex:none;width:22px;height:22px;align-items:center;justify-content:center;background:${color};color:#fff;border-radius:50%;font-size:11px;font-weight:800;">${num.replace(/[.)]/, '')}</span>
+        <span style="flex:1;min-width:0;font-weight:600;color:#28323e;">${escHtml(rest)}</span>
+        ${badge}
+      </div>`;
+    }
+    return `<div style="display:flex;gap:6px;align-items:flex-start;padding:4px 0;font-size:13.5px;line-height:1.5;color:#28323e;">
+      <span style="color:#9aa6b4;flex:none;">•</span>
+      <span style="flex:1;min-width:0;">${escHtml(t)}</span>
+      ${badge}
+    </div>`;
   };
+
+  // 계획 행 — '예정' 배지가 기본
+  const renderPlanItem = (txt, color) => {
+    if (!txt) return '';
+    const t = txt.trim();
+    const isMain = /^[0-9]+[.)]/.test(t);
+    const isSub = /^[→•·↳]/.test(t) || /^[ \t]+/.test(txt);
+    const hasTest = /시험|검사|test|TEST|Test/.test(t);
+    const badge = hasTest
+      ? `<span style="display:inline-block;flex:none;padding:2px 7px;background:${color};color:#fff;border-radius:9px;font-size:10.5px;font-weight:700;">▶ 예정</span>`
+      : `<span style="display:inline-block;flex:none;padding:2px 7px;background:#cdd5df;color:#28323e;border-radius:9px;font-size:10.5px;font-weight:700;">▶</span>`;
+    if (isSub) {
+      const stripped = t.replace(/^[→•·↳\s]+/, '');
+      return `<div style="display:flex;gap:6px;align-items:flex-start;padding:3px 0 3px 18px;border-left:2px solid ${color}22;margin-left:8px;font-size:13px;color:#5a6677;line-height:1.5;">
+        <span style="color:#9aa6b4;flex:none;">↳</span>
+        <span style="flex:1;min-width:0;">${escHtml(stripped)}</span>
+        ${badge}
+      </div>`;
+    }
+    if (isMain) {
+      const m = t.match(/^(\d+[.)])\s*(.+)$/);
+      const num = m ? m[1] : '';
+      const rest = m ? m[2] : t;
+      return `<div style="display:flex;gap:8px;align-items:flex-start;padding:6px 0;font-size:14px;line-height:1.5;">
+        <span style="display:inline-flex;flex:none;width:22px;height:22px;align-items:center;justify-content:center;background:#fff;color:${color};border:2px solid ${color};border-radius:50%;font-size:11px;font-weight:800;">${num.replace(/[.)]/, '')}</span>
+        <span style="flex:1;min-width:0;font-weight:600;color:#28323e;">${escHtml(rest)}</span>
+        ${badge}
+      </div>`;
+    }
+    return `<div style="display:flex;gap:6px;align-items:flex-start;padding:4px 0;font-size:13.5px;line-height:1.5;color:#28323e;">
+      <span style="color:${color};flex:none;font-weight:800;">▸</span>
+      <span style="flex:1;min-width:0;">${escHtml(t)}</span>
+      ${badge}
+    </div>`;
+  };
+
+  // 카드별 완료/예정 카운트 — 실적은 '완료' 키워드, 계획은 main 항목 수로 추정
+  function countActuals(rows) {
+    return rows.filter(r => r.actual && /완료/.test(r.actual)).length;
+  }
+  function countPlans(rows) {
+    return rows.filter(r => r.plan && /^[0-9]+[.)]/.test(r.plan.trim())).length;
+  }
 
   const groupOrder = ['토목 / 건축', '기계 (Tank)', '기계 (Insulation)', '기계 (배관)'];
   const cats = [...new Set([...groupOrder, ...Object.keys(grouped)])].filter(c => grouped[c]);
 
-  // 2 × 2 그리드로 재배치 (한 그룹당 충분한 폭 확보)
   textHost.style.display = 'grid';
   textHost.style.gridTemplateColumns = 'repeat(2, 1fr)';
   textHost.style.gap = '16px';
 
-  // 행 렌더: 번호로 시작하면 강조, '→'/공백으로 시작하면 들여쓰기 — 폰트 키움
-  // (이전 renderTextItem 재정의는 함수 내부에서 사용했지만, 폰트 변경을 위해 여기서 override)
-
   textHost.innerHTML = cats.map(cat => {
-    const style = groupStyles[cat] || { color: '#7a8694', icon: '📋' };
+    const style = groupStyles[cat] || { color: '#7a8694', accent: '#eef0f4', icon: '📋' };
     const rows = grouped[cat] || [];
+    const nActual = countActuals(rows);
+    const nPlan = countPlans(rows);
+    const actualHtml = rows.map(r => renderResultItem(r.actual, style.color)).filter(Boolean).join('') || '<div style="color:#cdd5df;font-size:13.5px;padding:8px 0;">기록된 실적이 없습니다.</div>';
+    const planHtml   = rows.map(r => renderPlanItem(r.plan, style.color)).filter(Boolean).join('') || '<div style="color:#cdd5df;font-size:13.5px;padding:8px 0;">계획된 항목이 없습니다.</div>';
     return `
-      <div style="background:#fafbfd;border:1px solid #e6eaf1;border-top:5px solid ${style.color};border-radius:10px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 1px 3px rgba(20,30,60,0.04);">
-        <div style="padding:14px 18px;background:#fff;border-bottom:1px solid #e6eaf1;font-size:17px;font-weight:800;color:${style.color};display:flex;align-items:center;gap:8px;letter-spacing:-0.01em;">
-          <span style="font-size:20px;">${style.icon}</span>
-          <span>${escHtml(cat)}</span>
-          <span style="margin-left:auto;font-size:13px;color:#9aa6b4;font-weight:600;">${rows.length}건</span>
+      <div style="background:#fff;border:1px solid #e6eaf1;border-top:5px solid ${style.color};border-radius:12px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 2px 6px rgba(20,30,60,0.05);">
+        <div style="padding:14px 18px;background:linear-gradient(180deg,#fff 0%,${style.accent}40 100%);border-bottom:1px solid #eef0f4;display:flex;align-items:center;gap:10px;">
+          <span style="display:inline-flex;width:38px;height:38px;align-items:center;justify-content:center;background:${style.accent};border-radius:8px;font-size:20px;">${style.icon}</span>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:16px;font-weight:800;color:${style.color};letter-spacing:-0.01em;line-height:1.2;">${escHtml(cat)}</div>
+            <div style="font-size:11.5px;color:#7a8694;font-weight:600;margin-top:2px;">총 ${rows.length}건 · ✓ 완료 ${nActual}건 · ▶ 예정 ${nPlan}건</div>
+          </div>
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;flex:1;">
-          <div style="padding:14px 16px;border-right:1px dashed #e6eaf1;">
-            <div style="font-size:13px;color:#5a6677;font-weight:800;margin-bottom:10px;letter-spacing:0.04em;padding-bottom:6px;border-bottom:1px solid #eef0f4;">📅 ′26.04 실적</div>
-            ${rows.map(r => renderTextItem(r.actual)).join('') || '<span style="color:#cdd5df;font-size:14px;">—</span>'}
+          <div style="padding:12px 16px;border-right:1px dashed #eef0f4;">
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid #eef0f4;">
+              <span style="display:inline-flex;width:22px;height:22px;align-items:center;justify-content:center;background:#3f8a3f;color:#fff;border-radius:6px;font-size:12px;font-weight:800;">✓</span>
+              <span style="font-size:13px;color:#3f8a3f;font-weight:800;letter-spacing:0.02em;">′26.04 실적</span>
+              <span style="margin-left:auto;font-size:11px;color:#7a8694;font-weight:600;">${rows.filter(r => r.actual).length}/${rows.length}</span>
+            </div>
+            ${actualHtml}
           </div>
-          <div style="padding:14px 16px;background:rgba(74,123,209,0.04);">
-            <div style="font-size:13px;color:${style.color};font-weight:800;margin-bottom:10px;letter-spacing:0.04em;padding-bottom:6px;border-bottom:1px solid #eef0f4;">🚀 ′26.05 계획</div>
-            ${rows.map(r => renderTextItem(r.plan)).join('') || '<span style="color:#cdd5df;font-size:14px;">—</span>'}
+          <div style="padding:12px 16px;background:${style.accent}25;">
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid #eef0f4;">
+              <span style="display:inline-flex;width:22px;height:22px;align-items:center;justify-content:center;background:${style.color};color:#fff;border-radius:6px;font-size:12px;font-weight:800;">▶</span>
+              <span style="font-size:13px;color:${style.color};font-weight:800;letter-spacing:0.02em;">′26.05 계획</span>
+              <span style="margin-left:auto;font-size:11px;color:#7a8694;font-weight:600;">${rows.filter(r => r.plan).length}/${rows.length}</span>
+            </div>
+            ${planHtml}
           </div>
         </div>
       </div>
@@ -5469,7 +5538,16 @@ PANEL_INIT.quality = () => {
 //------------------------------------------------------------
 // Photos
 //------------------------------------------------------------
-let currentPhotoFilter = { year: 'all', month: 'all', category: 'all', type: 'all' };
+let currentPhotoFilter = { year: 'all', month: 'all', category: 'all', type: 'all', discipline: 'all' };
+
+// 섹션 title 에서 공종 (토목/건축/기계/전기) 추출
+function _disciplineOf(section) {
+  if (!section) return null;
+  const t = section.title || '';
+  const m = t.match(/[(\[]\s*(토목|건축|기계|전기|토건|기전)\s*[)\]]/);
+  if (m) return m[1];
+  return null;
+}
 let currentPhotoSet = []; // for lightbox navigation
 let currentPhotoIdx = 0;
 
@@ -5518,22 +5596,33 @@ PANELS.photos = () => {
 
   return `
     <div class="photo-toolbar">
-      <strong style="color:var(--text); margin-right:8px; font-weight:600;">📆 연도</strong>
+      <strong style="color:var(--text); margin-right:8px; font-weight:600;min-width:60px;">📆 연도</strong>
       <button data-filter="year" data-val="all" class="${currentPhotoFilter.year==='all'?'active':''}">전체</button>
       ${years.map(y => `<button data-filter="year" data-val="${y}" class="${currentPhotoFilter.year===y?'active':''}">${y}년</button>`).join('')}
-      <span style="width: 16px;"></span>
-      <strong style="color:var(--text); margin-right:8px; font-weight:600;">📅 월</strong>
+    </div>
+    <div class="photo-toolbar" style="border-top:1px solid var(--border);">
+      <strong style="color:var(--text); margin-right:8px; font-weight:600;min-width:60px;">📅 월</strong>
       <button data-filter="month" data-val="all" class="${currentPhotoFilter.month==='all'?'active':''}">전체</button>
       ${visibleMonths.map(m => `<button data-filter="month" data-val="${m}" class="${currentPhotoFilter.month===m?'active':''}">${_monthLabel(m)}</button>`).join('')}
     </div>
     <div class="photo-toolbar" style="border-top:1px solid var(--border);">
-      <strong style="color:var(--text); margin-right:8px; font-weight:600;">🏷️ 분류</strong>
+      <strong style="color:var(--text); margin-right:8px; font-weight:600;min-width:60px;">🏷️ 구역</strong>
       <button data-filter="category" data-val="all" class="${currentPhotoFilter.category==='all'?'active':''}">전체</button>
       <button data-filter="category" data-val="육상부" class="${currentPhotoFilter.category==='육상부'?'active':''}">육상부</button>
       <button data-filter="category" data-val="해상부" class="${currentPhotoFilter.category==='해상부'?'active':''}">해상부</button>
       <button data-filter="category" data-val="154kV" class="${currentPhotoFilter.category==='154kV'?'active':''}">154kV</button>
-      <span style="width: 16px;"></span>
-      <strong style="color:var(--text); margin-right:8px; font-weight:600;">📑 유형</strong>
+    </div>
+    <div class="photo-toolbar" style="border-top:1px solid var(--border);">
+      <strong style="color:var(--text); margin-right:8px; font-weight:600;min-width:60px;">🔧 공종</strong>
+      <button data-filter="discipline" data-val="all" class="${currentPhotoFilter.discipline==='all'?'active':''}">전체</button>
+      <button data-filter="discipline" data-val="토목" class="${currentPhotoFilter.discipline==='토목'?'active':''}">🏗️ 토목</button>
+      <button data-filter="discipline" data-val="건축" class="${currentPhotoFilter.discipline==='건축'?'active':''}">🏢 건축</button>
+      <button data-filter="discipline" data-val="기계" class="${currentPhotoFilter.discipline==='기계'?'active':''}">⚙️ 기계</button>
+      <button data-filter="discipline" data-val="전기" class="${currentPhotoFilter.discipline==='전기'?'active':''}">⚡ 전기</button>
+      <span style="color:var(--text-muted);font-size:11px;margin-left:8px;">※ 공사사진 한정 (공정/안전점검은 공종 무관)</span>
+    </div>
+    <div class="photo-toolbar" style="border-top:1px solid var(--border);">
+      <strong style="color:var(--text); margin-right:8px; font-weight:600;min-width:60px;">📑 유형</strong>
       <button data-filter="type" data-val="all" class="${currentPhotoFilter.type==='all'?'active':''}">전체</button>
       <button data-filter="type" data-val="공사사진" class="${currentPhotoFilter.type==='공사사진'?'active':''}">공사/공정</button>
       <button data-filter="type" data-val="공정사진" class="${currentPhotoFilter.type==='공정사진'?'active':''}">공정사진</button>
@@ -5599,6 +5688,11 @@ function renderPhotoGallery() {
     data[month].forEach((section, secIdx) => {
       if (currentPhotoFilter.category !== 'all' && currentPhotoFilter.category !== section.category) return;
       if (currentPhotoFilter.type && currentPhotoFilter.type !== 'all' && currentPhotoFilter.type !== section.type) return;
+      // 공종 필터: 공사사진 type 한정 (공정/안전점검은 공종 정보가 없으므로 'all' 일 때만 통과)
+      if (currentPhotoFilter.discipline && currentPhotoFilter.discipline !== 'all') {
+        const disc = _disciplineOf(section);
+        if (disc !== currentPhotoFilter.discipline) return;
+      }
       html += `<div class="photo-section">
         <h2>${section.title} <span style="color:var(--text-muted); font-weight:500; font-size:12px;">(${section.items.length}장)</span></h2>
         <div class="photo-grid">`;
@@ -7184,7 +7278,7 @@ openTab('overview');
       tparts.push(`<line x1="${todayX}" y1="0" x2="${todayX}" y2="${HEADER_H}" stroke="#c97070" stroke-width="1.5" shape-rendering="crispEdges"/>`);
       tparts.push(`<text x="${todayX + 5}" y="14" font-size="11" font-weight="700" fill="#c97070" font-family="Segoe UI">▼ 오늘</text>`);
     }
-    // 월간공정: 직전/해당/다음월 배경 + 라벨
+    // 월간공정: 직전/해당/다음월 배경 + 라벨 + 날짜 범위
     if (monthHighlight) {
       const [hy, hm] = monthHighlight.split('-').map(Number);
       const labels3 = [
@@ -7199,8 +7293,14 @@ openTab('overview');
         const xs = Math.round((ms - lo2) / dayMs * PX_PER_DAY_LOCAL);
         const xe = Math.round((me - lo2) / dayMs * PX_PER_DAY_LOCAL) + Math.round(PX_PER_DAY_LOCAL);
         if (xe < 0 || xs > timelineW) continue;
+        const cx = (xs + xe) / 2;
+        const lastDay = me.getDate();
+        const monthLabel = `${ms.getMonth() + 1}월`;
+        const dateRange = `${monthLabel} 1 ~ ${lastDay}일 (${lastDay}일)`;
         headerStrips.push(`<rect x="${xs}" y="0" width="${xe - xs}" height="${HEADER_H - 2}" fill="${m.bg}" opacity="0.55"/>`);
-        headerStrips.push(`<text x="${(xs + xe) / 2}" y="13" font-size="11.5" font-weight="700" fill="${m.offs === 0 ? '#a14d4d' : '#5a6677'}" text-anchor="middle" font-family="Segoe UI">${m.label}</text>`);
+        headerStrips.push(`<text x="${cx}" y="12" font-size="11.5" font-weight="700" fill="${m.offs === 0 ? '#a14d4d' : '#5a6677'}" text-anchor="middle" font-family="Segoe UI">${m.label}</text>`);
+        // 날짜 범위 (직전/해당/다음월 배지 아래)
+        headerStrips.push(`<text x="${cx}" y="27" font-size="10.5" font-weight="600" fill="${m.offs === 0 ? '#a14d4d' : '#7a8694'}" text-anchor="middle" font-family="Segoe UI">${dateRange}</text>`);
       }
       tparts.unshift(headerStrips.join(''));
     }
@@ -7545,12 +7645,25 @@ openTab('overview');
   // Process는 동적이라 4톤 순환
   const PROC_PALETTE = ['#2c569f', '#8a6e4b', '#3f7a4f', '#6b5b95'];
 
-  //--- 레벨별 접기: maxVisibleLevel 이하만 보이도록 ---
+  //--- 레벨별 접기: maxVisibleLevel 깊이 이하만 보이도록 ---
+  // 데이터별 level 시작값(0/1) + 누락 레벨(rev6b는 {0,2,3})이 있어
+  // 절대 level 대신 "현재 task 집합의 최소 level을 1로 보는 상대 깊이"로 동작
   function collapseToLevel(tasks, collapsedSet, maxVisibleLevel) {
     collapsedSet.clear();
+    if (!tasks || tasks.length === 0) return;
+    let minLevel = Infinity;
+    for (const t of tasks) {
+      const lv = t.level || 0;
+      if (lv < minLevel) minLevel = lv;
+    }
+    if (!isFinite(minLevel)) minLevel = 0;
+    // 자식 인덱스 정리 (성능)
+    const hasChild = new Set();
+    for (const t of tasks) if (t.parent_idx != null) hasChild.add(t.parent_idx);
     for (let i = 0; i < tasks.length; i++) {
-      if ((tasks[i].level || 0) >= maxVisibleLevel) {
-        if (tasks.some(t => t.parent_idx === i)) collapsedSet.add(i);
+      const depth = (tasks[i].level || 0) - minLevel + 1;  // 최상단 = 1
+      if (depth >= maxVisibleLevel && hasChild.has(i)) {
+        collapsedSet.add(i);
       }
     }
   }
@@ -8161,14 +8274,20 @@ openTab('overview');
         }
         return out;
       });
+      // 가용 폭에 맞춰 pxPerDay 동적 계산 (3개월 윈도우를 시간축에 가득 채움)
+      const labelW = 220;
+      const hostW = host.clientWidth || (host.parentElement && host.parentElement.clientWidth) || 1200;
+      const availW = Math.max(900, hostW - labelW - 4);
+      const dayMs = 86400000;
+      const totalDays = Math.max(30, Math.round((winHi - winLo) / dayMs) + 1);
+      const pxPerDay = Math.max(8, availW / totalDays);
       buildGantt(host, {
         tasks: clippedTasks, compareKeys: mo.compare, collapsed,
         showLinks: linksCb.checked, onToggle: render,
         forceRange: { lo: winLo, hi: winHi },
         monthHighlight: baseYm,
-        // 한 화면 표시: 좌측 라벨 좁히고 시간축 PX/day 크게 → 시간축 영역 풍성하게
-        labelW: 220,
-        pxPerDay: 12,
+        labelW,
+        pxPerDay,
       });
     }
 
@@ -8585,8 +8704,11 @@ openTab('overview');
     const HEADER_H = 32;
     const PAD_R = 16;
     const totalDays = Math.ceil((maxT - minT) / 86400000) + 1;
+    // 컨테이너 가로폭에 맞춰 widthBody 동적 계산 — 우측 빈공간 제거
+    const hostW = host.clientWidth || (host.parentElement && host.parentElement.clientWidth) || 1100;
+    const availBody = Math.max(560, hostW - LABEL_W - PAD_R - 4);
     const minPxPerDay = 1.5;
-    const widthBody = Math.max(560, totalDays * minPxPerDay);
+    const widthBody = Math.max(availBody, totalDays * minPxPerDay);
     const svgH = HEADER_H + visible.length * ROW_H + 12;
     const svgW = LABEL_W + widthBody + PAD_R;
 
