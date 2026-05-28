@@ -3779,7 +3779,7 @@ PANELS.progress = () => `
         <div class="ec-chart" id="pg-pstatus-bars" style="height:420px;"></div>
       </div>
       <div class="pg-card col-12">
-        <h3 class="pg-title">🗺 공종 가중치 × 진척률 트리맵 <span class="pg-sub">📦 박스 크기 = EPC 점유 가중치 · 🎨 색상 = 달성률(계획대비 실적)</span></h3>
+        <h3 class="pg-title">🗺 공종 가중치 × 진척률 트리맵 <span class="pg-sub">📦 박스 크기 = 영역 내 가중치 · 🎨 색상 = 달성률(계획대비 실적)</span></h3>
         <div id="pg-treemap-summary" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:14px;"></div>
         <div id="pg-treemap-legend" style="display:flex;align-items:center;gap:18px;flex-wrap:wrap;padding:12px 16px;background:#f5f8fc;border-radius:8px;margin-bottom:12px;font-size:13px;color:#28323e;">
           <span style="font-weight:700;color:#2c569f;">🎨 영역 색상:</span>
@@ -3791,9 +3791,34 @@ PANELS.progress = () => `
           <span style="display:inline-flex;align-items:center;gap:6px;"><span style="width:18px;height:14px;background:#fff;border:2px solid #fff;outline:1px dashed #ccc;border-radius:3px;"></span>97%↑ 양호</span>
           <span style="display:inline-flex;align-items:center;gap:6px;"><span style="width:18px;height:14px;background:#fff;border:3px solid #d49462;border-radius:3px;"></span>85~97% 주의</span>
           <span style="display:inline-flex;align-items:center;gap:6px;"><span style="width:18px;height:14px;background:#fff;border:4px solid #c25656;border-radius:3px;"></span>85% 미만 지연</span>
-          <span style="margin-left:auto;color:#7a8694;font-size:12px;">박스 클릭 → 드릴다운 · 박스 크기 = EPC 점유 가중치</span>
+          <span style="margin-left:auto;color:#7a8694;font-size:12px;">박스 클릭 → 드릴다운 · 영역별 카드 너비 = EPC 가중치</span>
         </div>
-        <div class="ec-chart" id="pg-pstatus-treemap" style="height:560px;"></div>
+        <div id="pg-treemap-charts" style="display:grid;grid-template-columns:minmax(220px,0.6fr) minmax(320px,1.5fr) minmax(420px,8fr);gap:12px;">
+          <div class="pg-tm-block" data-area="ENGINEERING">
+            <div class="pg-tm-header" style="background:linear-gradient(135deg,#1a2331 0%,#2c4a3a 100%);color:#fff;padding:10px 14px;border-radius:8px 8px 0 0;font-weight:800;font-size:14px;display:flex;align-items:center;gap:8px;line-height:1.3;letter-spacing:-0.01em;">
+              <span style="font-size:18px;">✏️</span><span data-fill="title">설계</span>
+            </div>
+            <div class="ec-chart" id="pg-tm-eng" style="height:480px;background:#fff;border:1px solid #e6eaf1;border-top:none;border-radius:0 0 8px 8px;"></div>
+          </div>
+          <div class="pg-tm-block" data-area="PROCUREMENT">
+            <div class="pg-tm-header" style="background:linear-gradient(135deg,#1a2331 0%,#3a2c4a 100%);color:#fff;padding:10px 14px;border-radius:8px 8px 0 0;font-weight:800;font-size:14px;display:flex;align-items:center;gap:8px;line-height:1.3;letter-spacing:-0.01em;">
+              <span style="font-size:18px;">📦</span><span data-fill="title">구매</span>
+            </div>
+            <div class="ec-chart" id="pg-tm-proc" style="height:480px;background:#fff;border:1px solid #e6eaf1;border-top:none;border-radius:0 0 8px 8px;"></div>
+          </div>
+          <div class="pg-tm-block" data-area="CONSTRUCTION">
+            <div class="pg-tm-header" style="background:linear-gradient(135deg,#1a2331 0%,#28395a 100%);color:#fff;padding:10px 14px;border-radius:8px 8px 0 0;font-weight:800;font-size:14px;display:flex;align-items:center;gap:8px;line-height:1.3;letter-spacing:-0.01em;">
+              <span style="font-size:18px;">🏗️</span><span data-fill="title">시공</span>
+            </div>
+            <div class="ec-chart" id="pg-tm-cons" style="height:480px;background:#fff;border:1px solid #e6eaf1;border-top:none;border-radius:0 0 8px 8px;"></div>
+          </div>
+        </div>
+        <style>
+          @media (max-width: 1100px) {
+            #pg-treemap-charts { grid-template-columns: 1fr !important; }
+            .pg-tm-block .ec-chart { height: 380px !important; }
+          }
+        </style>
       </div>
     </div>
   </div>
@@ -4124,8 +4149,9 @@ PANEL_INIT.progress = () => {
       }).join('');
     }
 
-    // (b2) Treemap : 가중치(EPC %) × 진척률 — 영역별 색상 팔레트 + 달성률 외곽 테두리
-    // color 는 카테고리 구분(설계 그린/구매 퍼플/시공 블루), 달성률은 라벨에 명시 + 미달 항목은 빨간 테두리
+    // (b2) Treemap : 영역별 독립 트리맵 3개 (설계/구매/시공)
+    //   - 각 차트가 자체 공간으로 정규화되어 모든 중분류가 한눈에 보임
+    //   - 색상 = 카테고리(설계 그린/구매 퍼플/시공 블루), 달성률은 라벨 명시 + 미달은 빨간 테두리
     const PALETTES = {
       ENGINEERING: '#56a06a',
       PROCUREMENT: '#a48cc4',
@@ -4143,8 +4169,23 @@ PANEL_INIT.progress = () => {
       if (r >= 0.85) return 3;
       return 4;
     };
-    const treeData = topRows.map(t => {
+
+    // 영역별 헤더 업데이트 (달성률 / 가중치 표시) + 차트 빌드
+    const _areaTitleKo = { ENGINEERING: '설계', PROCUREMENT: '구매', CONSTRUCTION: '시공' };
+    const tmHostIds = { ENGINEERING: 'pg-tm-eng', PROCUREMENT: 'pg-tm-proc', CONSTRUCTION: 'pg-tm-cons' };
+    const psTreeCharts = [];
+    for (const t of topRows) {
       const baseColor = PALETTES[t.name] || '#7a8694';
+      const labelKo = _areaTitleKo[t.name] || t.name;
+      const topRatio = t.plan > 0 ? t.actual / t.plan : 1;
+      // 헤더 텍스트 (달성률 + 가중치 인라인)
+      const headerBlock = document.querySelector(`#pg-treemap-charts .pg-tm-block[data-area="${t.name}"] [data-fill="title"]`);
+      if (headerBlock) {
+        const ratioPct = (topRatio * 100).toFixed(0);
+        const weightPct = (t.weight * 100).toFixed(2);
+        headerBlock.innerHTML = `${labelKo} <span style="font-weight:600;font-size:13px;opacity:0.9;margin-left:4px;">·  달성률 <b>${ratioPct}%</b>  ·  가중치 <b>${weightPct}%</b></span>`;
+      }
+      // 하위 데이터 구성 (root 없이 sub-items가 top-level)
       const subs = ps.rows.filter(r => r.top === t.name && r.kind === 'sub' && r.weight != null && r.weight > 0 && r.name.trim() !== '계');
       const children = subs.map(s => {
         const ratio = s.plan > 0 ? s.actual / s.plan : (s.actual > 0 ? 1 : 0);
@@ -4155,7 +4196,6 @@ PANEL_INIT.progress = () => {
           return {
             name: it.name,
             value: it.weight * 100,
-            // 색은 colorMappingBy:'index' 가 자동 할당 (levels[3])
             itemStyle: { borderColor: _borderByRatio(r2), borderWidth: _borderWByRatio(r2) },
             extra: { ratio: r2, plan: it.plan, actual: it.actual, weight: it.weight }
           };
@@ -4164,23 +4204,17 @@ PANEL_INIT.progress = () => {
           name: cleanName,
           value: s.weight * 100,
           itemStyle: { borderColor: _borderByRatio(ratio), borderWidth: _borderWByRatio(ratio) },
-          extra: { ratio, plan: s.plan, actual: s.actual, weight: s.weight },
+          extra: { ratio, plan: s.plan, actual: s.actual, weight: s.weight, parent: labelKo },
           children: itemChildren.length ? itemChildren : undefined,
         };
       });
-      const topRatio = t.plan > 0 ? t.actual / t.plan : 1;
-      return {
-        name: t.name === 'ENGINEERING' ? '설계' : (t.name === 'PROCUREMENT' ? '구매' : '시공'),
-        value: t.weight * 100,
-        itemStyle: { color: baseColor },
-        extra: { ratio: topRatio, plan: t.plan, actual: t.actual, weight: t.weight },
-        children,
-      };
-    });
-    const treeHost = document.getElementById('pg-pstatus-treemap');
-    if (treeHost) {
-      psTreeChart = echarts.init(treeHost);
+      if (!children.length) continue;
+      const treeHost = document.getElementById(tmHostIds[t.name]);
+      if (!treeHost) continue;
+      const psTreeChart = echarts.init(treeHost);
       psTreeChart.setOption({
+        backgroundColor: '#fff',
+        color: [baseColor],
         tooltip: {
           formatter: info => {
             const x = info.data.extra;
@@ -4193,50 +4227,39 @@ PANEL_INIT.progress = () => {
         },
         series: [{
           type: 'treemap',
-          data: treeData,
-          breadcrumb: { show: true, height: 32, itemStyle: { textStyle: { fontSize: 14, fontWeight: 600 } } },
+          data: children,
+          width: '100%',
+          height: '100%',
+          left: 0, top: 0, right: 0, bottom: 0,
+          breadcrumb: { show: true, height: 26, top: 4, itemStyle: { textStyle: { fontSize: 12.5, fontWeight: 600 } } },
           roam: false,
           nodeClick: 'zoomToNode',
-          leafDepth: 2,
-          label: { show: true, position: 'insideTopLeft', fontSize: 14, fontWeight: 700, padding: [8, 10],
+          leafDepth: 1,
+          squareRatio: 0.5 * (1 + Math.sqrt(5)),  // 황금비 — 가로/세로 균형
+          label: {
+            show: true, position: 'insideTopLeft', padding: [8, 10],
             formatter: p => {
               const x = p.data.extra;
               if (!x) return `{name|${p.name}}`;
               const ratio = x.ratio != null ? (x.ratio * 100).toFixed(0) + '%' : '';
               const weight = (x.weight*100).toFixed(2);
-              return `{name|${p.name}}\n{stat|달성률 ${ratio}  ·  가중치 ${weight}%}`;
-            }, rich: {
-              name: { fontSize: 15, color: '#fff', fontWeight: 800, lineHeight: 22, textShadowColor: 'rgba(0,0,0,0.55)', textShadowBlur: 5 },
-              stat: { fontSize: 12.5, color: 'rgba(255,255,255,0.97)', lineHeight: 17, fontWeight: 600, textShadowColor: 'rgba(0,0,0,0.5)', textShadowBlur: 4 },
-            } },
-          upperLabel: { show: true, height: 36, color: '#fff', fontWeight: 800, fontSize: 16,
-            backgroundColor: '#1a2331',
-            padding: [8, 14, 8, 14],
-            borderRadius: 4,
-            formatter: p => {
-              const x = p.data.extra;
-              if (!x) return p.name;
-              const ratio = x.ratio != null ? (x.ratio * 100).toFixed(0) + '%' : '';
-              return `${p.name}   ·   달성률 ${ratio}   ·   가중치 ${(x.weight*100).toFixed(1)}%`;
+              return `{name|▶ ${p.name}}\n{stat|달성률 ${ratio}  ·  가중치 ${weight}%}`;
+            },
+            rich: {
+              name: { fontSize: 14, color: '#fff', fontWeight: 800, lineHeight: 20, textShadowColor: 'rgba(0,0,0,0.55)', textShadowBlur: 5 },
+              stat: { fontSize: 12, color: 'rgba(255,255,255,0.97)', lineHeight: 16, fontWeight: 600, textShadowColor: 'rgba(0,0,0,0.5)', textShadowBlur: 4 },
             },
           },
-          itemStyle: { gapWidth: 3, borderRadius: 4 },
+          upperLabel: { show: false },
+          itemStyle: { gapWidth: 3, borderRadius: 5, borderColor: '#fff', borderWidth: 2 },
           emphasis: { itemStyle: { borderColor: '#28323e', borderWidth: 3 } },
           levels: [
-            // Level 0 (루트 — 보이지 않음): 그저 자식들을 묶음
-            { itemStyle: { borderColor: '#fff', borderWidth: 0, gapWidth: 10 }, upperLabel: { show: false } },
-            // Level 1 (설계/구매/시공): 큰 부모 박스 - 상단 헤더 검정 배경
-            { itemStyle: { borderColor: '#fff', borderWidth: 4, gapWidth: 4, borderRadius: 8 },
-              upperLabel: { show: true, height: 40, backgroundColor: '#1a2331', color: '#fff',
-                fontWeight: 800, fontSize: 17, padding: [10, 16, 10, 16], borderRadius: 6 } },
-            // Level 2 (중분류): 부모 색의 명도/채도 자동 변환 → 자식들이 서로 다른 톤으로 자동 구분
-            { colorSaturation: [0.3, 0.6],
-              colorAlpha: [0.55, 1.0],
+            // Level 0 (sub-items — 화면 상위) : 카테고리 색 변형
+            { colorSaturation: [0.35, 0.7],
+              colorAlpha: [0.6, 1.0],
               colorMappingBy: 'index',
-              itemStyle: { gapWidth: 3, borderRadius: 5 },
-              upperLabel: { show: true, height: 30, backgroundColor: 'rgba(20,30,46,0.78)', color: '#fff',
-                fontWeight: 700, fontSize: 13.5, padding: [6, 10, 6, 10], borderRadius: 4 } },
-            // Level 3 (item) — 더 옅게, 인덱스 기반 자동 변환
+              itemStyle: { gapWidth: 3, borderRadius: 5 } },
+            // Level 1 (item — 드릴다운 시): 더 옅게
             { colorSaturation: [0.2, 0.45],
               colorAlpha: [0.4, 0.75],
               colorMappingBy: 'index',
@@ -4244,11 +4267,13 @@ PANEL_INIT.progress = () => {
           ],
         }],
       });
+      psTreeCharts.push(psTreeChart);
     }
+    psTreeChart = psTreeCharts;  // 외부 charts_ec resize 배열에 모두 포함되도록
   }
 
   // 반응형
-  const charts_ec = [sc, fChart, heat, contribChart, mpChart, gantt, psBarChart, psTreeChart].filter(Boolean);
+  const charts_ec = [sc, fChart, heat, contribChart, mpChart, gantt, psBarChart].concat(Array.isArray(psTreeChart) ? psTreeChart : (psTreeChart ? [psTreeChart] : [])).filter(Boolean);
   const onResize = debounce(() => charts_ec.forEach(c => c && c.resize()), 100);
   window.addEventListener('resize', onResize);
 };
@@ -5386,8 +5411,8 @@ PANEL_INIT.quality = () => {
     ],
   });
 
-  // ── 텍스트 영역: 4개 그룹 × (실적/계획) — 카드 구조 개선 v2 ──
-  // 각 항목을 "체크리스트 행"으로 시각화: ✅ 실적 / ➜ 계획 + 상태 배지 + sub-item 들여쓰기
+  // ── 텍스트 영역: 4개 그룹 × (실적/계획) — 카드 구조 개선 v3 ──
+  // 통일된 카드 구조: 헤더 (아이콘/타이틀/요약칩) + 진척 막대 + 2컬럼(실적/계획) 체크리스트 + 상태 배지
   const textHost = document.getElementById('ql-text');
   const items = Q.text_items;
   const grouped = {};
@@ -5405,123 +5430,165 @@ PANEL_INIT.quality = () => {
     '기계 (배관)':       { color: '#d49462', accent: '#f4e2d2', icon: '🔧' },
   };
 
-  // 결과(실적) 행 — 키워드로 완료/검사/시험을 자동 인식해 상태 배지 부여
-  const renderResultItem = (txt, color) => {
-    if (!txt) return '';
-    const t = txt.trim();
-    const isMain = /^[0-9]+[.)]/.test(t);
-    const isSub = /^[→•·↳]/.test(t) || /^[ \t]+/.test(txt);
-    // 키워드 → 배지
-    const hasDone = /완료/.test(t);
-    const hasTest = /시험|검사|test|TEST|Test/.test(t);
-    let badge = '';
-    if (hasDone) badge = `<span style="display:inline-block;flex:none;padding:2px 7px;background:#3f8a3f;color:#fff;border-radius:9px;font-size:10.5px;font-weight:700;letter-spacing:0.02em;">✓ 완료</span>`;
-    else if (hasTest) badge = `<span style="display:inline-block;flex:none;padding:2px 7px;background:#7a8694;color:#fff;border-radius:9px;font-size:10.5px;font-weight:600;">검사</span>`;
-    if (isSub) {
-      const stripped = t.replace(/^[→•·↳\s]+/, '');
-      return `<div style="display:flex;gap:6px;align-items:flex-start;padding:3px 0 3px 18px;border-left:2px solid ${color}22;margin-left:8px;font-size:13px;color:#5a6677;line-height:1.5;">
-        <span style="color:#9aa6b4;flex:none;">↳</span>
-        <span style="flex:1;min-width:0;">${escHtml(stripped)}</span>
+  // 행 분류: main / sub / plain
+  const _classify = (raw) => {
+    if (!raw) return null;
+    const t = raw.trim();
+    const isSub = /^[→•·↳]/.test(t) || /^[ \t]+/.test(raw);
+    const mMain = !isSub && t.match(/^(\d+)[.)]\s*(.+)$/);
+    const isMain = !!mMain;
+    return {
+      raw: t,
+      text: isSub ? t.replace(/^[→•·↳\s]+/, '') : (isMain ? mMain[2] : t),
+      isSub, isMain,
+      originalNum: isMain ? parseInt(mMain[1], 10) : null,
+    };
+  };
+
+  // 상태 배지 — 통일 스타일
+  const _badge = (kind, text, color) => {
+    const styles = {
+      done:    `background:#3f8a3f;color:#fff;`,
+      test:    `background:#7a8694;color:#fff;`,
+      planTest:`background:${color};color:#fff;`,
+      plan:    `background:#cdd5df;color:#28323e;`,
+    };
+    return `<span style="display:inline-flex;flex:none;align-items:center;gap:3px;padding:2px 8px;border-radius:10px;font-size:10.5px;font-weight:700;letter-spacing:0.02em;line-height:1.4;${styles[kind]||styles.plan}">${text}</span>`;
+  };
+
+  // 결과(실적) 행
+  const renderResultItem = (raw, color, autoNum) => {
+    const c = _classify(raw);
+    if (!c) return '';
+    const hasDone = /완료/.test(c.raw);
+    const hasTest = /시험|검사|test|TEST|Test/.test(c.raw);
+    const badge = hasDone ? _badge('done', '✓ 완료', color)
+                 : (hasTest ? _badge('test', '검사', color) : '');
+    if (c.isSub) {
+      return `<div style="display:flex;gap:6px;align-items:flex-start;padding:3px 0 3px 22px;border-left:2px solid ${color}33;margin-left:11px;font-size:12.5px;color:#5a6677;line-height:1.5;">
+        <span style="color:#9aa6b4;flex:none;font-size:11px;">↳</span>
+        <span style="flex:1;min-width:0;">${escHtml(c.text)}</span>
         ${badge}
       </div>`;
     }
-    if (isMain) {
-      const m = t.match(/^(\d+[.)])\s*(.+)$/);
-      const num = m ? m[1] : '';
-      const rest = m ? m[2] : t;
-      return `<div style="display:flex;gap:8px;align-items:flex-start;padding:6px 0;font-size:14px;line-height:1.5;">
-        <span style="display:inline-flex;flex:none;width:22px;height:22px;align-items:center;justify-content:center;background:${color};color:#fff;border-radius:50%;font-size:11px;font-weight:800;">${num.replace(/[.)]/, '')}</span>
-        <span style="flex:1;min-width:0;font-weight:600;color:#28323e;">${escHtml(rest)}</span>
-        ${badge}
-      </div>`;
-    }
-    return `<div style="display:flex;gap:6px;align-items:flex-start;padding:4px 0;font-size:13.5px;line-height:1.5;color:#28323e;">
-      <span style="color:#9aa6b4;flex:none;">•</span>
-      <span style="flex:1;min-width:0;">${escHtml(t)}</span>
+    const n = autoNum != null ? autoNum : (c.originalNum || '•');
+    const numBg = typeof n === 'number'
+      ? `background:${hasDone ? '#3f8a3f' : color};color:#fff;`
+      : `background:#fff;color:${color};border:1.5px solid ${color}55;`;
+    return `<div style="display:flex;gap:9px;align-items:flex-start;padding:7px 0;font-size:13.5px;line-height:1.5;">
+      <span style="display:inline-flex;flex:none;width:22px;height:22px;align-items:center;justify-content:center;border-radius:50%;font-size:11px;font-weight:800;${numBg}">${n}</span>
+      <span style="flex:1;min-width:0;font-weight:600;color:#28323e;">${escHtml(c.text)}</span>
       ${badge}
     </div>`;
   };
 
-  // 계획 행 — '예정' 배지가 기본
-  const renderPlanItem = (txt, color) => {
-    if (!txt) return '';
-    const t = txt.trim();
-    const isMain = /^[0-9]+[.)]/.test(t);
-    const isSub = /^[→•·↳]/.test(t) || /^[ \t]+/.test(txt);
-    const hasTest = /시험|검사|test|TEST|Test/.test(t);
+  // 계획 행
+  const renderPlanItem = (raw, color, autoNum) => {
+    const c = _classify(raw);
+    if (!c) return '';
+    const hasTest = /시험|검사|test|TEST|Test/.test(c.raw);
     const badge = hasTest
-      ? `<span style="display:inline-block;flex:none;padding:2px 7px;background:${color};color:#fff;border-radius:9px;font-size:10.5px;font-weight:700;">▶ 예정</span>`
-      : `<span style="display:inline-block;flex:none;padding:2px 7px;background:#cdd5df;color:#28323e;border-radius:9px;font-size:10.5px;font-weight:700;">▶</span>`;
-    if (isSub) {
-      const stripped = t.replace(/^[→•·↳\s]+/, '');
-      return `<div style="display:flex;gap:6px;align-items:flex-start;padding:3px 0 3px 18px;border-left:2px solid ${color}22;margin-left:8px;font-size:13px;color:#5a6677;line-height:1.5;">
-        <span style="color:#9aa6b4;flex:none;">↳</span>
-        <span style="flex:1;min-width:0;">${escHtml(stripped)}</span>
+      ? _badge('planTest', '▶ 예정', color)
+      : _badge('plan', '▶ 예정', color);
+    if (c.isSub) {
+      return `<div style="display:flex;gap:6px;align-items:flex-start;padding:3px 0 3px 22px;border-left:2px solid ${color}33;margin-left:11px;font-size:12.5px;color:#5a6677;line-height:1.5;">
+        <span style="color:#9aa6b4;flex:none;font-size:11px;">↳</span>
+        <span style="flex:1;min-width:0;">${escHtml(c.text)}</span>
         ${badge}
       </div>`;
     }
-    if (isMain) {
-      const m = t.match(/^(\d+[.)])\s*(.+)$/);
-      const num = m ? m[1] : '';
-      const rest = m ? m[2] : t;
-      return `<div style="display:flex;gap:8px;align-items:flex-start;padding:6px 0;font-size:14px;line-height:1.5;">
-        <span style="display:inline-flex;flex:none;width:22px;height:22px;align-items:center;justify-content:center;background:#fff;color:${color};border:2px solid ${color};border-radius:50%;font-size:11px;font-weight:800;">${num.replace(/[.)]/, '')}</span>
-        <span style="flex:1;min-width:0;font-weight:600;color:#28323e;">${escHtml(rest)}</span>
-        ${badge}
-      </div>`;
-    }
-    return `<div style="display:flex;gap:6px;align-items:flex-start;padding:4px 0;font-size:13.5px;line-height:1.5;color:#28323e;">
-      <span style="color:${color};flex:none;font-weight:800;">▸</span>
-      <span style="flex:1;min-width:0;">${escHtml(t)}</span>
+    const n = autoNum != null ? autoNum : (c.originalNum || '•');
+    const numBg = typeof n === 'number'
+      ? `background:#fff;color:${color};border:1.5px solid ${color};`
+      : `background:#fff;color:${color};border:1.5px solid ${color}55;`;
+    return `<div style="display:flex;gap:9px;align-items:flex-start;padding:7px 0;font-size:13.5px;line-height:1.5;">
+      <span style="display:inline-flex;flex:none;width:22px;height:22px;align-items:center;justify-content:center;border-radius:50%;font-size:11px;font-weight:800;${numBg}">${n}</span>
+      <span style="flex:1;min-width:0;font-weight:600;color:#28323e;">${escHtml(c.text)}</span>
       ${badge}
     </div>`;
   };
 
-  // 카드별 완료/예정 카운트 — 실적은 '완료' 키워드, 계획은 main 항목 수로 추정
-  function countActuals(rows) {
-    return rows.filter(r => r.actual && /완료/.test(r.actual)).length;
-  }
-  function countPlans(rows) {
-    return rows.filter(r => r.plan && /^[0-9]+[.)]/.test(r.plan.trim())).length;
-  }
+  // 카드별 카운트
+  const _statsOf = (rows) => {
+    let actualMain = 0, actualDone = 0, planMain = 0;
+    for (const r of rows) {
+      const ca = _classify(r.actual);
+      if (ca && !ca.isSub) {
+        actualMain++;
+        if (/완료/.test(ca.raw)) actualDone++;
+      }
+      const cp = _classify(r.plan);
+      if (cp && !cp.isSub) planMain++;
+    }
+    return { actualMain, actualDone, planMain };
+  };
 
   const groupOrder = ['토목 / 건축', '기계 (Tank)', '기계 (Insulation)', '기계 (배관)'];
   const cats = [...new Set([...groupOrder, ...Object.keys(grouped)])].filter(c => grouped[c]);
 
   textHost.style.display = 'grid';
   textHost.style.gridTemplateColumns = 'repeat(2, 1fr)';
-  textHost.style.gap = '16px';
+  textHost.style.gap = '18px';
 
   textHost.innerHTML = cats.map(cat => {
     const style = groupStyles[cat] || { color: '#7a8694', accent: '#eef0f4', icon: '📋' };
     const rows = grouped[cat] || [];
-    const nActual = countActuals(rows);
-    const nPlan = countPlans(rows);
-    const actualHtml = rows.map(r => renderResultItem(r.actual, style.color)).filter(Boolean).join('') || '<div style="color:#cdd5df;font-size:13.5px;padding:8px 0;">기록된 실적이 없습니다.</div>';
-    const planHtml   = rows.map(r => renderPlanItem(r.plan, style.color)).filter(Boolean).join('') || '<div style="color:#cdd5df;font-size:13.5px;padding:8px 0;">계획된 항목이 없습니다.</div>';
+    const stats = _statsOf(rows);
+    // 진척률: 실적 main 중 완료 / 실적 main
+    const donePct = stats.actualMain > 0 ? Math.round(stats.actualDone / stats.actualMain * 100) : 0;
+    // 자동 번호 매김 (main 항목에 순차 번호) — 원본에 이미 번호가 있어도 일관성 위해 재할당
+    let actualCounter = 0, planCounter = 0;
+    const actualHtml = rows.map(r => {
+      const c = _classify(r.actual);
+      if (c && !c.isSub) actualCounter++;
+      return renderResultItem(r.actual, style.color, (c && !c.isSub) ? actualCounter : null);
+    }).filter(Boolean).join('') || '<div style="color:#cdd5df;font-size:13px;padding:10px 0;text-align:center;">기록된 실적이 없습니다.</div>';
+    const planHtml = rows.map(r => {
+      const c = _classify(r.plan);
+      if (c && !c.isSub) planCounter++;
+      return renderPlanItem(r.plan, style.color, (c && !c.isSub) ? planCounter : null);
+    }).filter(Boolean).join('') || '<div style="color:#cdd5df;font-size:13px;padding:10px 0;text-align:center;">계획된 항목이 없습니다.</div>';
     return `
       <div style="background:#fff;border:1px solid #e6eaf1;border-top:5px solid ${style.color};border-radius:12px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 2px 6px rgba(20,30,60,0.05);">
-        <div style="padding:14px 18px;background:linear-gradient(180deg,#fff 0%,${style.accent}40 100%);border-bottom:1px solid #eef0f4;display:flex;align-items:center;gap:10px;">
-          <span style="display:inline-flex;width:38px;height:38px;align-items:center;justify-content:center;background:${style.accent};border-radius:8px;font-size:20px;">${style.icon}</span>
-          <div style="flex:1;min-width:0;">
-            <div style="font-size:16px;font-weight:800;color:${style.color};letter-spacing:-0.01em;line-height:1.2;">${escHtml(cat)}</div>
-            <div style="font-size:11.5px;color:#7a8694;font-weight:600;margin-top:2px;">총 ${rows.length}건 · ✓ 완료 ${nActual}건 · ▶ 예정 ${nPlan}건</div>
+        <!-- 카드 헤더 -->
+        <div style="padding:14px 18px 12px;background:linear-gradient(180deg,#fff 0%,${style.accent}40 100%);border-bottom:1px solid #eef0f4;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+            <span style="display:inline-flex;width:40px;height:40px;align-items:center;justify-content:center;background:${style.accent};border-radius:9px;font-size:21px;">${style.icon}</span>
+            <div style="flex:1;min-width:0;">
+              <div style="font-size:16px;font-weight:800;color:${style.color};letter-spacing:-0.01em;line-height:1.2;">${escHtml(cat)}</div>
+              <div style="display:flex;gap:6px;margin-top:4px;flex-wrap:wrap;">
+                <span style="font-size:11px;background:#3f8a3f;color:#fff;padding:2px 7px;border-radius:8px;font-weight:700;letter-spacing:0.02em;">✓ 완료 ${stats.actualDone}</span>
+                <span style="font-size:11px;background:${style.color};color:#fff;padding:2px 7px;border-radius:8px;font-weight:700;letter-spacing:0.02em;">▶ 예정 ${stats.planMain}</span>
+                <span style="font-size:11px;background:#7a8694;color:#fff;padding:2px 7px;border-radius:8px;font-weight:700;letter-spacing:0.02em;">∑ 총 ${Math.max(stats.actualMain, stats.planMain)}건</span>
+              </div>
+            </div>
+          </div>
+          <!-- 진척 막대 (실적 완료/실적 main) -->
+          <div>
+            <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:4px;">
+              <span style="font-size:11px;color:#5a6677;font-weight:600;">전월 실적 완료율</span>
+              <span style="font-size:13px;color:${donePct>=100?'#3f8a3f':(donePct>=70?style.color:'#d49462')};font-weight:800;font-variant-numeric:tabular-nums;">${donePct}%</span>
+            </div>
+            <div style="position:relative;height:6px;background:#eef0f4;border-radius:4px;overflow:hidden;">
+              <div style="position:absolute;left:0;top:0;height:100%;width:${donePct}%;background:linear-gradient(90deg,${donePct>=100?'#3f8a3f':style.color},${donePct>=100?'#56a06a':style.color}cc);border-radius:4px;transition:width .4s;"></div>
+            </div>
           </div>
         </div>
+        <!-- 2컬럼 그리드: 실적/계획 -->
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;flex:1;">
-          <div style="padding:12px 16px;border-right:1px dashed #eef0f4;">
-            <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid #eef0f4;">
+          <div style="padding:12px 14px 14px;border-right:1px dashed #eef0f4;">
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:10px;padding-bottom:7px;border-bottom:1.5px solid #3f8a3f33;">
               <span style="display:inline-flex;width:22px;height:22px;align-items:center;justify-content:center;background:#3f8a3f;color:#fff;border-radius:6px;font-size:12px;font-weight:800;">✓</span>
               <span style="font-size:13px;color:#3f8a3f;font-weight:800;letter-spacing:0.02em;">′26.04 실적</span>
-              <span style="margin-left:auto;font-size:11px;color:#7a8694;font-weight:600;">${rows.filter(r => r.actual).length}/${rows.length}</span>
+              <span style="margin-left:auto;font-size:11px;color:#5a6677;font-weight:700;font-variant-numeric:tabular-nums;background:#fff;padding:2px 8px;border-radius:9px;border:1px solid #e6eaf1;">${stats.actualDone}/${stats.actualMain || '–'}</span>
             </div>
             ${actualHtml}
           </div>
-          <div style="padding:12px 16px;background:${style.accent}25;">
-            <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid #eef0f4;">
+          <div style="padding:12px 14px 14px;background:${style.accent}1f;">
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:10px;padding-bottom:7px;border-bottom:1.5px solid ${style.color}33;">
               <span style="display:inline-flex;width:22px;height:22px;align-items:center;justify-content:center;background:${style.color};color:#fff;border-radius:6px;font-size:12px;font-weight:800;">▶</span>
               <span style="font-size:13px;color:${style.color};font-weight:800;letter-spacing:0.02em;">′26.05 계획</span>
-              <span style="margin-left:auto;font-size:11px;color:#7a8694;font-weight:600;">${rows.filter(r => r.plan).length}/${rows.length}</span>
+              <span style="margin-left:auto;font-size:11px;color:#5a6677;font-weight:700;font-variant-numeric:tabular-nums;background:#fff;padding:2px 8px;border-radius:9px;border:1px solid #e6eaf1;">${stats.planMain}건</span>
             </div>
             ${planHtml}
           </div>
@@ -7608,38 +7675,113 @@ openTab('overview');
     setTimeout(() => syncTimeAxis(), 400);
   }
 
-  //--- 같은 부모 형제 task의 시작일 순으로 화살표 ---
+  //--- 선후 의존 화살표 — 같은 부모 아래 형제 + 부모/조상 레벨 chain + overlap 케이스 라우팅 ---
+  // v2: 누락 최소화 — 겹침(reverse) 케이스도 루프 라우팅으로 표시, 동일 레벨 cross-summary chain 추가
   function renderArrows(barInfo, rows, tasks, compareKeys) {
     const repByRow = new Map();
     for (const b of barInfo) if (!repByRow.has(b.rowIdx)) repByRow.set(b.rowIdx, b);
-    const groups = new Map();
+
+    // 모든 가시 행 + 시작일 + parent_idx + level 정보
+    const visible = [];
     for (const row of rows) {
       const t = row.task;
       const b = repByRow.get(row.idx);
       if (!b) continue;
-      let startStr = null;
+      let startStr = null, endStr = null;
       if (compareKeys) {
-        for (const ck of compareKeys) if (t[ck] && t[ck].start) { startStr = t[ck].start; break; }
-      } else startStr = t.start;
+        for (const ck of compareKeys) {
+          if (t[ck] && t[ck].start) { startStr = t[ck].start; endStr = t[ck].end; break; }
+        }
+      } else { startStr = t.start; endStr = t.end; }
       if (!startStr) continue;
-      const p = t.parent_idx == null ? '_root' : String(t.parent_idx);
-      if (!groups.has(p)) groups.set(p, []);
-      groups.get(p).push({ rowIdx: row.idx, b, start: startStr });
+      visible.push({ rowIdx: row.idx, b, start: startStr, end: endStr || startStr, parent_idx: t.parent_idx, level: t.level || 0, task: t });
     }
+
+    const seen = new Set();
     const parts = [];
+
+    const drawArrow = (from, to, opts) => {
+      const a = from.b, c = to.b;
+      if (!a || !c) return;
+      const key = `${from.rowIdx}-${to.rowIdx}`;
+      if (seen.has(key)) return;
+      seen.add(key);
+      const x1 = a.x + a.w, y1 = a.cy;
+      const x2 = c.x, y2 = c.cy;
+      const dashed = opts && opts.dashed ? 'stroke-dasharray="4,3"' : '';
+      const op = opts && opts.opacity != null ? opts.opacity : 0.85;
+      const sw = opts && opts.strokeWidth != null ? opts.strokeWidth : 2.4;
+      // 겹침/역방향 케이스 → 루프 라우팅 (predecessor 위로 우회)
+      if (x2 < x1 - 4) {
+        const topY = Math.min(y1, y2) - Math.max(7, Math.abs(y2 - y1) * 0.25 + 5);
+        const rightOff = 8;
+        const leftOff  = 8;
+        parts.push(`<path class="ms-link" data-from="${from.rowIdx}" data-to="${to.rowIdx}" d="M${x1},${y1} L${x1+rightOff},${y1} L${x1+rightOff},${topY} L${x2-leftOff},${topY} L${x2-leftOff},${y2} L${x2},${y2}" fill="none" stroke="#c97070" stroke-width="${Math.max(sw - 0.4, 1.6)}" stroke-dasharray="4,3" marker-end="url(#ms-arr-default)" opacity="${op * 0.85}"/>`);
+        return;
+      }
+      // 일반 케이스 (FS-like)
+      const midX = x1 + Math.max(10, Math.min(24, (x2 - x1) / 2));
+      parts.push(`<path class="ms-link" data-from="${from.rowIdx}" data-to="${to.rowIdx}" d="M${x1},${y1} L${midX},${y1} L${midX},${y2} L${x2},${y2}" fill="none" stroke="#c97070" stroke-width="${sw}" ${dashed} marker-end="url(#ms-arr-default)" opacity="${op}"/>`);
+    };
+
+    // ── 1단계: 같은 부모 아래 형제 chain (시작일 오름차순) ──
+    const groups = new Map();
+    for (const v of visible) {
+      const p = v.parent_idx == null ? '_root' : String(v.parent_idx);
+      if (!groups.has(p)) groups.set(p, []);
+      groups.get(p).push(v);
+    }
     for (const [, arr] of groups) {
       if (arr.length < 2) continue;
-      arr.sort((a, b) => a.start.localeCompare(b.start));
+      arr.sort((a, b) => a.start.localeCompare(b.start) || a.rowIdx - b.rowIdx);
       for (let i = 1; i < arr.length; i++) {
-        const a = arr[i-1].b, c = arr[i].b;
-        if (!a || !c) continue;
-        const x1 = a.x + a.w, y1 = a.cy;
-        const x2 = c.x, y2 = c.cy;
-        if (x2 <= x1 - 6) continue;
-        const midX = x1 + Math.max(10, Math.min(24, (x2 - x1) / 2));
-        parts.push(`<path class="ms-link" data-from="${arr[i-1].rowIdx}" data-to="${arr[i].rowIdx}" d="M${x1},${y1} L${midX},${y1} L${midX},${y2} L${x2},${y2}" fill="none" stroke="#c97070" stroke-width="2.4" marker-end="url(#ms-arr-default)" opacity="0.85"/>`);
+        drawArrow(arr[i-1], arr[i], {});
       }
     }
+
+    // ── 2단계: 동일 레벨 cross-summary chain (조부모 공유 시) ──
+    // 예: ENGINEERING의 마지막 가시 행 → PROCUREMENT의 첫 가시 행 (둘 다 _root level)
+    //     이미 1단계에서 _root chain 으로 처리됨. 그러나 1단계에서 처리되지 않는 패턴:
+    //     동일 level 의 노드들이 서로 다른 부모를 가질 때
+    const _ancestorAt = (taskIdx, targetLevel) => {
+      let cur = taskIdx;
+      let safety = 30;
+      while (cur != null && safety-- > 0) {
+        const t = tasks[cur];
+        if (!t) return null;
+        if ((t.level || 0) === targetLevel) return cur;
+        if ((t.level || 0) < targetLevel) return null;
+        cur = t.parent_idx;
+      }
+      return null;
+    };
+    // 레벨별 가시 행 분류 (단, 같은 부모를 공유하지 않는 경우만)
+    const byLevel = new Map();
+    for (const v of visible) {
+      if (!byLevel.has(v.level)) byLevel.set(v.level, []);
+      byLevel.get(v.level).push(v);
+    }
+    for (const [lv, arr] of byLevel) {
+      if (lv === 0 || arr.length < 2) continue;
+      arr.sort((a, b) => a.start.localeCompare(b.start) || a.rowIdx - b.rowIdx);
+      for (let i = 1; i < arr.length; i++) {
+        const prev = arr[i-1], cur = arr[i];
+        // 동일 부모면 1단계에서 이미 그려짐 → skip
+        if (prev.parent_idx === cur.parent_idx) continue;
+        // 조부모(같은 상위 summary)를 공유하는지 — 같은 그룹 핸드오프 케이스 우선
+        const lvUp = lv - 1;
+        if (lvUp < 0) continue;
+        const ga = _ancestorAt(prev.rowIdx, lvUp);
+        const gb = _ancestorAt(cur.rowIdx, lvUp);
+        if (ga == null || gb == null || ga !== gb) {
+          // 다른 조부모 아래의 leaf → root chain은 1단계 _root group 에서 부모(summary)끼리 연결됨.
+          // leaf 끼리 직접 연결하면 화살표 폭주이므로 skip.
+          continue;
+        }
+        drawArrow(prev, cur, { dashed: true, opacity: 0.65, strokeWidth: 1.9 });
+      }
+    }
+
     return parts.join('');
   }
   function highlightLinks(svg, rowIdx, on) {
