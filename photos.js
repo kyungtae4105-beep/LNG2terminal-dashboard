@@ -722,10 +722,6 @@ window.PHOTOS_DATA = {
       "type": "안전점검",
       "items": [
         {
-          "file": "photos/2023-10/s7_1_image25.tmp",
-          "caption": "정기안전보건교육(’23.09.18)"
-        },
-        {
           "file": "photos/2023-10/s7_2_image24.png",
           "caption": "노사합동점검(’23.10.11)"
         },

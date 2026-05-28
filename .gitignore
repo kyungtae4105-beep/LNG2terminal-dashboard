@@ -50,6 +50,10 @@ _archive/
 # 디버그/탐색용 임시 스크립트 (추적 제외)
 _probe_*.py
 _probe_*.out.txt
+_extract_*.py
+_verify_*.py
+_apply_*.py
+_excel_totals.json
 make_icons.py
 
 # 사용자 노트

@@ -1,12 +1,13 @@
 // 광양 제2 LNG터미널 증설공사 대시보드 데이터
-// 보고기간: 2023년 2월 ~ 2026년 3월 (38개월, 일부 갭 포함)
+// 보고기간: 2023년 1월 ~ 2026년 5월 (41개월, 1차계약 23.1~23.7 별도 관리)
 // 갭 사유: DRM 보호 또는 보고서 미보유 (data_gap_reason 참조)
+// 23.8월 이후 종합 진척률은 월간회의 엑셀 '2-1.공정현황' 시트의 '계' 행에서 EPC 누계 자동 추출
 
 window.DASHBOARD_DATA = {
   "project": {
     "name": "광양 제2 LNG터미널 증설공사",
     "owner": "에너지건설 TF",
-    "report_period": "2023년 2월 ~ 2026년 3월",
+    "report_period": "2023년 1월 ~ 2026년 5월",
     "purpose": "에너지건설 TF 주요 지표 Dashboard 구축",
     "phases": [
       {
@@ -23,30 +24,32 @@ window.DASHBOARD_DATA = {
       }
     ],
     "data_gaps": [
-      "2023-12",
-      "2024-02",
-      "2024-10",
-      "2024-12",
-      "2025-01",
-      "2025-02",
-      "2025-03",
-      "2025-04",
-      "2025-05"
+      "2023-01",
+      "2023-02",
+      "2023-03",
+      "2023-04",
+      "2023-05",
+      "2023-06",
+      "2023-07",
+      "2023-08",
+      "2023-10"
     ],
     "data_gap_reason": {
-      "2023-12": "보고서 DRM 보호로 추출 불가",
-      "2024-02": "보고서 DRM 보호로 추출 불가",
-      "2024-10": "보고서 DRM 보호로 추출 불가",
-      "2024-12": "보고서 미보유",
-      "2025-01": "보고서 미보유",
-      "2025-02": "보고서 미보유",
-      "2025-03": "보고서 미보유",
-      "2025-04": "보고서 미보유",
-      "2025-05": "보고서 미보유"
-    }
+      "2023-01": "1차계약(지반개량) 진행기간 — phase1_progress 참조",
+      "2023-02": "1차계약(지반개량) — phase1_progress.tank78_actual 참조",
+      "2023-03": "1차계약(지반개량) — phase1_progress.tank78_actual 참조",
+      "2023-04": "1차계약(지반개량) — phase1_progress.tank78_actual 참조",
+      "2023-05": "1차계약(지반개량) — phase1_progress.tank78_actual 참조",
+      "2023-06": "1차계약(지반개량) — phase1_progress.tank78_actual 참조",
+      "2023-07": "1차계약(지반개량) 종료 — phase1_progress.tank78_actual 참조",
+      "2023-08": "1차→본계약 전환월 — 엑셀 1차계약 carryover 값(72.75%)이므로 종합 null 처리",
+      "2023-10": "월간회의 엑셀 미존재 (23.10월_Final 파일 부재)"
+    },
+    "data_source_note": "23.9월~25.5월 종합 진척률은 월간회의 엑셀 '2-1.공정현황' 시트의 '계' 행에서 EPC 누계 자동 추출. 25.6월~26.5월은 기존 PPT 보고서 추출값 보존 + 2026-04는 엑셀 변환본에서 추출. 두 출처 사이에 가중치/scope 차이가 있어 25.5→25.6월 사이에 시각적 단차가 발생할 수 있음 (Excel 41.68% → PPT 63.26%)."
   },
   "progress": {
     "months": [
+      "2023-01",
       "2023-02",
       "2023-03",
       "2023-04",
@@ -84,7 +87,9 @@ window.DASHBOARD_DATA = {
       "2025-12",
       "2026-01",
       "2026-02",
-      "2026-03"
+      "2026-03",
+      "2026-04",
+      "2026-05"
     ],
     "종합": {
       "plan": [
@@ -96,11 +101,12 @@ window.DASHBOARD_DATA = {
         null,
         null,
         null,
+        24.07,
         null,
-        null,
-        null,
+        28.18,
+        30.83,
         13.73,
-        null,
+        15.74,
         14.96,
         16.04,
         17.1,
@@ -108,14 +114,14 @@ window.DASHBOARD_DATA = {
         22.89,
         25.27,
         28.43,
-        null,
+        24.51,
         35.25,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
+        28.75,
+        30.12,
+        32.33,
+        35.68,
+        38.92,
+        44.36,
         61.65,
         65.12,
         68.83,
@@ -125,7 +131,9 @@ window.DASHBOARD_DATA = {
         84.86,
         88.73,
         91.96,
-        94.37
+        94.37,
+        92.7,
+        94.84
       ],
       "actual": [
         null,
@@ -136,11 +144,12 @@ window.DASHBOARD_DATA = {
         null,
         null,
         null,
+        21.23,
         null,
-        null,
-        null,
+        27.84,
+        30.37,
         13.72,
-        null,
+        15.92,
         16.6,
         18.07,
         19.3,
@@ -148,14 +157,14 @@ window.DASHBOARD_DATA = {
         22.26,
         25.37,
         29.61,
-        null,
+        22.64,
         36.29,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
+        25.82,
+        28.15,
+        29.99,
+        33.34,
+        38.35,
+        41.68,
         63.26,
         66.98,
         69.31,
@@ -165,11 +174,14 @@ window.DASHBOARD_DATA = {
         80.55,
         82.2,
         86.16,
-        88.99
+        88.99,
+        84.03,
+        87.12
       ]
     },
     "육상부": {
       "plan": [
+        null,
         null,
         null,
         null,
@@ -207,9 +219,12 @@ window.DASHBOARD_DATA = {
         81.84,
         86.7,
         90.73,
-        93.71
+        93.71,
+        null,
+        null
       ],
       "actual": [
+        null,
         null,
         null,
         null,
@@ -247,11 +262,14 @@ window.DASHBOARD_DATA = {
         73.14,
         75.09,
         80.86,
-        84.9
+        84.9,
+        null,
+        null
       ]
     },
     "해상부": {
       "plan": [
+        null,
         null,
         null,
         null,
@@ -289,9 +307,12 @@ window.DASHBOARD_DATA = {
         91.15,
         92.78,
         94.38,
-        95.65
+        95.65,
+        null,
+        null
       ],
       "actual": [
+        null,
         null,
         null,
         null,
@@ -329,11 +350,14 @@ window.DASHBOARD_DATA = {
         95.97,
         96.7,
         96.96,
-        97.3
+        97.3,
+        null,
+        null
       ]
     },
     "154kV": {
       "plan": [
+        null,
         null,
         null,
         null,
@@ -371,9 +395,12 @@ window.DASHBOARD_DATA = {
         98.7,
         99.9,
         100.0,
-        100.0
+        100.0,
+        null,
+        null
       ],
       "actual": [
+        null,
         null,
         null,
         null,
@@ -411,12 +438,15 @@ window.DASHBOARD_DATA = {
         98.31,
         99.53,
         100.0,
-        100.0
+        100.0,
+        null,
+        null
       ]
     }
   },
   "manpower": {
     "months": [
+      "2023-01",
       "2023-02",
       "2023-03",
       "2023-04",
@@ -454,10 +484,13 @@ window.DASHBOARD_DATA = {
       "2025-12",
       "2026-01",
       "2026-02",
-      "2026-03"
+      "2026-03",
+      "2026-04",
+      "2026-05"
     ],
     "종합": {
       "manager": [
+        null,
         16,
         16,
         16,
@@ -495,9 +528,12 @@ window.DASHBOARD_DATA = {
         67,
         71,
         65,
-        63
+        63,
+        null,
+        null
       ],
       "partner": [
+        null,
         95,
         62,
         58,
@@ -535,11 +571,14 @@ window.DASHBOARD_DATA = {
         651,
         595,
         574,
-        595
+        595,
+        null,
+        null
       ]
     },
     "육상부": {
       "manager": [
+        null,
         null,
         null,
         null,
@@ -577,9 +616,12 @@ window.DASHBOARD_DATA = {
         49,
         55,
         51,
-        51
+        51,
+        null,
+        null
       ],
       "partner": [
+        null,
         null,
         null,
         null,
@@ -617,11 +659,14 @@ window.DASHBOARD_DATA = {
         603,
         567,
         540,
-        569
+        569,
+        null,
+        null
       ]
     },
     "해상부": {
       "manager": [
+        null,
         null,
         null,
         null,
@@ -659,9 +704,12 @@ window.DASHBOARD_DATA = {
         17,
         15,
         13,
-        11
+        11,
+        null,
+        null
       ],
       "partner": [
+        null,
         null,
         null,
         null,
@@ -699,7 +747,9 @@ window.DASHBOARD_DATA = {
         42,
         23,
         30,
-        22
+        22,
+        null,
+        null
       ]
     },
     "154kV": {
@@ -733,6 +783,7 @@ window.DASHBOARD_DATA = {
         null,
         null,
         null,
+        null,
         2,
         2,
         2,
@@ -741,9 +792,12 @@ window.DASHBOARD_DATA = {
         1,
         1,
         1,
-        0
+        0,
+        null,
+        null
       ],
       "partner": [
+        null,
         null,
         null,
         null,
@@ -781,12 +835,15 @@ window.DASHBOARD_DATA = {
         6,
         5,
         4,
-        0
+        0,
+        null,
+        null
       ]
     }
   },
   "no_accident_days": {
     "months": [
+      "2023-01",
       "2023-02",
       "2023-03",
       "2023-04",
@@ -824,9 +881,12 @@ window.DASHBOARD_DATA = {
       "2025-12",
       "2026-01",
       "2026-02",
-      "2026-03"
+      "2026-03",
+      "2026-04",
+      "2026-05"
     ],
     "육상부": [
+      null,
       null,
       null,
       null,
@@ -864,9 +924,12 @@ window.DASHBOARD_DATA = {
       264,
       295,
       323,
-      354
+      354,
+      null,
+      null
     ],
     "해상부": [
+      null,
       null,
       null,
       null,
@@ -904,9 +967,12 @@ window.DASHBOARD_DATA = {
       832,
       863,
       891,
-      922
+      922,
+      null,
+      null
     ],
     "154kV": [
+      null,
       null,
       null,
       null,
@@ -944,11 +1010,14 @@ window.DASHBOARD_DATA = {
       395,
       426,
       454,
+      null,
+      null,
       null
     ]
   },
   "safety_audit_land": {
     "months": [
+      "2023-01",
       "2023-02",
       "2023-03",
       "2023-04",
@@ -986,9 +1055,12 @@ window.DASHBOARD_DATA = {
       "2025-12",
       "2026-01",
       "2026-02",
-      "2026-03"
+      "2026-03",
+      "2026-04",
+      "2026-05"
     ],
     "추락": [
+      null,
       27,
       26,
       27,
@@ -1026,9 +1098,12 @@ window.DASHBOARD_DATA = {
       null,
       77,
       53,
-      62
+      62,
+      null,
+      null
     ],
     "전도": [
+      null,
       21,
       20,
       16,
@@ -1066,9 +1141,12 @@ window.DASHBOARD_DATA = {
       null,
       90,
       61,
-      70
+      70,
+      null,
+      null
     ],
     "낙하/비래": [
+      null,
       20,
       29,
       24,
@@ -1106,9 +1184,12 @@ window.DASHBOARD_DATA = {
       null,
       48,
       43,
-      44
+      44,
+      null,
+      null
     ],
     "감전": [
+      null,
       35,
       40,
       19,
@@ -1146,9 +1227,12 @@ window.DASHBOARD_DATA = {
       null,
       34,
       29,
-      40
+      40,
+      null,
+      null
     ],
     "충돌/협착": [
+      null,
       10,
       19,
       21,
@@ -1186,9 +1270,12 @@ window.DASHBOARD_DATA = {
       null,
       39,
       45,
-      33
+      33,
+      null,
+      null
     ],
     "붕괴/도괴": [
+      null,
       0,
       4,
       4,
@@ -1226,9 +1313,12 @@ window.DASHBOARD_DATA = {
       null,
       13,
       2,
-      6
+      6,
+      null,
+      null
     ],
     "화재/폭발": [
+      null,
       14,
       25,
       24,
@@ -1266,28 +1356,31 @@ window.DASHBOARD_DATA = {
       null,
       17,
       16,
-      17
+      17,
+      null,
+      null
     ],
     "질식": [
-      0,
-      0,
-      0,
-      1,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
       null,
-      1,
-      null,
+      0,
       0,
       0,
       1,
       0,
       0,
       0,
+      0,
+      0,
+      0,
+      null,
+      1,
+      null,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
       null,
       null,
       null,
@@ -1306,9 +1399,12 @@ window.DASHBOARD_DATA = {
       null,
       0,
       0,
-      0
+      0,
+      null,
+      null
     ],
     "기타": [
+      null,
       32,
       45,
       33,
@@ -1346,11 +1442,14 @@ window.DASHBOARD_DATA = {
       null,
       122,
       105,
-      141
+      141,
+      null,
+      null
     ]
   },
   "safety_edu_land": {
     "months": [
+      "2023-01",
       "2023-02",
       "2023-03",
       "2023-04",
@@ -1388,7 +1487,9 @@ window.DASHBOARD_DATA = {
       "2025-12",
       "2026-01",
       "2026-02",
-      "2026-03"
+      "2026-03",
+      "2026-04",
+      "2026-05"
     ],
     "채용/작업변경": [
       null,
@@ -1426,9 +1527,12 @@ window.DASHBOARD_DATA = {
       null,
       null,
       null,
+      null,
       2857,
       2981,
-      3205
+      3205,
+      null,
+      null
     ],
     "특별교육": [
       null,
@@ -1466,9 +1570,12 @@ window.DASHBOARD_DATA = {
       null,
       null,
       null,
+      null,
       8630,
       8765,
-      9159
+      9159,
+      null,
+      null
     ],
     "관리감독자": [
       null,
@@ -1506,9 +1613,12 @@ window.DASHBOARD_DATA = {
       null,
       null,
       null,
+      null,
       2278,
       2381,
-      2457
+      2457,
+      null,
+      null
     ],
     "정기교육": [
       null,
@@ -1546,9 +1656,12 @@ window.DASHBOARD_DATA = {
       null,
       null,
       null,
+      null,
       11351,
       12366,
-      13371
+      13371,
+      null,
+      null
     ]
   },
   "incident_summary": [
