@@ -7278,7 +7278,7 @@ openTab('overview');
       tparts.push(`<line x1="${todayX}" y1="0" x2="${todayX}" y2="${HEADER_H}" stroke="#c97070" stroke-width="1.5" shape-rendering="crispEdges"/>`);
       tparts.push(`<text x="${todayX + 5}" y="14" font-size="11" font-weight="700" fill="#c97070" font-family="Segoe UI">▼ 오늘</text>`);
     }
-    // 월간공정: 직전/해당/다음월 배경 + 라벨 + 날짜 범위
+    // 월간공정: 직전/해당/다음월 배경 + 라벨 + 날짜 범위 + 주(week) 눈금
     if (monthHighlight) {
       const [hy, hm] = monthHighlight.split('-').map(Number);
       const labels3 = [
@@ -7287,6 +7287,7 @@ openTab('overview');
         { offs:  1, label: '다음월',  bg: '#f1f5f9' },
       ];
       const headerStrips = [];
+      const weekTicks = [];
       for (const m of labels3) {
         const ms = new Date(hy, hm - 1 + m.offs, 1);
         const me = new Date(hy, hm + m.offs, 0);
@@ -7299,10 +7300,25 @@ openTab('overview');
         const dateRange = `${monthLabel} 1 ~ ${lastDay}일 (${lastDay}일)`;
         headerStrips.push(`<rect x="${xs}" y="0" width="${xe - xs}" height="${HEADER_H - 2}" fill="${m.bg}" opacity="0.55"/>`);
         headerStrips.push(`<text x="${cx}" y="12" font-size="11.5" font-weight="700" fill="${m.offs === 0 ? '#a14d4d' : '#5a6677'}" text-anchor="middle" font-family="Segoe UI">${m.label}</text>`);
-        // 날짜 범위 (직전/해당/다음월 배지 아래)
-        headerStrips.push(`<text x="${cx}" y="27" font-size="10.5" font-weight="600" fill="${m.offs === 0 ? '#a14d4d' : '#7a8694'}" text-anchor="middle" font-family="Segoe UI">${dateRange}</text>`);
+        headerStrips.push(`<text x="${cx}" y="26" font-size="10.5" font-weight="600" fill="${m.offs === 0 ? '#a14d4d' : '#7a8694'}" text-anchor="middle" font-family="Segoe UI">${dateRange}</text>`);
+        // ── 주(week) 눈금: 8·15·22·29일 위치에 세로 마이크로틱 + 일자(8/15/22/29) 라벨 ──
+        // 라벨은 header 의 하단(date range 텍스트와 month tick 사이 — y≈40)에 배치
+        const weekStarts = [8, 15, 22, 29];
+        const isCurMonth = m.offs === 0;
+        for (const day of weekStarts) {
+          if (day > lastDay) break;
+          const wd = new Date(ms.getFullYear(), ms.getMonth(), day);
+          const wx = Math.round((wd - lo2) / dayMs * PX_PER_DAY_LOCAL);
+          if (wx < xs || wx > xe) continue;
+          weekTicks.push(`<line x1="${wx}" y1="${HEADER_H - 14}" x2="${wx}" y2="${HEADER_H - 8}" stroke="${isCurMonth ? '#bda790' : '#cdd5df'}" stroke-width="0.8" stroke-dasharray="2,2"/>`);
+          // 일자 라벨 — 매우 작게, date range 와 month label 사이 (y=39)
+          if (PX_PER_DAY_LOCAL >= 8) {
+            weekTicks.push(`<text x="${wx + 1}" y="39" font-size="9" fill="${isCurMonth ? '#a14d4d' : '#9aa6b4'}" font-family="Segoe UI" font-weight="${isCurMonth ? 700 : 500}">${day}일</text>`);
+          }
+        }
       }
       tparts.unshift(headerStrips.join(''));
+      tparts.push(weekTicks.join(''));
     }
     timeSvg.innerHTML = tparts.join('');
 
@@ -7346,6 +7362,18 @@ openTab('overview');
       const sep2 = new Date(hy, hm, 1);
       cparts.push(`<line x1="${Math.round((sep1 - lo2)/dayMs*PX_PER_DAY_LOCAL)}" y1="0" x2="${Math.round((sep1 - lo2)/dayMs*PX_PER_DAY_LOCAL)}" y2="${ROW_H*N}" stroke="#a14d4d" stroke-width="1.5" stroke-dasharray="3,3" opacity="0.55"/>`);
       cparts.push(`<line x1="${Math.round((sep2 - lo2)/dayMs*PX_PER_DAY_LOCAL)}" y1="0" x2="${Math.round((sep2 - lo2)/dayMs*PX_PER_DAY_LOCAL)}" y2="${ROW_H*N}" stroke="#a14d4d" stroke-width="1.5" stroke-dasharray="3,3" opacity="0.55"/>`);
+      // ── 주 단위 세로 그리드 (배경 가이드, 매우 옅게) ──
+      for (const b of bgs) {
+        const mms = new Date(hy, hm - 1 + b.offs, 1);
+        const mme = new Date(hy, hm + b.offs, 0);
+        const lastDay = mme.getDate();
+        for (const day of [8, 15, 22, 29]) {
+          if (day > lastDay) break;
+          const wd = new Date(mms.getFullYear(), mms.getMonth(), day);
+          const wx = Math.round((wd - lo2) / dayMs * PX_PER_DAY_LOCAL);
+          cparts.push(`<line x1="${wx}" y1="0" x2="${wx}" y2="${ROW_H * N}" stroke="#e6eaf1" stroke-width="0.6" stroke-dasharray="2,3" opacity="0.7"/>`);
+        }
+      }
     }
     // 연도 구분선
     for (const t of ticks) {
@@ -7500,19 +7528,43 @@ openTab('overview');
       document.head.appendChild(s);
     }
 
-    //-- 트리 토글 --
+    //-- 트리 토글 (재렌더 전/후 스크롤 위치 보존 — 화면 점프 방지) --
+    const _preserveScroll = (fn) => {
+      const panels = document.querySelector('.panels');
+      const pSy = panels ? panels.scrollTop : 0;
+      const lSy = labelsBox ? labelsBox.scrollTop : 0;
+      const cSy = chartBox ? chartBox.scrollTop : 0;
+      const cSx = chartBox ? chartBox.scrollLeft : 0;
+      // host 위치 (viewport 기준) 도 저장 — 재렌더로 host 가 사라져도 같은 위치로 복원
+      const hostRect = host.getBoundingClientRect();
+      const winY = window.scrollY;
+      fn();
+      // 다음 프레임에 복원 (DOM 재배치 완료 후)
+      requestAnimationFrame(() => {
+        if (panels) panels.scrollTop = pSy;
+        // 새 labels/chart DOM 으로 교체됐을 가능성 — 다시 query
+        const newLabels = host.querySelector('.ms-labels');
+        const newChart = host.querySelector('.ms-chart');
+        if (newLabels) newLabels.scrollTop = lSy;
+        if (newChart) { newChart.scrollTop = cSy; newChart.scrollLeft = cSx; }
+        // 윈도우 자체 스크롤도 보정
+        if (window.scrollY !== winY) window.scrollTo(0, winY);
+      });
+    };
     $$('.ms-toggle', labelsBox).forEach(el => {
       el.addEventListener('click', e => {
+        e.preventDefault();
         e.stopPropagation();
         const idx = Number(el.dataset.row);
         if (collapsed.has(idx)) collapsed.delete(idx); else collapsed.add(idx);
-        onToggle && onToggle();
+        _preserveScroll(() => { onToggle && onToggle(); });
       });
       el.addEventListener('mouseenter', () => el.style.background = '#e8f0fc');
       el.addEventListener('mouseleave', () => el.style.background = '');
     });
     $$('.ms-row', labelsBox).forEach(el => {
-      el.addEventListener('dblclick', () => {
+      el.addEventListener('dblclick', (e) => {
+        e.preventDefault();
         const toggle = el.querySelector('.ms-toggle');
         if (toggle) toggle.click();
       });
@@ -7645,24 +7697,24 @@ openTab('overview');
   // Process는 동적이라 4톤 순환
   const PROC_PALETTE = ['#2c569f', '#8a6e4b', '#3f7a4f', '#6b5b95'];
 
-  //--- 레벨별 접기: maxVisibleLevel 깊이 이하만 보이도록 ---
-  // 데이터별 level 시작값(0/1) + 누락 레벨(rev6b는 {0,2,3})이 있어
-  // 절대 level 대신 "현재 task 집합의 최소 level을 1로 보는 상대 깊이"로 동작
+  //--- 레벨별 접기: L N까지 = "데이터에 존재하는 N번째 깊이 레이어까지 보이도록" ---
+  // 데이터별 level 시작값/갭 차이 (rev6b={0,2,3}, rev3={0,1,2,3}, process={0,1,2,3,4,5})
+  // 흡수: 절대 level → "유니크 level 정렬 순서(rank)"로 매핑한 후
+  //   rank ≤ N-1 (0-indexed) 까지 보이도록 / 그 이하는 자식을 collapse 한다.
   function collapseToLevel(tasks, collapsedSet, maxVisibleLevel) {
     collapsedSet.clear();
     if (!tasks || tasks.length === 0) return;
-    let minLevel = Infinity;
-    for (const t of tasks) {
-      const lv = t.level || 0;
-      if (lv < minLevel) minLevel = lv;
-    }
-    if (!isFinite(minLevel)) minLevel = 0;
-    // 자식 인덱스 정리 (성능)
+    // 데이터 내 유니크 level 들을 오름차순 정렬
+    const uniq = [...new Set(tasks.map(t => t.level || 0))].sort((a, b) => a - b);
+    if (uniq.length === 0) return;
+    // cutoff = N번째 레이어(1-indexed). N이 uniq.length 이상이면 모두 보임 (collapse 없음)
+    if (maxVisibleLevel >= uniq.length) return;
+    const cutoffLevel = uniq[maxVisibleLevel - 1];
     const hasChild = new Set();
     for (const t of tasks) if (t.parent_idx != null) hasChild.add(t.parent_idx);
+    // cutoffLevel 레이어에 있는 노드 중 자식 보유 노드 → 자식(=deeper layers) 숨김
     for (let i = 0; i < tasks.length; i++) {
-      const depth = (tasks[i].level || 0) - minLevel + 1;  // 최상단 = 1
-      if (depth >= maxVisibleLevel && hasChild.has(i)) {
+      if ((tasks[i].level || 0) === cutoffLevel && hasChild.has(i)) {
         collapsedSet.add(i);
       }
     }
@@ -7846,39 +7898,46 @@ openTab('overview');
       render();
     }
 
-    // ── 드롭다운 클릭 시 페이지 스크롤 방지 (focus 자동 scrollIntoView 차단)
+    // ── 모든 컨트롤 클릭 시 스크롤 위치 보존 (focus auto-scroll 차단 + 재렌더 후 복원)
     const preventFocusScroll = (el) => {
-      el.addEventListener('mousedown', (e) => {
-        // 현재 스크롤 위치 보존 후, click 처리 후 복원
+      el.addEventListener('mousedown', () => {
         const panels = document.querySelector('.panels');
         const sy = panels ? panels.scrollTop : 0;
-        // 일부 브라우저에서 focus({preventScroll:true})로 처리
         try { el.focus({ preventScroll: true }); } catch (_) {}
-        // 한 프레임 뒤 강제 복원 (이중 안전장치)
         requestAnimationFrame(() => { if (panels) panels.scrollTop = sy; });
+      });
+    };
+    const _runWithScroll = (fn) => {
+      const panels = document.querySelector('.panels');
+      const sy = panels ? panels.scrollTop : 0;
+      const winY = window.scrollY;
+      fn();
+      requestAnimationFrame(() => {
+        if (panels) panels.scrollTop = sy;
+        if (window.scrollY !== winY) window.scrollTo(0, winY);
       });
     };
     preventFocusScroll(sel);
 
-    sel.addEventListener('change', () => { collapsed.clear(); collapsedMap.clear(); render(); });
-    linksCb.addEventListener('change', render);
+    sel.addEventListener('change', () => _runWithScroll(() => { collapsed.clear(); collapsedMap.clear(); render(); }));
+    linksCb.addEventListener('change', () => _runWithScroll(render));
     catTabs.addEventListener('click', e => {
       const btn = e.target.closest('.ms-cat-btn');
       if (!btn) return;
       catTabs.querySelectorAll('.ms-cat-btn').forEach(b => b.classList.toggle('active', b === btn));
       curCat = btn.dataset.cat;
       collapsed.clear();
-      render();
+      _runWithScroll(render);
     });
     const lvlSel = document.getElementById('ms-lvl-select');
     if (lvlSel) {
       preventFocusScroll(lvlSel);
-      lvlSel.addEventListener('change', () => {
+      lvlSel.addEventListener('change', () => _runWithScroll(() => {
         const v = lvlSel.value;
         if (v === 'expand') applyExpandAll();
         else if (v === 'collapse') applyCollapseAll();
         else applyLevelCollapse(Number(v));
-      });
+      }));
     }
     const todayBtn = document.getElementById('ms-today-btn');
     if (todayBtn) todayBtn.addEventListener('click', () => {
@@ -8043,17 +8102,26 @@ openTab('overview');
       render();
     }
 
-    cbDated.addEventListener('change', () => { collapsed.clear(); collapsedMap.clear(); render(); });
-    cbLinks.addEventListener('change', render);
+    const _runWithScroll = (fn) => {
+      const panels = document.querySelector('.panels');
+      const sy = panels ? panels.scrollTop : 0;
+      const winY = window.scrollY;
+      fn();
+      requestAnimationFrame(() => {
+        if (panels) panels.scrollTop = sy;
+        if (window.scrollY !== winY) window.scrollTo(0, winY);
+      });
+    };
+    cbDated.addEventListener('change', () => _runWithScroll(() => { collapsed.clear(); collapsedMap.clear(); render(); }));
+    cbLinks.addEventListener('change', () => _runWithScroll(render));
     catTabs.addEventListener('click', e => {
       const btn = e.target.closest('.ms-cat-btn');
       if (!btn) return;
       catTabs.querySelectorAll('.ms-cat-btn').forEach(b => b.classList.toggle('active', b === btn));
       curCat = btn.dataset.cat;
       collapsed.clear();
-      render();
+      _runWithScroll(render);
     });
-    // 드롭다운 클릭 시 스크롤 보존
     const preventFocusScroll = (el) => {
       if (!el) return;
       el.addEventListener('mousedown', () => {
@@ -8066,12 +8134,12 @@ openTab('overview');
     const psLvlSel = document.getElementById('ps-lvl-select');
     if (psLvlSel) {
       preventFocusScroll(psLvlSel);
-      psLvlSel.addEventListener('change', () => {
+      psLvlSel.addEventListener('change', () => _runWithScroll(() => {
         const v = psLvlSel.value;
         if (v === 'expand') applyExpandAll();
         else if (v === 'collapse') applyCollapseAll();
         else applyLevelCollapse(Number(v));
-      });
+      }));
     }
     const psTodayBtn = document.getElementById('ps-today-btn');
     if (psTodayBtn) psTodayBtn.addEventListener('click', () => {

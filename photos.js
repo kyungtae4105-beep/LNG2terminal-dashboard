@@ -609,6 +609,62 @@ window.PHOTOS_DATA = {
         }
       ],
       "slide": 6
+    },
+    {
+      "title": "공사 사진 (토목) — 2023.09",
+      "category": "육상부",
+      "type": "공사사진",
+      "items": [
+        {
+          "file": "photos/2023-09/cnstr_토목_cea6483c6613.jpg",
+          "caption": "#7탱크 Wall#1단 철근조립"
+        },
+        {
+          "file": "photos/2023-09/cnstr_토목_1b03d19242a7.jpg",
+          "caption": "#8탱크 Annular Bottom 철근 조립"
+        },
+        {
+          "file": "photos/2023-09/cnstr_토목_96d5af58eb4a.jpg",
+          "caption": "설비 5-B(미취득구간) S.C.P 시공"
+        },
+        {
+          "file": "photos/2023-09/cnstr_토목_df752baf6d6c.jpg",
+          "caption": "#7탱크 Inclinometer Casing 설치"
+        }
+      ],
+      "slide": 11
+    },
+    {
+      "title": "공사 사진 (기계) — 2023.09",
+      "category": "육상부",
+      "type": "공사사진",
+      "items": [
+        {
+          "file": "photos/2023-09/cnstr_기계_8a9875f3923d.jpg",
+          "caption": "7TK Rafter 조립 (23/08/04)"
+        },
+        {
+          "file": "photos/2023-09/cnstr_기계_be9294883034.jpg",
+          "caption": "8TK Anchor Box Support 설치 (23/08/24)"
+        },
+        {
+          "file": "photos/2023-09/cnstr_기계_0771fee9b64a.jpg",
+          "caption": "8TK Anchor Box 설치 (23/08/28)"
+        }
+      ],
+      "slide": 11
+    },
+    {
+      "title": "공사 사진 (전기) — 2023.09",
+      "category": "육상부",
+      "type": "공사사진",
+      "items": [
+        {
+          "file": "photos/2023-09/cnstr_전기_38a04091352e.jpg",
+          "caption": "8탱크 Annular 구간 전선관 설치 (23/08/29)"
+        }
+      ],
+      "slide": 11
     }
   ],
   "2023-10": [
@@ -841,6 +897,66 @@ window.PHOTOS_DATA = {
         }
       ],
       "slide": 6
+    },
+    {
+      "title": "공사 사진 (토목) — 2023.11",
+      "category": "육상부",
+      "type": "공사사진",
+      "items": [
+        {
+          "file": "photos/2023-11/cnstr_토목_c93bee9e1311.jpg",
+          "caption": "설비 5구간(미취득구간) S.C.P 시공"
+        },
+        {
+          "file": "photos/2023-11/cnstr_토목_eea21db382f9.png",
+          "caption": "#7, #8탱크 전경사진 (23/10/26)"
+        },
+        {
+          "file": "photos/2023-11/cnstr_토목_0b48f0b97679.jpg",
+          "caption": "#8탱크 B/S Annular 콘크리트 타설 (23/10/05)"
+        },
+        {
+          "file": "photos/2023-11/cnstr_토목_acb579fd5c41.jpg",
+          "caption": "#7탱크 Wall 2단 콘크리트 타설 (23/10/27)"
+        }
+      ],
+      "slide": 11
+    },
+    {
+      "title": "공사 사진 (기계) — 2023.11",
+      "category": "육상부",
+      "type": "공사사진",
+      "items": [
+        {
+          "file": "photos/2023-11/cnstr_기계_15503d22cea8.png",
+          "caption": "#7탱크 Roof Rafter Temp.Support 설치 (23/10/24)"
+        },
+        {
+          "file": "photos/2023-11/cnstr_기계_d62d9a98b26a.png",
+          "caption": "#7탱크 Roof Rafter Block 조립 (23/10/17)"
+        },
+        {
+          "file": "photos/2023-11/cnstr_기계_5048984c7290.jpg",
+          "caption": "#7탱크 Roof Rafter Temp.Support 설치 (23/10/20)"
+        },
+        {
+          "file": "photos/2023-11/cnstr_기계_5c0d9f40a47b.jpg",
+          "caption": "#7탱크 Roof Rafter Temp.Support 설치 (23/10/30)"
+        }
+      ],
+      "slide": 11
+    },
+    {
+      "title": "공사 사진 (전기) — 2023.11",
+      "category": "육상부",
+      "type": "공사사진",
+      "items": [
+        {
+          "file": "photos/2023-11/cnstr_전기_51ad8bcd8e9c.jpg",
+          "caption": "#8탱크 Center EBHS 전선관 설치 (23/10/31)"
+        }
+      ],
+      "slide": 11
     }
   ],
   "2024-01": [
@@ -955,6 +1071,78 @@ window.PHOTOS_DATA = {
         }
       ],
       "slide": 6
+    },
+    {
+      "title": "공사 사진 (토목) — 2024.01",
+      "category": "육상부",
+      "type": "공사사진",
+      "items": [
+        {
+          "file": "photos/2024-01/cnstr_토목_a5468b51d000.jpg",
+          "caption": "#8탱크 외부 Climbing Form 인상 (23/12/30)"
+        },
+        {
+          "file": "photos/2024-01/cnstr_토목_3eafc05df3e7.jpg",
+          "caption": "#7탱크 Wall 5단 정착구 설치 (23/12/22)"
+        },
+        {
+          "file": "photos/2024-01/cnstr_토목_a9fcb9121ae6.jpg",
+          "caption": "#8탱크 Wall 2단 콘크리트 타설 (23/12/19)"
+        },
+        {
+          "file": "photos/2024-01/cnstr_토목_28a2e5f41f33.jpg",
+          "caption": "#7탱크 Wall 5단 콘크리트 타설 (23/12/27)"
+        },
+        {
+          "file": "photos/2024-01/cnstr_토목_7cf07c8cf5b6.jpg",
+          "caption": "#7탱크 Wall 4단 콘크리트 타설 (23/12/06)"
+        },
+        {
+          "file": "photos/2024-01/cnstr_토목_c699d557e142.jpg",
+          "caption": "#8탱크 Wall 2단 Buttress 철근조립 (23/12/14)"
+        },
+        {
+          "file": "photos/2024-01/cnstr_토목_8250110edf13.jpg",
+          "caption": "설비4구간 재하토 제거 (23/12/02)"
+        },
+        {
+          "file": "photos/2024-01/cnstr_토목_3c04f4bfdef6.jpg",
+          "caption": "설비6구간 재하 성토 (23/12/05)"
+        }
+      ],
+      "slide": 11
+    },
+    {
+      "title": "공사 사진 (기계) — 2024.01",
+      "category": "육상부",
+      "type": "공사사진",
+      "items": [
+        {
+          "file": "photos/2024-01/cnstr_기계_9f4c497e2afe.jpg",
+          "caption": "#8탱크 Roof Rafter 조립 (23/12/22)"
+        },
+        {
+          "file": "photos/2024-01/cnstr_기계_ccfb6a0d248d.png",
+          "caption": "#8탱크 Roof Rafter Temp.Support 설치 (23/12/20)"
+        },
+        {
+          "file": "photos/2024-01/cnstr_기계_21158803e27b.jpg",
+          "caption": "#8탱크 Roof Rafter Temp.Support 설치 (23/12/13)"
+        },
+        {
+          "file": "photos/2024-01/cnstr_기계_372ddd6879f4.jpg",
+          "caption": "#7탱크 Roof Plate 설치 (23/12/05)"
+        },
+        {
+          "file": "photos/2024-01/cnstr_기계_d320fe069841.png",
+          "caption": "#8탱크 Roof Rafter 조립 (23/12/28)"
+        },
+        {
+          "file": "photos/2024-01/cnstr_기계_6430a7d59a31.jpg",
+          "caption": "#7탱크 Roof Rafter Bolting (23/12/08)"
+        }
+      ],
+      "slide": 11
     }
   ],
   "2024-03": [
@@ -1069,6 +1257,18 @@ window.PHOTOS_DATA = {
         }
       ],
       "slide": 6
+    },
+    {
+      "title": "공사 사진 (토목) — 2024.03",
+      "category": "육상부",
+      "type": "공사사진",
+      "items": [
+        {
+          "file": "photos/2024-03/cnstr_토목_a08e99c711f6.jpg",
+          "caption": "RT Room 파일 항타 (24/02/27)"
+        }
+      ],
+      "slide": 11
     }
   ],
   "2024-04": [
@@ -1183,6 +1383,18 @@ window.PHOTOS_DATA = {
         }
       ],
       "slide": 6
+    },
+    {
+      "title": "공사 사진 (건축) — 2024.04",
+      "category": "육상부",
+      "type": "공사사진",
+      "items": [
+        {
+          "file": "photos/2024-04/cnstr_건축_5454b472a938.png",
+          "caption": "#VALUE!"
+        }
+      ],
+      "slide": 11
     }
   ],
   "2024-05": [
@@ -1395,6 +1607,98 @@ window.PHOTOS_DATA = {
         }
       ],
       "slide": 6
+    },
+    {
+      "title": "공사 사진 (토목) — 2024.06",
+      "category": "육상부",
+      "type": "공사사진",
+      "items": [
+        {
+          "file": "photos/2024-06/cnstr_토목_f0105df35973.jpg",
+          "caption": "-#7탱크 Wall 9Lot 강선인장(24/05/02)"
+        },
+        {
+          "file": "photos/2024-06/cnstr_토목_cf5d5a2e419a.jpg",
+          "caption": "-#8탱크 Wall 9Lot 타설(24/05/09)"
+        },
+        {
+          "file": "photos/2024-06/cnstr_토목_be26db5ed471.jpg",
+          "caption": "-#7탱크 Wall 10Lot 내부 C/F 탈영(24/05/10)"
+        },
+        {
+          "file": "photos/2024-06/cnstr_토목_7a7783b04d67.jpg",
+          "caption": "-#7탱크 Ringbeam slab 합판 설치(24/05/24)"
+        },
+        {
+          "file": "photos/2024-06/cnstr_토목_dd06f5afca20.jpg",
+          "caption": "-#8탱크 Wall 10Lot 수직, 수평 철근조립 및 결속(24/05/20)"
+        },
+        {
+          "file": "photos/2024-06/cnstr_토목_4bb7818c4194.jpg",
+          "caption": "-#8탱크 Wall 10Lot 쉬스관 설치(24/05/30)"
+        },
+        {
+          "file": "photos/2024-06/cnstr_토목_b8e9d7f3d5c1.jpg",
+          "caption": "본 항타 작업(전기실)(24/05/09)"
+        },
+        {
+          "file": "photos/2024-06/cnstr_토목_a2b31c4d1b4c.jpg",
+          "caption": "- 파일이음 용접(24/05/09)"
+        }
+      ],
+      "slide": 11
+    },
+    {
+      "title": "공사 사진 (건축) — 2024.06",
+      "category": "육상부",
+      "type": "공사사진",
+      "items": [
+        {
+          "file": "photos/2024-06/cnstr_건축_54e46408a28f.jpg",
+          "caption": "RT-ROOM 2단타설완료 거푸집 해체(24/05/27)"
+        },
+        {
+          "file": "photos/2024-06/cnstr_건축_0e70449dcae2.jpg",
+          "caption": "RT-ROOM 2단콘크리트 타설(24/05/14)"
+        },
+        {
+          "file": "photos/2024-06/cnstr_건축_e7be92f74d18.jpg",
+          "caption": "행정동 Micro Pile 시공(24/05/27)"
+        }
+      ],
+      "slide": 11
+    },
+    {
+      "title": "공사 사진 (기계) — 2024.06",
+      "category": "육상부",
+      "type": "공사사진",
+      "items": [
+        {
+          "file": "photos/2024-06/cnstr_기계_ff75bc7ab33c.jpg",
+          "caption": "#7탱크 Suspended Deck Plate 설치(24/05/02)"
+        },
+        {
+          "file": "photos/2024-06/cnstr_기계_6adc73997242.jpg",
+          "caption": "#8탱크 Roof Plate 설치(24/05/02)"
+        },
+        {
+          "file": "photos/2024-06/cnstr_기계_3c4930a205eb.png",
+          "caption": "#7탱크 Compression Ring 사상(24/05/07)"
+        },
+        {
+          "file": "photos/2024-06/cnstr_기계_66a5c6a81779.png",
+          "caption": "#8탱크 Roof Plate 용접/사상(24/05/10)"
+        },
+        {
+          "file": "photos/2024-06/cnstr_기계_bb11ca30cbd8.png",
+          "caption": "#7탱크 Large Opening Closing Plate 설치(24/05/17)"
+        },
+        {
+          "file": "photos/2024-06/cnstr_기계_8816117ea610.jpg",
+          "caption": "#7탱크 Roof Air Raising(24/05/28)"
+        }
+      ],
+      "slide": 11
     }
   ],
   "2024-07": [
@@ -1541,6 +1845,50 @@ window.PHOTOS_DATA = {
         }
       ],
       "slide": 7
+    },
+    {
+      "title": "공사 사진 (건축) — 2024.07",
+      "category": "육상부",
+      "type": "공사사진",
+      "items": [
+        {
+          "file": "photos/2024-07/cnstr_건축_529a6fe66fd3.jpg",
+          "caption": "RT Room 건축공사 완료 (24/06/30)"
+        }
+      ],
+      "slide": 11
+    },
+    {
+      "title": "공사 사진 (기계) — 2024.07",
+      "category": "육상부",
+      "type": "공사사진",
+      "items": [
+        {
+          "file": "photos/2024-07/cnstr_기계_d2848bd33cb5.jpg",
+          "caption": "#8 Tank Roof(Heatbreak) Nozzle 제작 (24/06/01)"
+        },
+        {
+          "file": "photos/2024-07/cnstr_기계_e74f5f1e6a7e.jpg",
+          "caption": "#8 Tank Roof Manhole & Nozzle 설치/용접 (24/06/05)"
+        },
+        {
+          "file": "photos/2024-07/cnstr_기계_e1bbc1302619.png",
+          "caption": "#8 Tank Roof Plate 용접/사상 (24/06/10)"
+        },
+        {
+          "file": "photos/2024-07/cnstr_기계_e750d42dc993.png",
+          "caption": "#7 Tank Roof Air Raising System 해체 (24/06/13)"
+        },
+        {
+          "file": "photos/2024-07/cnstr_기계_81c453e6773a.png",
+          "caption": "#8 Tank Suspended Deck Gusset Plate 설치/용접 (24/06/18)"
+        },
+        {
+          "file": "photos/2024-07/cnstr_기계_2063a6f193d4.png",
+          "caption": "#8 Tank Roof Manhole & Nozzle 설치/용접 /사상 (24/06/20)"
+        }
+      ],
+      "slide": 11
     }
   ],
   "2024-08": [
@@ -1659,6 +2007,22 @@ window.PHOTOS_DATA = {
         }
       ],
       "slide": 6
+    },
+    {
+      "title": "공사 사진 (토목) — 2024.08",
+      "category": "육상부",
+      "type": "공사사진",
+      "items": [
+        {
+          "file": "photos/2024-08/cnstr_토목_6b8e85c28cf0.png",
+          "caption": "Tankage Sleeper(남측) 항타 (24/07/17)"
+        },
+        {
+          "file": "photos/2024-08/cnstr_토목_16882e80f910.png",
+          "caption": "Ground Flare Area(사석구간) 항타 (24/07/06)"
+        }
+      ],
+      "slide": 11
     }
   ],
   "2024-09": [
@@ -1777,6 +2141,82 @@ window.PHOTOS_DATA = {
         }
       ],
       "slide": 6
+    },
+    {
+      "title": "공사 사진 (토목) — 2024.09",
+      "category": "육상부",
+      "type": "공사사진",
+      "items": [
+        {
+          "file": "photos/2024-09/cnstr_토목_d92a5123c9aa.png",
+          "caption": "#7탱크 RingBeam Con'c 타설 (24/08/13)"
+        },
+        {
+          "file": "photos/2024-09/cnstr_토목_fb97183fbd9b.png",
+          "caption": "#7탱크 Roof Bottom 철근 조립 및 결속 (24/08/15)"
+        },
+        {
+          "file": "photos/2024-09/cnstr_토목_53da3a3c7f7e.png",
+          "caption": "#8탱크 RingBeam 정착구 Box 제작 (24/08/26)"
+        },
+        {
+          "file": "photos/2024-09/cnstr_토목_2240f3a8c132.png",
+          "caption": "RT Room 구간 가설도로 SLAG 포설 및 다짐 (24/08/16)"
+        },
+        {
+          "file": "photos/2024-09/cnstr_토목_c94d9ba194dc.png",
+          "caption": "남측 Sleeper 구간 항두절단 및 되메우기 작업 (24/08/17)"
+        }
+      ],
+      "slide": 11
+    },
+    {
+      "title": "공사 사진 (건축) — 2024.09",
+      "category": "육상부",
+      "type": "공사사진",
+      "items": [
+        {
+          "file": "photos/2024-09/cnstr_건축_ed1d5c536385.png",
+          "caption": "Interconnecting P/R-3 케이싱 설치 및 용접 (24/08/25)"
+        },
+        {
+          "file": "photos/2024-09/cnstr_건축_e43653a5c638.png",
+          "caption": "Interconnecting P/R-1 강봉 커플러 체결 (24/08/23)"
+        }
+      ],
+      "slide": 11
+    },
+    {
+      "title": "공사 사진 (기계) — 2024.09",
+      "category": "육상부",
+      "type": "공사사진",
+      "items": [
+        {
+          "file": "photos/2024-09/cnstr_기계_bb6aa90f4a34.png",
+          "caption": "#7 Tank Wall Vapour Barrier Plate 설치 (24/08/01)"
+        },
+        {
+          "file": "photos/2024-09/cnstr_기계_b3a73e26db6d.png",
+          "caption": "#8 Tank Suspended Deck Frame & Plate 설치 (24/08/01)"
+        },
+        {
+          "file": "photos/2024-09/cnstr_기계_e13d2b48a43b.png",
+          "caption": "#7 Tank Wall Vapour Barrier Plate 설치 (24/08/16)"
+        },
+        {
+          "file": "photos/2024-09/cnstr_기계_951e4f28f17e.png",
+          "caption": "#8 Tank Roof Air Raising System 설치 (24/08/20)"
+        },
+        {
+          "file": "photos/2024-09/cnstr_기계_1b7292b99836.png",
+          "caption": "RT Room Hoist Deck 설치 (24/08/22)"
+        },
+        {
+          "file": "photos/2024-09/cnstr_기계_d49c760bf30e.png",
+          "caption": "#8 Tank Roof Air Raising (24/08/22)"
+        }
+      ],
+      "slide": 11
     }
   ],
   "2024-11": [
@@ -1795,6 +2235,114 @@ window.PHOTOS_DATA = {
         }
       ],
       "slide": 6
+    },
+    {
+      "title": "공사 사진 (토목) — 2024.11",
+      "category": "육상부",
+      "type": "공사사진",
+      "items": [
+        {
+          "file": "photos/2024-11/cnstr_토목_41e0124db564.png",
+          "caption": "Process 구간 항타 (24/10/29)"
+        },
+        {
+          "file": "photos/2024-11/cnstr_토목_7c9e5f9de9ec.png",
+          "caption": "Process Pipe Rack 기초 철근조립 (24/10/25)"
+        },
+        {
+          "file": "photos/2024-11/cnstr_토목_f77a484ec11d.jpg",
+          "caption": "Process 구간 항속채움 및 되메우기 (24/10/29)"
+        },
+        {
+          "file": "photos/2024-11/cnstr_토목_530f79e863da.jpg",
+          "caption": "Oil Pond, Utility Tunnel 기초 Con'c 타설 (24/10/15)"
+        },
+        {
+          "file": "photos/2024-11/cnstr_토목_852ae405bf2b.png",
+          "caption": "#7탱크 Roof 2단 철근 조립 (24/10/30)"
+        },
+        {
+          "file": "photos/2024-11/cnstr_토목_7f386663a3f9.png",
+          "caption": "#8탱크 Ringbeam 철근 조립 (24/10/29)"
+        },
+        {
+          "file": "photos/2024-11/cnstr_토목_343caf4e9f7b.png",
+          "caption": "#7탱크 Roof Opening 철근 설치 (24/10/29)"
+        },
+        {
+          "file": "photos/2024-11/cnstr_토목_ac6b31b69fbf.png",
+          "caption": "#8탱크 Ringbeam Insert Plate 설치 (24/10/29)"
+        }
+      ],
+      "slide": 11
+    },
+    {
+      "title": "공사 사진 (건축) — 2024.11",
+      "category": "육상부",
+      "type": "공사사진",
+      "items": [
+        {
+          "file": "photos/2024-11/cnstr_건축_b1f20be383d7.jpg",
+          "caption": "본부빌딩B PIT 버림콘크리트 타설 (24/10/25)"
+        },
+        {
+          "file": "photos/2024-11/cnstr_건축_b4cf0527f4a7.jpg",
+          "caption": "주전기실 1차 터파기 작업 (1~6열) (24/10/21)"
+        },
+        {
+          "file": "photos/2024-11/cnstr_건축_b919f93423a7.jpg",
+          "caption": "주전기실 2차 터파기 작업 (A~C열중 8~11열) (24/10/28)"
+        },
+        {
+          "file": "photos/2024-11/cnstr_건축_878fe11d555f.png",
+          "caption": "본부빌딩B PIT WALL 타설 및 되메우기 (24/10/31)"
+        }
+      ],
+      "slide": 11
+    },
+    {
+      "title": "공사 사진 (기계) — 2024.11",
+      "category": "육상부",
+      "type": "공사사진",
+      "items": [
+        {
+          "file": "photos/2024-11/cnstr_기계_753bdaea65de.png",
+          "caption": "#8 Tank Bottom Vapour Barrier Plate 설치 (24/10/07)"
+        },
+        {
+          "file": "photos/2024-11/cnstr_기계_eebfe730635e.png",
+          "caption": "#8 Tank Wall Vapour Barrier Plate (1단) 설치 (24/10/14)"
+        },
+        {
+          "file": "photos/2024-11/cnstr_기계_9e3a4481678c.png",
+          "caption": "#7 Tank BDPC 설치 (24/10/21)"
+        },
+        {
+          "file": "photos/2024-11/cnstr_기계_9819d88d6df0.png",
+          "caption": "#7 Tank PCB 설치 (24/10/30)"
+        },
+        {
+          "file": "photos/2024-11/cnstr_기계_bd9a46d53d91.png",
+          "caption": "#7 Tank Wall Stair 설치 (24/10/30)"
+        },
+        {
+          "file": "photos/2024-11/cnstr_기계_9367de132e91.png",
+          "caption": "Field Shop FW(UG) Spool Install(1-2구간) (24/10/23)"
+        }
+      ],
+      "slide": 11
+    },
+    {
+      "title": "공사 사진 (전기) — 2024.11",
+      "category": "육상부",
+      "type": "공사사진",
+      "items": [
+        {
+          "file": "photos/2024-11/cnstr_전기_08c0ed4b1877.jpg",
+          "caption": "본부빌딩B 접지 (24/10/18)"
+        }
+      ],
+      "slide": 11
     }
   ],
   "2025-06": [
@@ -5100,6 +5648,184 @@ window.PHOTOS_DATA = {
         {
           "file": "photos/2026-04/cnstr_전기_1774f3b6da2b.jpg",
           "caption": "Air Comp. Area 계기 설치 및 Hook-Up 작업 (26/03/23)"
+        }
+      ],
+      "slide": 11
+    }
+  ],
+  "2023-01": [
+    {
+      "title": "공사 사진 (토목) — 2023.01",
+      "category": "육상부",
+      "type": "공사사진",
+      "items": [
+        {
+          "file": "photos/2023-01/cnstr_토목_ba0681c50f66.jpg",
+          "caption": "현장전경"
+        },
+        {
+          "file": "photos/2023-01/cnstr_토목_1af74eece22e.jpg",
+          "caption": "설비 4구간 Auger + SCP 시공"
+        },
+        {
+          "file": "photos/2023-01/cnstr_토목_1f08e2b296da.jpg",
+          "caption": "TK-7 강관파일항타"
+        },
+        {
+          "file": "photos/2023-01/cnstr_토목_43dc85d2f0a7.jpg",
+          "caption": "가설사무실 자재반입"
+        }
+      ],
+      "slide": 11
+    }
+  ],
+  "2023-12": [
+    {
+      "title": "공사 사진 (토목) — 2023.12",
+      "category": "육상부",
+      "type": "공사사진",
+      "items": [
+        {
+          "file": "photos/2023-12/cnstr_토목_ee5e8c7869c6.jpg",
+          "caption": "#8탱크 B/S Center Con'c 타설 2차 (23/11/21)"
+        },
+        {
+          "file": "photos/2023-12/cnstr_토목_6cf9306c4627.jpg",
+          "caption": "#7탱크 Wall 3단 Con'c 타설 (23/11/20)"
+        },
+        {
+          "file": "photos/2023-12/cnstr_토목_bafbb173055d.jpg",
+          "caption": "#8탱크 Wall 1단 Con'c 타설 (23/11/14)"
+        },
+        {
+          "file": "photos/2023-12/cnstr_토목_aced0af9297b.jpg",
+          "caption": "#8탱크 B/S Center Con'c 타설 1차 (23/11/8)"
+        },
+        {
+          "file": "photos/2023-12/cnstr_토목_9b92e2bf961b.jpg",
+          "caption": "#8탱크 Climbing Form 내부 인상 (23/11/30)"
+        },
+        {
+          "file": "photos/2023-12/cnstr_토목_c4a7582fcf60.jpg",
+          "caption": "지반개량 설비 4구간 재하토 제거 (23/11/30)"
+        }
+      ],
+      "slide": 11
+    },
+    {
+      "title": "공사 사진 (기계) — 2023.12",
+      "category": "육상부",
+      "type": "공사사진",
+      "items": [
+        {
+          "file": "photos/2023-12/cnstr_기계_1b39fb53a40e.jpg",
+          "caption": "#7탱크 Runway Beam 설치 (23/11/27)"
+        },
+        {
+          "file": "photos/2023-12/cnstr_기계_5add28eca20e.jpg",
+          "caption": "#8탱크 SUS Embedded Plate 설치 (23/11/20)"
+        },
+        {
+          "file": "photos/2023-12/cnstr_기계_3679cb93bae3.jpg",
+          "caption": "#7탱크 Roof Rafter 설치 (23/11/24)"
+        },
+        {
+          "file": "photos/2023-12/cnstr_기계_b538db5b171c.png",
+          "caption": "#7탱크 Roof Rafter 설치 (23/11/14)"
+        }
+      ],
+      "slide": 11
+    },
+    {
+      "title": "공사 사진 (전기) — 2023.12",
+      "category": "육상부",
+      "type": "공사사진",
+      "items": [
+        {
+          "file": "photos/2023-12/cnstr_전기_949fc679eee3.jpg",
+          "caption": "#8탱크 Center 전선관 설치 완료 (23/11/21)"
+        },
+        {
+          "file": "photos/2023-12/cnstr_전기_14ccc18bd9b7.jpg",
+          "caption": "#8탱크 전선관 내부청소 및 마감 (23/11/29)"
+        }
+      ],
+      "slide": 11
+    }
+  ],
+  "2024-10": [
+    {
+      "title": "공사 사진 (토목) — 2024.10",
+      "category": "육상부",
+      "type": "공사사진",
+      "items": [
+        {
+          "file": "photos/2024-10/cnstr_토목_7d56d2c841ca.png",
+          "caption": "- #7탱크 Roof 1단 1차 Con C. 타설 (24/09/09)"
+        },
+        {
+          "file": "photos/2024-10/cnstr_토목_922697757193.png",
+          "caption": "- #8탱크 Ringbeam 단도리 철근 및 U바 설치 착수 (24/09/07)"
+        },
+        {
+          "file": "photos/2024-10/cnstr_토목_3e2e8523bc4a.png",
+          "caption": "- #8탱크 Ringbeam Inside 수평철근 조립 (24/09/24)"
+        },
+        {
+          "file": "photos/2024-10/cnstr_토목_bb55740c2ce4.png",
+          "caption": "- 항타 2호기 부속자재 및 항타기 반출 (24/09/21)"
+        },
+        {
+          "file": "photos/2024-10/cnstr_토목_3837a3bb453f.png",
+          "caption": "- 1-2구간 UG배관 모래채움 (24/09/07)"
+        },
+        {
+          "file": "photos/2024-10/cnstr_토목_3a41a39d0916.png",
+          "caption": "- Process Pipe Rack 기초 철근조립 (24/09/24)"
+        }
+      ],
+      "slide": 11
+    },
+    {
+      "title": "공사 사진 (건축) — 2024.10",
+      "category": "육상부",
+      "type": "공사사진",
+      "items": [
+        {
+          "file": "photos/2024-10/cnstr_건축_8e829cc1ab47.png",
+          "caption": "InterConnecting P.R - 3 마이크로파일 시공 (24/09/06)"
+        },
+        {
+          "file": "photos/2024-10/cnstr_건축_5a7f1f0d691a.png",
+          "caption": "InterConnecting P.R - 2 마이크로파일 시공 (24/09/10)"
+        }
+      ],
+      "slide": 11
+    },
+    {
+      "title": "공사 사진 (기계) — 2024.10",
+      "category": "육상부",
+      "type": "공사사진",
+      "items": [
+        {
+          "file": "photos/2024-10/cnstr_기계_9228dc033279.png",
+          "caption": "#7 Tank Bottom Vapour Barrier Plate 용접/사상 (24/09/03)"
+        },
+        {
+          "file": "photos/2024-10/cnstr_기계_414d6aebdbe7.png",
+          "caption": "Field(1-2구간) FW(UG) 배관 Spool 설치 (24/09/03)"
+        }
+      ],
+      "slide": 11
+    },
+    {
+      "title": "공사 사진 (전기) — 2024.10",
+      "category": "육상부",
+      "type": "공사사진",
+      "items": [
+        {
+          "file": "photos/2024-10/cnstr_전기_c196e654c4f2.png",
+          "caption": "본부빌딩 B 접지봉 설치 (24/09/26)"
         }
       ],
       "slide": 11
