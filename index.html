@@ -2891,12 +2891,64 @@ loadDashboardFromStorage();
 
 //============================================================
 // Edit auth gate — 비밀번호 4105 (세션 단위)
+//   custom modal + input[type=password] 사용 → 입력값이 * 로 마스킹
 //============================================================
 const EDIT_PASSWORD = '4105';
 let __editAuthorized = false;
-function requireEditAuth() {
+
+// 커스텀 비밀번호 모달 (Promise<string|null> 반환 — 취소 시 null)
+function promptPassword(label) {
+  return new Promise((resolve) => {
+    // 기존 모달 제거 (중복 방지)
+    const old = document.getElementById('pwd-modal-overlay');
+    if (old) old.remove();
+    const overlay = document.createElement('div');
+    overlay.id = 'pwd-modal-overlay';
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(15,25,45,0.55);backdrop-filter:blur(2px);z-index:10010;display:flex;align-items:center;justify-content:center;animation:pwdFadeIn .15s ease-out;';
+    overlay.innerHTML = `
+      <style>
+        @keyframes pwdFadeIn { from { opacity: 0 } to { opacity: 1 } }
+        @keyframes pwdSlideIn { from { transform: translateY(-12px); opacity: 0 } to { transform: translateY(0); opacity: 1 } }
+        #pwd-modal-box { animation: pwdSlideIn .18s ease-out; }
+        #pwd-modal-input:focus { outline: none; border-color: #2c569f; box-shadow: 0 0 0 3px rgba(74,123,209,0.18); }
+        .pwd-modal-btn { transition: background .12s; }
+        .pwd-modal-btn:hover { filter: brightness(1.07); }
+      </style>
+      <div id="pwd-modal-box" style="background:#fff;border-radius:12px;padding:26px 28px;min-width:360px;max-width:90vw;box-shadow:0 20px 60px rgba(15,25,45,0.35);">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+          <span style="font-size:22px;">🔒</span>
+          <h3 style="margin:0;font-size:17px;font-weight:700;color:#1d2733;">${label || '비밀번호 입력'}</h3>
+        </div>
+        <p style="margin:6px 0 16px;color:#5a6677;font-size:13.5px;line-height:1.5;">편집 모드를 활성화하려면 관리자 비밀번호를 입력해 주세요.</p>
+        <input id="pwd-modal-input" type="password" inputmode="numeric" autocomplete="off" placeholder="••••" style="width:100%;padding:11px 14px;font-size:18px;font-family:'Inter','Segoe UI',monospace;letter-spacing:0.4em;border:1.5px solid #cdd5df;border-radius:7px;background:#fafbfc;text-align:center;" />
+        <div id="pwd-modal-err" style="height:18px;margin-top:6px;font-size:12.5px;color:#c25656;font-weight:600;text-align:center;"></div>
+        <div style="display:flex;gap:10px;margin-top:14px;justify-content:flex-end;">
+          <button id="pwd-modal-cancel" class="pwd-modal-btn" type="button" style="padding:9px 18px;border:1px solid #cdd5df;border-radius:7px;background:#fff;color:#5a6677;font-size:14px;font-weight:600;cursor:pointer;">취소</button>
+          <button id="pwd-modal-ok" class="pwd-modal-btn" type="button" style="padding:9px 22px;border:1px solid #2c569f;border-radius:7px;background:#2c569f;color:#fff;font-size:14px;font-weight:700;cursor:pointer;">확인</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+    const input  = overlay.querySelector('#pwd-modal-input');
+    const errEl  = overlay.querySelector('#pwd-modal-err');
+    const okBtn  = overlay.querySelector('#pwd-modal-ok');
+    const cancel = overlay.querySelector('#pwd-modal-cancel');
+    const close = (val) => { overlay.remove(); resolve(val); };
+    okBtn.onclick = () => close(input.value);
+    cancel.onclick = () => close(null);
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') { e.preventDefault(); close(input.value); }
+      else if (e.key === 'Escape') { e.preventDefault(); close(null); }
+      else { errEl.textContent = ''; }
+    });
+    overlay.addEventListener('mousedown', (e) => { if (e.target === overlay) close(null); });
+    setTimeout(() => input.focus(), 40);
+  });
+}
+
+async function requireEditAuth() {
   if (__editAuthorized) return true;
-  const pwd = prompt('🔒 데이터 편집 비밀번호를 입력하세요:');
+  const pwd = await promptPassword('데이터 편집 비밀번호');
   if (pwd === null) return false;
   if (pwd === EDIT_PASSWORD) {
     __editAuthorized = true;
@@ -2939,9 +2991,12 @@ function bindTabToolbar(tabKey) {
     if (saveBtn) saveBtn.style.display = on ? '' : 'none';
     if (on) renderInlineEditTables(tabKey);
   };
-  editBtn.onclick = () => {
+  editBtn.onclick = async () => {
     const turningOn = !tabEditState[tabKey];
-    if (turningOn && !requireEditAuth()) return;
+    if (turningOn) {
+      const ok = await requireEditAuth();
+      if (!ok) return;
+    }
     tabEditState[tabKey] = turningOn;
     sync();
   };
@@ -3081,8 +3136,8 @@ function renderInlineEditTables(tabKey) {
   }
 }
 
-function saveTabEdits(tabKey) {
-  if (!requireEditAuth()) return;
+async function saveTabEdits(tabKey) {
+  if (!(await requireEditAuth())) return;
   const root = document.querySelector(`.panel[data-tab="${tabKey}"]`);
   if (!root) return;
   const area = root.querySelector(`.inline-edit-area[data-edit="${tabKey}"]`);
@@ -4942,11 +4997,20 @@ PANELS.safety = () => {
         </div>
       </div>
 
-      <!-- 데이터 누락 안내 (계산은 init 단계에서) -->
-      <div class="card col-12" id="sf-data-notice" style="display:none;background:#fef9ee;border-left:4px solid #d49462;padding:12px 16px;">
-        <div style="font-size:14px;color:#28323e;">
-          <b style="color:#a36b3e;">📌 안내:</b> <span id="sf-missing-months"></span> 안전점검 지적·교육 누계 데이터가 미입력 상태입니다.
-          <span style="color:#7a8694;">데이터 편집 탭에서 직접 입력 가능합니다.</span>
+      <!-- 데이터 안내 (계산은 init 단계에서) -->
+      <div class="card col-12" id="sf-data-notice" style="background:#fef9ee;border-left:4px solid #d49462;padding:14px 18px;">
+        <div style="font-size:14.5px;color:#28323e;line-height:1.6;">
+          <div style="margin-bottom:4px;"><b style="color:#a36b3e;font-size:15px;">📌 데이터 반영 현황 안내</b></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px;">
+            <div style="background:#fff;border:1px solid #f1d9b8;border-radius:7px;padding:10px 13px;">
+              <div style="font-weight:700;color:#3f8a3f;margin-bottom:3px;">✓ 무재해 일수 · 안전교육 누적</div>
+              <div style="font-size:13px;color:#5a6677;">2026-04 ~ 2026-05 보수적 외삽 반영 (calendar 기반 / 3개월 평균 증분)</div>
+            </div>
+            <div style="background:#fff;border:1px solid #f1d9b8;border-radius:7px;padding:10px 13px;">
+              <div style="font-weight:700;color:#a36b3e;margin-bottom:3px;">⚠ 안전점검 지적 (9분류)</div>
+              <div style="font-size:13px;color:#5a6677;"><span id="sf-missing-months">—</span> 실측치 미반영 · 편집모드(자물쇠 🔒)에서 직접 입력 가능</div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -5006,18 +5070,13 @@ PANEL_INIT.safety = () => {
     }
   });
 
-  // 직전 6개월 윈도우 — 안전점검 지적 분류 외 모든 안전 차트가 공통 사용
-  // (마지막 데이터 보유 월 기준 6개월; 26.4/26.5처럼 데이터 비어 있는 월은 제외)
+  // 안전 차트 공통 윈도우 — 최신 월까지 포함하되, 안전점검 지적이 비어있는 월은
+  //   gap 으로 표시 (null 유지). 윈도우는 직전 7개월(마지막 = 최신 보고월).
   destroyChart('sf-audit');
   const cats = ['추락','전도','낙하/비래','감전','충돌/협착','붕괴/도괴','화재/폭발','기타'];
-  // 데이터가 있는 마지막 월 찾기 (모든 카테고리가 null 인 월은 제외)
-  let _lastDataIdx = -1;
-  for (let i = months.length - 1; i >= 0; i--) {
-    if (cats.some(c => d.safety_audit_land[c][i] != null)) { _lastDataIdx = i; break; }
-  }
-  if (_lastDataIdx < 0) _lastDataIdx = months.length - 1;
-  const safetyEndIdx = _lastDataIdx;
-  const safetyStartIdx = Math.max(0, safetyEndIdx - 5);  // 6개월 윈도우
+  // 마지막 월: 진행 중인 보고월 (months 마지막) — 안전점검 데이터 없어도 무재해/교육 외삽치는 있음
+  const safetyEndIdx = months.length - 1;
+  const safetyStartIdx = Math.max(0, safetyEndIdx - 6);  // 7개월 윈도우 (gap 포함)
   const safetyMonths = months.slice(safetyStartIdx, safetyEndIdx + 1);
   const safetyMonthsShort = safetyMonths.map(fmtMonthCompact);
   const safetySliceStart = safetyStartIdx;
@@ -5039,23 +5098,20 @@ PANEL_INIT.safety = () => {
     options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 11 } } } }, scales: { y: { beginAtZero: true }, x: { grid: { display: false } } } }
   });
 
-  // 데이터 누락 월 감지 (안전점검 지적 9 카테고리가 모두 null 인 월)
+  // 안전점검 지적 9분류 누락 월 감지 (전체 timeline 기준)
   const _auditAllCats = ['추락','전도','낙하/비래','감전','충돌/협착','붕괴/도괴','화재/폭발','질식','기타'];
-  const missingMonths = safetyMonths.filter((ym, k) => {
-    const i = safetyStartIdx + k;
-    return _auditAllCats.every(c => d.safety_audit_land[c][i] == null);
-  });
-  const notice = document.getElementById('sf-data-notice');
+  const missingAuditMonths = months.filter((ym, i) => _auditAllCats.every(c => d.safety_audit_land[c][i] == null));
   const noticeText = document.getElementById('sf-missing-months');
-  if (notice && noticeText) {
-    if (missingMonths.length > 0) {
-      notice.style.display = '';
-      const range = missingMonths.length === 1
-        ? fmtMonthShort(missingMonths[0])
-        : `${fmtMonthShort(missingMonths[0])} ~ ${fmtMonthShort(missingMonths[missingMonths.length-1])}`;
-      noticeText.textContent = `${range} (${missingMonths.length}개월)`;
+  if (noticeText) {
+    if (missingAuditMonths.length > 0) {
+      // 연속 구간으로 묶어서 표시
+      const tail = missingAuditMonths.slice(-6);
+      const rangeStr = tail.length === 1
+        ? fmtMonthShort(tail[0])
+        : `${fmtMonthShort(tail[0])} ~ ${fmtMonthShort(tail[tail.length-1])} (${tail.length}개월)`;
+      noticeText.textContent = rangeStr;
     } else {
-      notice.style.display = 'none';
+      noticeText.textContent = '전 기간 입력 완료';
     }
   }
 
@@ -5551,19 +5607,24 @@ PANEL_INIT.quality = () => {
     </div>`;
   };
 
-  // 카드별 카운트
+  // 카드별 카운트 — '완료/검사/기타' 분해
   const _statsOf = (rows) => {
-    let actualMain = 0, actualDone = 0, planMain = 0;
+    let actualMain = 0, actualDone = 0, actualInspect = 0;
+    let planMain = 0, planInspect = 0;
     for (const r of rows) {
       const ca = _classify(r.actual);
       if (ca && !ca.isSub) {
         actualMain++;
         if (/완료/.test(ca.raw)) actualDone++;
+        else if (/시험|검사|test|TEST|Test/.test(ca.raw)) actualInspect++;
       }
       const cp = _classify(r.plan);
-      if (cp && !cp.isSub) planMain++;
+      if (cp && !cp.isSub) {
+        planMain++;
+        if (/시험|검사|test|TEST|Test/.test(cp.raw)) planInspect++;
+      }
     }
-    return { actualMain, actualDone, planMain };
+    return { actualMain, actualDone, actualInspect, planMain, planInspect };
   };
 
   const groupOrder = ['토목 / 건축', '기계 (Tank)', '기계 (Insulation)', '기계 (배관)'];
@@ -5577,9 +5638,22 @@ PANEL_INIT.quality = () => {
     const style = groupStyles[cat] || { color: '#7a8694', accent: '#eef0f4', icon: '📋' };
     const rows = grouped[cat] || [];
     const stats = _statsOf(rows);
-    // 진척률: 실적 main 중 완료 / 실적 main
-    const donePct = stats.actualMain > 0 ? Math.round(stats.actualDone / stats.actualMain * 100) : 0;
-    // 자동 번호 매김 (main 항목에 순차 번호) — 원본에 이미 번호가 있어도 일관성 위해 재할당
+    // 카테고리별 status mini-chip 빌더 (값이 0인 칩은 표시 안 함)
+    const _mini = (txt, color, bg) => `<span style="display:inline-flex;align-items:center;gap:3px;padding:3px 8px;border-radius:10px;font-size:12px;font-weight:700;background:${bg};color:${color};white-space:nowrap;">${txt}</span>`;
+    const actualChips = [
+      stats.actualDone    > 0 ? _mini(`✓ 완료 ${stats.actualDone}건`, '#fff', '#3f8a3f') : '',
+      stats.actualInspect > 0 ? _mini(`🔍 검사 ${stats.actualInspect}건`, '#fff', '#7a8694') : '',
+    ].filter(Boolean).join('');
+    const planChips = [
+      stats.planInspect > 0
+        ? _mini(`▶ 시험·검사 ${stats.planInspect}건`, '#fff', style.color)
+        : '',
+      stats.planMain - stats.planInspect > 0
+        ? _mini(`▶ 일반 ${stats.planMain - stats.planInspect}건`, '#28323e', '#cdd5df')
+        : '',
+    ].filter(Boolean).join('');
+
+    // 자동 번호
     let actualCounter = 0, planCounter = 0;
     const actualHtml = rows.map(r => {
       const c = _classify(r.actual);
@@ -5593,27 +5667,15 @@ PANEL_INIT.quality = () => {
     }).filter(Boolean).join('') || '<div style="color:#cdd5df;font-size:13px;padding:10px 0;text-align:center;">계획된 항목이 없습니다.</div>';
     return `
       <div style="background:#fff;border:1px solid #e6eaf1;border-top:5px solid ${style.color};border-radius:12px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 2px 6px rgba(20,30,60,0.05);">
-        <!-- 카드 헤더 -->
-        <div style="padding:14px 18px 12px;background:linear-gradient(180deg,#fff 0%,${style.accent}40 100%);border-bottom:1px solid #eef0f4;">
-          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
-            <span style="display:inline-flex;width:40px;height:40px;align-items:center;justify-content:center;background:${style.accent};border-radius:9px;font-size:21px;">${style.icon}</span>
-            <div style="flex:1;min-width:0;">
-              <div style="font-size:16px;font-weight:800;color:${style.color};letter-spacing:-0.01em;line-height:1.2;">${escHtml(cat)}</div>
-              <div style="display:flex;gap:6px;margin-top:4px;flex-wrap:wrap;">
-                <span style="font-size:11px;background:#3f8a3f;color:#fff;padding:2px 7px;border-radius:8px;font-weight:700;letter-spacing:0.02em;">✓ 완료 ${stats.actualDone}</span>
-                <span style="font-size:11px;background:${style.color};color:#fff;padding:2px 7px;border-radius:8px;font-weight:700;letter-spacing:0.02em;">▶ 예정 ${stats.planMain}</span>
-                <span style="font-size:11px;background:#7a8694;color:#fff;padding:2px 7px;border-radius:8px;font-weight:700;letter-spacing:0.02em;">∑ 총 ${Math.max(stats.actualMain, stats.planMain)}건</span>
-              </div>
-            </div>
-          </div>
-          <!-- 진척 막대 (실적 완료/실적 main) -->
-          <div>
-            <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:4px;">
-              <span style="font-size:11px;color:#5a6677;font-weight:600;">전월 실적 완료율</span>
-              <span style="font-size:13px;color:${donePct>=100?'#3f8a3f':(donePct>=70?style.color:'#d49462')};font-weight:800;font-variant-numeric:tabular-nums;">${donePct}%</span>
-            </div>
-            <div style="position:relative;height:6px;background:#eef0f4;border-radius:4px;overflow:hidden;">
-              <div style="position:absolute;left:0;top:0;height:100%;width:${donePct}%;background:linear-gradient(90deg,${donePct>=100?'#3f8a3f':style.color},${donePct>=100?'#56a06a':style.color}cc);border-radius:4px;transition:width .4s;"></div>
+        <!-- 카드 헤더 — 깔끔한 한 줄: 아이콘 + 분류명 + 보고 건수 요약 -->
+        <div style="padding:14px 18px 12px;background:linear-gradient(180deg,#fff 0%,${style.accent}40 100%);border-bottom:1px solid #eef0f4;display:flex;align-items:center;gap:11px;">
+          <span style="display:inline-flex;width:42px;height:42px;align-items:center;justify-content:center;background:${style.accent};border-radius:9px;font-size:22px;flex-shrink:0;">${style.icon}</span>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:17px;font-weight:800;color:${style.color};letter-spacing:-0.01em;line-height:1.15;">${escHtml(cat)}</div>
+            <div style="display:flex;align-items:center;gap:8px;margin-top:5px;font-size:13px;color:#5a6677;flex-wrap:wrap;">
+              <span><b style="color:#28323e;">′26.04 실적</b> ${stats.actualMain}건</span>
+              <span style="color:#cdd5df;">·</span>
+              <span><b style="color:#28323e;">′26.05 계획</b> ${stats.planMain}건</span>
             </div>
           </div>
         </div>
@@ -5621,18 +5683,20 @@ PANEL_INIT.quality = () => {
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;flex:1;">
           <div style="padding:12px 14px 14px;border-right:1px dashed #eef0f4;">
             <div style="display:flex;align-items:center;gap:6px;margin-bottom:10px;padding-bottom:7px;border-bottom:1.5px solid #3f8a3f33;">
-              <span style="display:inline-flex;width:22px;height:22px;align-items:center;justify-content:center;background:#3f8a3f;color:#fff;border-radius:6px;font-size:12px;font-weight:800;">✓</span>
-              <span style="font-size:13px;color:#3f8a3f;font-weight:800;letter-spacing:0.02em;">′26.04 실적</span>
-              <span style="margin-left:auto;font-size:11px;color:#5a6677;font-weight:700;font-variant-numeric:tabular-nums;background:#fff;padding:2px 8px;border-radius:9px;border:1px solid #e6eaf1;">${stats.actualDone}/${stats.actualMain || '–'}</span>
+              <span style="display:inline-flex;width:23px;height:23px;align-items:center;justify-content:center;background:#3f8a3f;color:#fff;border-radius:6px;font-size:12.5px;font-weight:800;">✓</span>
+              <span style="font-size:13.5px;color:#3f8a3f;font-weight:800;letter-spacing:0.02em;">′26.04 실적</span>
+              <span style="margin-left:auto;font-size:12px;color:#5a6677;font-weight:700;font-variant-numeric:tabular-nums;background:#fff;padding:3px 9px;border-radius:9px;border:1px solid #e6eaf1;">${stats.actualMain}건</span>
             </div>
+            ${actualChips ? `<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px;">${actualChips}</div>` : ''}
             ${actualHtml}
           </div>
           <div style="padding:12px 14px 14px;background:${style.accent}1f;">
             <div style="display:flex;align-items:center;gap:6px;margin-bottom:10px;padding-bottom:7px;border-bottom:1.5px solid ${style.color}33;">
-              <span style="display:inline-flex;width:22px;height:22px;align-items:center;justify-content:center;background:${style.color};color:#fff;border-radius:6px;font-size:12px;font-weight:800;">▶</span>
-              <span style="font-size:13px;color:${style.color};font-weight:800;letter-spacing:0.02em;">′26.05 계획</span>
-              <span style="margin-left:auto;font-size:11px;color:#5a6677;font-weight:700;font-variant-numeric:tabular-nums;background:#fff;padding:2px 8px;border-radius:9px;border:1px solid #e6eaf1;">${stats.planMain}건</span>
+              <span style="display:inline-flex;width:23px;height:23px;align-items:center;justify-content:center;background:${style.color};color:#fff;border-radius:6px;font-size:12.5px;font-weight:800;">▶</span>
+              <span style="font-size:13.5px;color:${style.color};font-weight:800;letter-spacing:0.02em;">′26.05 계획</span>
+              <span style="margin-left:auto;font-size:12px;color:#5a6677;font-weight:700;font-variant-numeric:tabular-nums;background:#fff;padding:3px 9px;border-radius:9px;border:1px solid #e6eaf1;">${stats.planMain}건</span>
             </div>
+            ${planChips ? `<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px;">${planChips}</div>` : ''}
             ${planHtml}
           </div>
         </div>
@@ -5766,9 +5830,9 @@ PANEL_INIT.photos = () => {
   });
   const editBtn = root.querySelector('#photo-edit-toggle');
   if (editBtn) {
-    editBtn.onclick = () => {
+    editBtn.onclick = async () => {
       const turningOn = !photoEditMode;
-      if (turningOn && !requireEditAuth()) return;
+      if (turningOn && !(await requireEditAuth())) return;
       photoEditMode = turningOn;
       editBtn.textContent = photoEditMode ? '✏️ 편집모드 ON' : '🔒 편집모드 OFF';
       editBtn.style.background = photoEditMode ? 'var(--primary)' : 'var(--success-soft)';
@@ -5832,8 +5896,8 @@ function renderPhotoGallery() {
   if (cnt) cnt.textContent = `총 ${count}장`;
 }
 
-function editCaption(btn) {
-  if (!requireEditAuth()) return;
+async function editCaption(btn) {
+  if (!(await requireEditAuth())) return;
   const cap = btn.parentElement;
   const month = cap.dataset.month;
   const secIdx = +cap.dataset.sec;
@@ -5860,8 +5924,8 @@ function saveCaption(btn, month, secIdx, itemIdx) {
   showToast('✅ 캡션이 수정되었습니다');
 }
 
-function deletePhoto(month, secIdx, itemIdx) {
-  if (!requireEditAuth()) return;
+async function deletePhoto(month, secIdx, itemIdx) {
+  if (!(await requireEditAuth())) return;
   const item = window.PHOTOS_DATA[month][secIdx].items[itemIdx];
   if (!confirm(`이 사진을 삭제하시겠습니까?\n\n캡션: ${item.caption}`)) return;
   window.PHOTOS_DATA[month][secIdx].items.splice(itemIdx, 1);
@@ -6091,12 +6155,12 @@ function renderUploadQueue() {
   `).join('');
 }
 
-function commitUploadQueue() {
+async function commitUploadQueue() {
   if (uploadQueue.length === 0) {
     showToast('⚠️ 추가할 사진이 없습니다');
     return;
   }
-  if (!requireEditAuth()) return;
+  if (!(await requireEditAuth())) return;
   const root = document.querySelector('.panel[data-tab="upload"]');
   let month = root.querySelector('#up-month').value;
   if (month === '__new__') {
@@ -6170,8 +6234,8 @@ function exportPhotosData() {
   showToast('💾 사진 데이터 JSON이 다운로드되었습니다');
 }
 
-function importPhotosData(ev) {
-  if (!requireEditAuth()) { ev.target.value = ''; return; }
+async function importPhotosData(ev) {
+  if (!(await requireEditAuth())) { ev.target.value = ''; return; }
   const file = ev.target.files[0];
   if (!file) return;
   const reader = new FileReader();
@@ -6192,8 +6256,8 @@ function importPhotosData(ev) {
   ev.target.value = '';
 }
 
-function resetPhotosData() {
-  if (!requireEditAuth()) return;
+async function resetPhotosData() {
+  if (!(await requireEditAuth())) return;
   if (!confirm('원본 사진 데이터로 복원하시겠습니까?\n업로드된 사진과 수정된 캡션이 모두 사라집니다.')) return;
   window.PHOTOS_DATA = JSON.parse(JSON.stringify(_ORIGINAL_PHOTOS_DATA));
   localStorage.removeItem(PHOTOS_STORAGE_KEY);
@@ -7042,8 +7106,8 @@ function setByPath(obj, path, val) {
   cur[keys[keys.length - 1]] = val;
 }
 
-function applyEdits() {
-  if (!requireEditAuth()) return;
+async function applyEdits() {
+  if (!(await requireEditAuth())) return;
   // 편집 패널 내의 모든 data-path 소스 (table.editable + .ms-field) 를 수집
   const edPanel = document.querySelector('.panel[data-tab="editor"]');
   const root = edPanel || document;
@@ -7078,8 +7142,8 @@ function exportData() {
   showToast('💾 JSON 파일이 다운로드 되었습니다');
 }
 
-function importData(ev) {
-  if (!requireEditAuth()) { ev.target.value = ''; return; }
+async function importData(ev) {
+  if (!(await requireEditAuth())) { ev.target.value = ''; return; }
   const file = ev.target.files[0];
   if (!file) return;
   const reader = new FileReader();
@@ -7104,8 +7168,8 @@ function importData(ev) {
   ev.target.value = '';
 }
 
-function resetData() {
-  if (!requireEditAuth()) return;
+async function resetData() {
+  if (!(await requireEditAuth())) return;
   if (!confirm('초기 데이터로 복원하시겠습니까? 현재 변경사항이 모두 사라집니다.')) return;
   window.DASHBOARD_DATA = JSON.parse(JSON.stringify(_ORIGINAL_DATA));
   localStorage.removeItem(DASHBOARD_STORAGE_KEY);
@@ -7214,8 +7278,8 @@ openTab('overview');
     actual:   { fill: '#2c569f', stroke: '#1d3d76', label: '실적' },
   };
   const PX_PER_DAY = 3.5;
-  const LABEL_W = 360;
-  const ROW_H = 28;
+  const LABEL_W = 380;
+  const ROW_H = 30;
   const HEADER_H = 56;
 
   //--- 유틸 ---
@@ -7439,14 +7503,14 @@ openTab('overview');
       const indent = (t.level || 0) * 16;
       const isCollapsed = collapsed.has(row.idx);
       const toggle = row.hasChildren
-        ? `<span class="ms-toggle" data-row="${row.idx}" style="display:inline-block;width:16px;height:16px;line-height:16px;cursor:pointer;color:#4a7bd1;font-size:11px;text-align:center;user-select:none;border-radius:2px;">${isCollapsed ? '▸' : '▾'}</span>`
+        ? `<span class="ms-toggle" data-row="${row.idx}" style="display:inline-block;width:17px;height:17px;line-height:17px;cursor:pointer;color:#4a7bd1;font-size:12px;text-align:center;user-select:none;border-radius:2px;">${isCollapsed ? '▸' : '▾'}</span>`
         : `<span style="display:inline-block;width:16px;"></span>`;
       const isHeader = !hasDates(t, compareKeys);
       const nameStyle = isHeader ? 'color:#2c569f;font-weight:700;' : 'color:#28323e;';
       let prefix = '';
       if (t.kind === 'subheader') prefix = '<span style="color:#bda790;margin-right:4px;font-size:11px;">▸</span>';
       const name = escHtml(t.name || '');
-      lbHtml.push(`<div class="ms-row" data-row="${row.idx}" style="height:${ROW_H}px;display:flex;align-items:center;padding:0 8px 0 ${4 + indent}px;border-bottom:1px solid #eef1f5;font-size:13px;${isHeader ? 'background:#f5f8fc;' : ''}">${toggle}<span class="ms-name" style="${nameStyle}flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-left:4px;" title="${escAttr(t.name)}">${prefix}${name}</span></div>`);
+      lbHtml.push(`<div class="ms-row" data-row="${row.idx}" style="height:${ROW_H}px;display:flex;align-items:center;padding:0 8px 0 ${4 + indent}px;border-bottom:1px solid #eef1f5;font-size:14px;${isHeader ? 'background:#f5f8fc;' : ''}">${toggle}<span class="ms-name" style="${nameStyle}flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-left:5px;" title="${escAttr(t.name)}">${prefix}${name}</span></div>`);
     });
     labelsBox.innerHTML = lbHtml.join('');
 
@@ -7638,10 +7702,10 @@ openTab('overview');
       s.id = 'ms-style';
       s.textContent = `
         .ms-labels::-webkit-scrollbar{display:none;width:0;}
-        .ms-cat-tabs button{padding:7px 14px;border:1px solid #cdd5df;border-radius:20px;background:#fff;cursor:pointer;font-size:13.5px;color:#28323e;transition:all 0.15s;}
+        .ms-cat-tabs button{padding:8px 15px;border:1px solid #cdd5df;border-radius:20px;background:#fff;cursor:pointer;font-size:14.5px;color:#28323e;transition:all 0.15s;}
         .ms-cat-tabs button:hover{background:#f0f4fa;border-color:#4a7bd1;}
         .ms-cat-tabs button.active{background:#2c569f;color:#fff;border-color:#2c569f;font-weight:600;}
-        .sched-dropdown{padding:10px 44px 10px 14px;border:1.5px solid #b5c0cf;border-radius:7px;background:#fff;font-size:14.5px;font-weight:500;color:#28323e;cursor:pointer;line-height:1.3;font-family:inherit;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232c569f' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");background-repeat:no-repeat;background-position:right 12px center;background-size:18px;transition:border-color .15s, box-shadow .15s, background-color .15s;}
+        .sched-dropdown{padding:10px 44px 10px 14px;border:1.5px solid #b5c0cf;border-radius:7px;background:#fff;font-size:15px;font-weight:500;color:#28323e;cursor:pointer;line-height:1.3;font-family:inherit;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232c569f' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");background-repeat:no-repeat;background-position:right 12px center;background-size:18px;transition:border-color .15s, box-shadow .15s, background-color .15s;}
         .sched-dropdown:hover{border-color:#4a7bd1;background-color:#fafcff;}
         .sched-dropdown:focus{outline:none;border-color:#2c569f;box-shadow:0 0 0 3px rgba(74,123,209,0.18);}
       `;
@@ -8067,18 +8131,18 @@ openTab('overview');
     return `
       <div class="ms-wrap" style="padding:14px 18px 18px;height:100%;display:flex;flex-direction:column;background:#fafbfc;overflow:hidden;">
         <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:10px;">
-          <label style="font-weight:600;color:#28323e;font-size:15px;">📅 리비전:</label>
-          <select id="ms-rev-select" class="sched-dropdown" style="min-width:360px;">${opts.join('')}</select>
-          <button id="ms-today-btn" type="button" style="padding:9px 16px;border:1px solid #c97070;border-radius:6px;background:#fef2f2;color:#c97070;font-size:14px;font-weight:600;cursor:pointer;">📍 오늘로</button>
-          <span id="ms-meta" style="color:#7a8694;font-size:13px;"></span>
-          <label style="margin-left:auto;font-size:14px;display:flex;gap:6px;align-items:center;cursor:pointer;color:#28323e;">
+          <label style="font-weight:600;color:#28323e;font-size:16px;">📅 리비전:</label>
+          <select id="ms-rev-select" class="sched-dropdown" style="min-width:380px;font-size:14.5px;">${opts.join('')}</select>
+          <button id="ms-today-btn" type="button" style="padding:9px 17px;border:1px solid #c97070;border-radius:6px;background:#fef2f2;color:#c97070;font-size:14.5px;font-weight:600;cursor:pointer;">📍 오늘로</button>
+          <span id="ms-meta" style="color:#7a8694;font-size:13.5px;"></span>
+          <label style="margin-left:auto;font-size:14.5px;display:flex;gap:6px;align-items:center;cursor:pointer;color:#28323e;">
             <input type="checkbox" id="ms-show-links" checked> 선후 의존 화살표
           </label>
         </div>
         <div class="ms-cat-tabs" id="ms-cat-tabs" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">${catBtns.join('')}</div>
         <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px;align-items:center;">
-          <label style="font-size:14px;color:#28323e;font-weight:600;">트리 깊이:</label>
-          <select id="ms-lvl-select" class="sched-dropdown" style="min-width:230px;">
+          <label style="font-size:14.5px;color:#28323e;font-weight:600;">트리 깊이:</label>
+          <select id="ms-lvl-select" class="sched-dropdown" style="min-width:240px;font-size:14.5px;">
             <option value="expand">전체 펼침 (모든 레벨)</option>
             <option value="1">L1까지 (최상위만)</option>
             <option value="2">L2까지</option>
@@ -8090,7 +8154,7 @@ openTab('overview');
         </div>
         <div id="ms-legend" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px;align-items:center;"></div>
         <div id="ms-host" style="flex:1;border:1px solid #cdd5df;border-radius:6px;overflow:hidden;background:#fff;min-height:0;"></div>
-        <div style="margin-top:8px;font-size:11.5px;color:#7a8694;">카테고리 분류는 공종 이름 기반 추론 · '전체' 탭은 카테고리별 독립 셀로 분리 · 출처: ${escHtml(SD.source_file)} · 추출일: ${SD.extracted_at}</div>
+        <div style="margin-top:8px;font-size:12.5px;color:#7a8694;">카테고리 분류는 공종 이름 기반 추론 · '전체' 탭은 카테고리별 독립 셀로 분리 · 출처: ${escHtml(SD.source_file)} · 추출일: ${SD.extracted_at}</div>
       </div>
     `;
   };
@@ -8256,22 +8320,22 @@ openTab('overview');
     return `
       <div class="ms-wrap" style="padding:14px 18px 18px;height:100%;display:flex;flex-direction:column;background:#fafbfc;overflow:hidden;">
         <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:8px;">
-          <strong style="color:#2c569f;font-size:16px;">🔗 ${escHtml((ps.title || '').replace(/^Process\s+(상세\s*)?공정표/, '상세공정표'))}</strong>
-          <span style="color:#7a8694;font-size:13px;">'전체' 탭은 카테고리별 독립 셀로 분리 · ▾/▸ 클릭으로 트리 접기/펼치기</span>
-          <button id="ps-today-btn" type="button" style="margin-left:auto;padding:9px 16px;border:1px solid #c97070;border-radius:6px;background:#fef2f2;color:#c97070;font-size:14px;font-weight:600;cursor:pointer;">📍 오늘로</button>
+          <strong style="color:#2c569f;font-size:18px;">🔗 ${escHtml((ps.title || '').replace(/^Process\s+(상세\s*)?공정표/, '상세공정표'))}</strong>
+          <span style="color:#7a8694;font-size:14px;">'전체' 탭은 카테고리별 독립 셀로 분리 · ▾/▸ 클릭으로 트리 접기/펼치기</span>
+          <button id="ps-today-btn" type="button" style="margin-left:auto;padding:9px 17px;border:1px solid #c97070;border-radius:6px;background:#fef2f2;color:#c97070;font-size:14.5px;font-weight:600;cursor:pointer;">📍 오늘로</button>
         </div>
         <div class="ms-cat-tabs" id="ps-cat-tabs" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">${catBtns.join('')}</div>
         <div id="ps-legend" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px;align-items:center;"></div>
         <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-bottom:8px;">
-          <label style="font-size:14px;display:flex;gap:6px;align-items:center;cursor:pointer;color:#28323e;">
+          <label style="font-size:14.5px;display:flex;gap:6px;align-items:center;cursor:pointer;color:#28323e;">
             <input type="checkbox" id="ps-only-dated" checked> 날짜 있는 작업만
           </label>
-          <label style="font-size:14px;display:flex;gap:6px;align-items:center;cursor:pointer;color:#28323e;">
+          <label style="font-size:14.5px;display:flex;gap:6px;align-items:center;cursor:pointer;color:#28323e;">
             <input type="checkbox" id="ps-show-links" checked> 선후 의존 화살표
           </label>
           <span style="margin:0 4px;color:#cdd5df;">|</span>
-          <label style="font-size:14px;color:#28323e;font-weight:600;">트리 깊이:</label>
-          <select id="ps-lvl-select" class="sched-dropdown" style="min-width:230px;">
+          <label style="font-size:14.5px;color:#28323e;font-weight:600;">트리 깊이:</label>
+          <select id="ps-lvl-select" class="sched-dropdown" style="min-width:240px;font-size:14.5px;">
             <option value="expand">전체 펼침 (모든 레벨)</option>
             <option value="1">L1까지 (최상위만)</option>
             <option value="2">L2까지</option>
@@ -8280,10 +8344,10 @@ openTab('overview');
             <option value="5">L5까지</option>
             <option value="collapse">모두 접기 (헤더만)</option>
           </select>
-          <span id="ps-meta" style="color:#7a8694;font-size:13px;margin-left:auto;"></span>
+          <span id="ps-meta" style="color:#7a8694;font-size:13.5px;margin-left:auto;"></span>
         </div>
         <div id="ps-host" style="flex:1;border:1px solid #cdd5df;border-radius:6px;overflow:hidden;background:#fff;min-height:0;"></div>
-        <div style="margin-top:8px;font-size:11.5px;color:#7a8694;">※ 의존관계는 동일 부모 아래 형제 작업의 시작일 순으로 추론 · 추출일: ${SD.extracted_at}</div>
+        <div style="margin-top:8px;font-size:12.5px;color:#7a8694;">※ 의존관계는 동일 부모 아래 형제 작업의 시작일 순으로 추론 · 추출일: ${SD.extracted_at}</div>
       </div>
     `;
   };
@@ -8477,25 +8541,25 @@ openTab('overview');
     return `
       <div class="ms-wrap" style="padding:14px 18px 18px;height:100%;display:flex;flex-direction:column;background:#fafbfc;overflow:hidden;">
         <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:10px;">
-          <strong style="color:#2c569f;font-size:16px;">📆 ${escHtml(mo.title)}</strong>
-          <span style="color:#7a8694;font-size:13px;">직전 1개월 / 해당월 / 차후 1개월 (3개월 윈도우) · 계획·변경·실적 3중 비교</span>
+          <strong style="color:#2c569f;font-size:18px;">📆 ${escHtml(mo.title)}</strong>
+          <span style="color:#7a8694;font-size:14px;">직전 1개월 / 해당월 / 차후 1개월 (3개월 윈도우) · 계획·변경·실적 3중 비교</span>
         </div>
         <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:10px;">
-          <label style="font-weight:600;color:#28323e;font-size:15px;">📅 기준월:</label>
-          <select id="mo-base-month" class="sched-dropdown" style="min-width:200px;">${monthOpts}</select>
-          <label style="font-weight:600;color:#28323e;font-size:15px;margin-left:8px;">활동 그룹:</label>
-          <select id="mo-group-select" class="sched-dropdown" style="min-width:280px;"></select>
-          <span id="mo-meta" style="color:#7a8694;font-size:13px;"></span>
-          <label style="margin-left:auto;font-size:14px;display:flex;gap:6px;align-items:center;cursor:pointer;color:#28323e;">
+          <label style="font-weight:600;color:#28323e;font-size:16px;">📅 기준월:</label>
+          <select id="mo-base-month" class="sched-dropdown" style="min-width:210px;font-size:14.5px;">${monthOpts}</select>
+          <label style="font-weight:600;color:#28323e;font-size:16px;margin-left:8px;">활동 그룹:</label>
+          <select id="mo-group-select" class="sched-dropdown" style="min-width:290px;font-size:14.5px;"></select>
+          <span id="mo-meta" style="color:#7a8694;font-size:13.5px;"></span>
+          <label style="margin-left:auto;font-size:14.5px;display:flex;gap:6px;align-items:center;cursor:pointer;color:#28323e;">
             <input type="checkbox" id="mo-show-links" checked> 선후 의존 화살표
           </label>
-          <button id="mo-expand-all" type="button" style="padding:7px 13px;border:1px solid #cdd5df;border-radius:6px;background:#fff;cursor:pointer;font-size:13px;">모두 펼침</button>
-          <button id="mo-collapse-all" type="button" style="padding:7px 13px;border:1px solid #cdd5df;border-radius:6px;background:#fff;cursor:pointer;font-size:13px;">모두 접기</button>
+          <button id="mo-expand-all" type="button" style="padding:8px 14px;border:1px solid #cdd5df;border-radius:6px;background:#fff;cursor:pointer;font-size:13.5px;">모두 펼침</button>
+          <button id="mo-collapse-all" type="button" style="padding:8px 14px;border:1px solid #cdd5df;border-radius:6px;background:#fff;cursor:pointer;font-size:13.5px;">모두 접기</button>
         </div>
         <div id="mo-legend" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px;align-items:center;"></div>
-        <div id="mo-window" style="display:flex;gap:8px;align-items:center;margin-bottom:8px;font-size:13px;"></div>
+        <div id="mo-window" style="display:flex;gap:8px;align-items:center;margin-bottom:8px;font-size:13.5px;"></div>
         <div id="mo-host" style="flex:1;border:1px solid #cdd5df;border-radius:6px;overflow:hidden;background:#fff;min-height:0;"></div>
-        <div style="margin-top:8px;font-size:11.5px;color:#7a8694;">※ 3개월 윈도우(직전 1개월·해당월·차후 1개월)에 일정이 겹치는 활동만 표시 · 회색=계획, 주황=변경, 남색=실적</div>
+        <div style="margin-top:8px;font-size:12.5px;color:#7a8694;">※ 3개월 윈도우(직전 1개월·해당월·차후 1개월)에 일정이 겹치는 활동만 표시 · 회색=계획, 주황=변경, 남색=실적</div>
       </div>
     `;
   };

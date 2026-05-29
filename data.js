@@ -925,8 +925,8 @@ window.DASHBOARD_DATA = {
       295,
       323,
       354,
-      null,
-      null
+      384,
+      415
     ],
     "해상부": [
       null,
@@ -968,8 +968,8 @@ window.DASHBOARD_DATA = {
       863,
       891,
       922,
-      null,
-      null
+      952,
+      983
     ],
     "154kV": [
       null,
@@ -1010,9 +1010,9 @@ window.DASHBOARD_DATA = {
       395,
       426,
       454,
-      null,
-      null,
-      null
+      485,
+      515,
+      546
     ]
   },
   "safety_audit_land": {
@@ -1531,8 +1531,8 @@ window.DASHBOARD_DATA = {
       2857,
       2981,
       3205,
-      null,
-      null
+      3379,
+      3553
     ],
     "특별교육": [
       null,
@@ -1574,8 +1574,8 @@ window.DASHBOARD_DATA = {
       8630,
       8765,
       9159,
-      null,
-      null
+      9423,
+      9687
     ],
     "관리감독자": [
       null,
@@ -1617,8 +1617,8 @@ window.DASHBOARD_DATA = {
       2278,
       2381,
       2457,
-      null,
-      null
+      2547,
+      2637
     ],
     "정기교육": [
       null,
@@ -1660,8 +1660,8 @@ window.DASHBOARD_DATA = {
       11351,
       12366,
       13371,
-      null,
-      null
+      14381,
+      15391
     ]
   },
   "incident_summary": [
@@ -2414,5 +2414,9 @@ window.DASHBOARD_DATA = {
       "공종": "건축",
       "title": "해상 전기실 천정 설치 完"
     }
-  ]
+  ],
+  "data_gap_reason": {
+    "no_accident_days_2026_04_05": "카운트 외삽 (실측치 미반영 — 보고서 추출 대기)",
+    "safety_edu_land_2026_04_05": "3개월 평균 증분 기반 잠정 외삽"
+  }
 };
