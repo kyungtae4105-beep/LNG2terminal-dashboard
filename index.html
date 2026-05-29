@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<title>광양 제2 LNG터미널 증설공사 - 주요 지표 Dashboard</title>
+<title>광양 제2 LNG터미널 증설공사 - 주요 지표 종합현황</title>
 
 <!-- Cloudflare Access — 팀 도메인. 변경 시 _redirects 의 /logout 도 함께 갱신할 것. -->
 <meta name="cf-access-team-domain" content="energytf">
@@ -2594,7 +2594,7 @@ table.editable td.num input {
     <img src="assets/posco_intl_logo.png" alt="POSCO INTERNATIONAL" class="logo">
     <div class="divider"></div>
     <div class="title-block">
-      <div class="title">광양 제2 LNG터미널 증설공사 Dashboard</div>
+      <div class="title">광양 제2 LNG터미널 증설공사 종합현황</div>
       <div class="subtitle">
         <span>📋 보고기간: 2023.02 ~ 2026.03 (38개월)</span>
         <span class="dot">·</span>
@@ -2614,12 +2614,12 @@ table.editable td.num input {
     <div class="sidebar-header">광양 LNG 제2 터미널 증설공사</div>
     <div class="sidebar-content">
       <div class="menu-group">📋 종합</div>
-      <div class="menu-item active" data-tab="overview"><span class="ic">📊</span>종합 대시보드</div>
+      <div class="menu-item active" data-tab="overview"><span class="ic">📊</span>종합현황</div>
 
       <div class="menu-group">🏗️ 프로젝트</div>
       <div class="menu-item" data-tab="progress"><span class="ic">📈</span>공정 관리</div>
       <div class="menu-item" data-tab="schedule"><span class="ic">📅</span>Master Schedule</div>
-      <div class="menu-item" data-tab="process"><span class="ic">🔗</span>Process 공정표</div>
+      <div class="menu-item" data-tab="process"><span class="ic">🔗</span>상세공정표</div>
       <div class="menu-item" data-tab="monthly"><span class="ic">📆</span>월간 공정 (3개월)</div>
       <div class="menu-item" data-tab="orders"><span class="ic">📦</span>기자재 발주현황</div>
       <div class="menu-item" data-tab="resource"><span class="ic">👷</span>시공/자원관리</div>
@@ -2672,10 +2672,10 @@ table.editable td.num input {
 // Tab management
 //============================================================
 const TAB_DEFS = {
-  overview:   { title: '종합 대시보드',     icon: '📊' },
+  overview:   { title: '종합현황',           icon: '📊' },
   progress:   { title: '공정 관리',         icon: '📈' },
   schedule:   { title: 'Master Schedule',   icon: '📅' },
-  process:    { title: 'Process 공정표',    icon: '🔗' },
+  process:    { title: '상세공정표',         icon: '🔗' },
   monthly:    { title: '월간 공정 (3개월)', icon: '📆' },
   orders:     { title: '기자재 발주현황',   icon: '📦' },
   resource:   { title: '시공/자원관리',     icon: '👷' },
@@ -2867,7 +2867,7 @@ function persistDashboardData() {
   try {
     localStorage.setItem(DASHBOARD_STORAGE_KEY, JSON.stringify(window.DASHBOARD_DATA));
   } catch (err) {
-    console.warn('대시보드 데이터 저장 실패:', err);
+    console.warn('종합현황 데이터 저장 실패:', err);
     showToast('⚠️ 데이터 저장 실패 (localStorage 용량 초과 가능)');
   }
 }
@@ -2882,7 +2882,7 @@ function loadDashboardFromStorage() {
       return true;
     }
   } catch (err) {
-    console.warn('대시보드 데이터 복원 실패:', err);
+    console.warn('종합현황 데이터 복원 실패:', err);
   }
   return false;
 }
@@ -3130,12 +3130,47 @@ function _msPickTop(arr, n) {
   }).slice(0, n);
 }
 
-// 특이사항(코멘트) 자동 산출 — Top 3
+// data.js milestones + events_data.js MAJOR EVENT를 통합한 마일스톤 목록 산출
+//   events_data.js 의 이벤트(actual 또는 rev6 기준 날짜)도 동일 스키마로 정규화하여 머지
+//   같은 title 중복 제거: data.js 우선 (status 더 정확)
+function _buildMergedMilestones() {
+  const base = (D().milestones || []).slice();
+  const baseTitles = new Set(base.map(m => (m.title || '').trim()));
+  const ev = (window.EVENTS_DATA && window.EVENTS_DATA.events) || [];
+  const todayStr = new Date().toISOString().slice(0,10);
+  for (const e of ev) {
+    const title = (e.title || '').trim();
+    if (!title) continue;
+    if (baseTitles.has(title)) continue;
+    // 우선순위: actual > rev6 > rev0
+    const date = e.actual || e.rev6 || e.rev0;
+    if (!date) continue;
+    // 상태: actual 있으면 완료, 아니면 예정(미래)/지연(과거)
+    let status;
+    if (e.actual) status = '완료';
+    else if (date >= todayStr) status = '계획';
+    else status = '지연';
+    base.push({
+      date,
+      sub: '주요 Event',
+      공종: e.category || '공통',
+      title,
+      status,
+      _from: 'event',
+    });
+  }
+  return base;
+}
+
+// 특이사항(코멘트) 자동 산출 — Top 3 (통합 소스 활용)
 function buildSpecialNotes() {
   const dAll = D();
   const d = D6();
   const lastIdx = lastValidIdx(d.progress.종합.actual);
   const items = [];
+  const merged = _buildMergedMilestones();
+  const lastMonth = d.progress.months[lastIdx];
+  const nextMonth = nextMonthKey(lastMonth);
 
   // 1) 큰 음의 편차 = 위험
   let worst = null;
@@ -3156,26 +3191,34 @@ function buildSpecialNotes() {
     });
   }
 
-  // 2) 진행중/착수 마일스톤 중 가장 임박한 것
-  const lastMonth = d.progress.months[lastIdx];
-  const ongoing = (dAll.milestones || []).filter(m =>
-    (m.status === '착수' || m.status === '진행중') && (m.date || '') >= (lastMonth || '')
-  ).sort((a,b) => (a.date||'').localeCompare(b.date||''));
+  // 2) 이번 달 또는 임박한 미완 마일스톤
+  const ongoing = merged.filter(m => {
+    const dt = m.date || '';
+    const st = m.status || '';
+    if (st === '완료') return false;
+    return dt.startsWith(lastMonth) || (dt >= (lastMonth || '') && dt < nextMonth);
+  }).sort((a,b) => (a.date||'').localeCompare(b.date||''));
   if (ongoing[0]) {
     items.push({
       prio: 'mid',
       icon: '🟡',
-      text: `진행 중 마일스톤 <b>${ongoing[0].title}</b> (${ongoing[0].date}) — 진척 점검 필요`
+      text: `진행/임박 마일스톤 <b>${ongoing[0].title}</b> (${ongoing[0].date}) — 진척 점검 필요`
     });
   }
 
-  // 3) 차월 첫 계획
-  const nextPlan = (dAll.next_month_plan || []).slice().sort((a,b) => (a.date||'').localeCompare(b.date||''));
-  if (nextPlan[0]) {
+  // 3) 차월 첫 마일스톤 — events_data 우선, 없으면 next_month_plan
+  const nextEv = merged.filter(m => (m.date || '').startsWith(nextMonth))
+                       .sort((a,b) => (a.date||'').localeCompare(b.date||''));
+  let nextItem = nextEv[0];
+  if (!nextItem) {
+    const nextPlan = (dAll.next_month_plan || []).slice().sort((a,b) => (a.date||'').localeCompare(b.date||''));
+    nextItem = nextPlan[0];
+  }
+  if (nextItem) {
     items.push({
       prio: 'low',
       icon: '🟢',
-      text: `차월 첫 마일스톤 <b>${nextPlan[0].title}</b> (${nextPlan[0].date}) — 자원 배정 사전 검토`
+      text: `차월 첫 마일스톤 <b>${nextItem.title}</b> (${nextItem.date}) — 자원 배정 사전 검토`
     });
   }
 
@@ -3259,16 +3302,16 @@ PANELS.overview = () => {
 
 
   // 마일스톤 — 당월/익월 Top 3 (요약)
+  //   data.js milestones + events_data.js 의 Major Event 를 통합 사용 → 누락 최소화
   const MS_TOP_N = 3;
-  const allMs = D().milestones || [];
+  const allMs = _buildMergedMilestones();
   const nextMonth = nextMonthKey(lastMonth);
   const currentMonthMs = allMs.filter(m => (m.date || '').startsWith(lastMonth));
   const currentTop = _msPickTop(currentMonthMs, MS_TOP_N);
 
-  // 익월: 마일스톤에 익월 데이터가 있으면 우선, 없으면 next_month_plan 사용
+  // 익월: 통합 마일스톤에 익월 데이터가 있으면 우선, 없으면 next_month_plan 보조 사용
   const nextMonthMs = allMs.filter(m => (m.date || '').startsWith(nextMonth));
   const nextPlanRaw = D().next_month_plan || [];
-  // next_month_plan 항목을 마일스톤 형태로 정규화
   const nextPlanNorm = nextPlanRaw.map(p => ({
     date: p.date,
     sub: p.sub || '차월 계획',
@@ -3716,12 +3759,12 @@ PANELS.progress = () => `
     <style>
       #pg-root .pg-grid { display:grid; grid-template-columns:repeat(12, 1fr); gap:16px; }
       #pg-root .pg-card { background:#fff; border:1px solid #e6eaf1; border-radius:10px; padding:18px 20px; box-shadow:0 1px 2px rgba(20,30,60,0.04); }
-      #pg-root .pg-title { font-size:16px; font-weight:700; color:#28323e; margin:0 0 12px; display:flex; align-items:center; gap:8px; letter-spacing:0.01em; }
-      #pg-root .pg-title .pg-sub { font-size:13px; font-weight:500; color:#7a8694; margin-left:auto; }
+      #pg-root .pg-title { font-size:17.5px; font-weight:700; color:#28323e; margin:0 0 12px; display:flex; align-items:center; gap:8px; letter-spacing:0.01em; }
+      #pg-root .pg-title .pg-sub { font-size:14px; font-weight:500; color:#7a8694; margin-left:auto; }
       #pg-root .pg-kpi { display:flex; flex-direction:column; gap:6px; }
-      #pg-root .pg-kpi .lbl { font-size:13px; color:#5a6677; font-weight:600; }
-      #pg-root .pg-kpi .val { font-size:34px; font-weight:700; line-height:1.05; }
-      #pg-root .pg-kpi .sub { font-size:12.5px; color:#7a8694; }
+      #pg-root .pg-kpi .lbl { font-size:14.5px; color:#5a6677; font-weight:600; }
+      #pg-root .pg-kpi .val { font-size:36px; font-weight:700; line-height:1.05; }
+      #pg-root .pg-kpi .sub { font-size:13.5px; color:#7a8694; }
       #pg-root .ec-chart { width:100%; height:360px; }
       #pg-root .ec-chart-tall { width:100%; height:420px; }
       #pg-root .col-3 { grid-column: span 3; }
@@ -3732,8 +3775,8 @@ PANELS.progress = () => `
       @media (max-width:1200px) { #pg-root .col-3 { grid-column: span 6; } #pg-root .col-8, #pg-root .col-4, #pg-root .col-6 { grid-column: span 12; } }
     </style>
     <div style="display:flex;align-items:baseline;gap:14px;margin-bottom:14px;">
-      <h2 style="margin:0;font-size:22px;color:#2c569f;font-weight:700;">📊 공정 관리</h2>
-      <span id="pg-asof" style="font-size:13.5px;color:#7a8694;"></span>
+      <h2 style="margin:0;font-size:24px;color:#2c569f;font-weight:700;">📊 공정 관리</h2>
+      <span id="pg-asof" style="font-size:14.5px;color:#7a8694;"></span>
     </div>
     <div class="pg-grid">
       <!-- Row 1: KPI 4 (가로 1/4씩) -->
@@ -3775,13 +3818,13 @@ PANELS.progress = () => `
       <!-- Row 5 (NEW · 2-1 공정현황): EPC 영역별 진척 막대 + 가중치×진척률 트리맵 -->
       <div class="pg-card col-12">
         <h3 class="pg-title">📋 2-1 공정현황 · EPC 영역별 + 중분류 진척 <span class="pg-sub">엑셀 2-1 시트 기반 · 26.05월</span></h3>
-        <div id="pg-pstatus-meta" style="font-size:12.5px;color:#7a8694;margin-bottom:10px;"></div>
+        <div id="pg-pstatus-meta" style="font-size:13.5px;color:#7a8694;margin-bottom:10px;"></div>
         <div class="ec-chart" id="pg-pstatus-bars" style="height:420px;"></div>
       </div>
       <div class="pg-card col-12">
         <h3 class="pg-title">🗺 공종 가중치 × 진척률 트리맵 <span class="pg-sub">📦 박스 크기 = 영역 내 가중치 · 🎨 색상 = 달성률(계획대비 실적)</span></h3>
         <div id="pg-treemap-summary" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:14px;"></div>
-        <div id="pg-treemap-legend" style="display:flex;align-items:center;gap:18px;flex-wrap:wrap;padding:12px 16px;background:#f5f8fc;border-radius:8px;margin-bottom:12px;font-size:13px;color:#28323e;">
+        <div id="pg-treemap-legend" style="display:flex;align-items:center;gap:18px;flex-wrap:wrap;padding:12px 16px;background:#f5f8fc;border-radius:8px;margin-bottom:12px;font-size:14px;color:#28323e;">
           <span style="font-weight:700;color:#2c569f;">🎨 영역 색상:</span>
           <span style="display:inline-flex;align-items:center;gap:6px;"><span style="width:18px;height:14px;background:#56a06a;border-radius:3px;"></span>설계 (그린 톤)</span>
           <span style="display:inline-flex;align-items:center;gap:6px;"><span style="width:18px;height:14px;background:#a48cc4;border-radius:3px;"></span>구매 (퍼플 톤)</span>
@@ -3791,23 +3834,23 @@ PANELS.progress = () => `
           <span style="display:inline-flex;align-items:center;gap:6px;"><span style="width:18px;height:14px;background:#fff;border:2px solid #fff;outline:1px dashed #ccc;border-radius:3px;"></span>97%↑ 양호</span>
           <span style="display:inline-flex;align-items:center;gap:6px;"><span style="width:18px;height:14px;background:#fff;border:3px solid #d49462;border-radius:3px;"></span>85~97% 주의</span>
           <span style="display:inline-flex;align-items:center;gap:6px;"><span style="width:18px;height:14px;background:#fff;border:4px solid #c25656;border-radius:3px;"></span>85% 미만 지연</span>
-          <span style="margin-left:auto;color:#7a8694;font-size:12px;">박스 클릭 → 드릴다운 · 영역별 카드 너비 = EPC 가중치</span>
+          <span style="margin-left:auto;color:#7a8694;font-size:13px;">박스 클릭 → 드릴다운 · 영역별 카드 너비 = EPC 가중치</span>
         </div>
         <div id="pg-treemap-charts" style="display:grid;grid-template-columns:minmax(220px,0.6fr) minmax(320px,1.5fr) minmax(420px,8fr);gap:12px;">
           <div class="pg-tm-block" data-area="ENGINEERING">
-            <div class="pg-tm-header" style="background:linear-gradient(135deg,#1a2331 0%,#2c4a3a 100%);color:#fff;padding:10px 14px;border-radius:8px 8px 0 0;font-weight:800;font-size:14px;display:flex;align-items:center;gap:8px;line-height:1.3;letter-spacing:-0.01em;">
+            <div class="pg-tm-header" style="background:linear-gradient(135deg,#1a2331 0%,#2c4a3a 100%);color:#fff;padding:11px 15px;border-radius:8px 8px 0 0;font-weight:800;font-size:15.5px;display:flex;align-items:center;gap:9px;line-height:1.3;letter-spacing:-0.01em;">
               <span style="font-size:18px;">✏️</span><span data-fill="title">설계</span>
             </div>
             <div class="ec-chart" id="pg-tm-eng" style="height:480px;background:#fff;border:1px solid #e6eaf1;border-top:none;border-radius:0 0 8px 8px;"></div>
           </div>
           <div class="pg-tm-block" data-area="PROCUREMENT">
-            <div class="pg-tm-header" style="background:linear-gradient(135deg,#1a2331 0%,#3a2c4a 100%);color:#fff;padding:10px 14px;border-radius:8px 8px 0 0;font-weight:800;font-size:14px;display:flex;align-items:center;gap:8px;line-height:1.3;letter-spacing:-0.01em;">
+            <div class="pg-tm-header" style="background:linear-gradient(135deg,#1a2331 0%,#3a2c4a 100%);color:#fff;padding:11px 15px;border-radius:8px 8px 0 0;font-weight:800;font-size:15.5px;display:flex;align-items:center;gap:9px;line-height:1.3;letter-spacing:-0.01em;">
               <span style="font-size:18px;">📦</span><span data-fill="title">구매</span>
             </div>
             <div class="ec-chart" id="pg-tm-proc" style="height:480px;background:#fff;border:1px solid #e6eaf1;border-top:none;border-radius:0 0 8px 8px;"></div>
           </div>
           <div class="pg-tm-block" data-area="CONSTRUCTION">
-            <div class="pg-tm-header" style="background:linear-gradient(135deg,#1a2331 0%,#28395a 100%);color:#fff;padding:10px 14px;border-radius:8px 8px 0 0;font-weight:800;font-size:14px;display:flex;align-items:center;gap:8px;line-height:1.3;letter-spacing:-0.01em;">
+            <div class="pg-tm-header" style="background:linear-gradient(135deg,#1a2331 0%,#28395a 100%);color:#fff;padding:11px 15px;border-radius:8px 8px 0 0;font-weight:800;font-size:15.5px;display:flex;align-items:center;gap:9px;line-height:1.3;letter-spacing:-0.01em;">
               <span style="font-size:18px;">🏗️</span><span data-fill="title">시공</span>
             </div>
             <div class="ec-chart" id="pg-tm-cons" style="height:480px;background:#fff;border:1px solid #e6eaf1;border-top:none;border-radius:0 0 8px 8px;"></div>
@@ -3882,9 +3925,9 @@ PANEL_INIT.progress = () => {
     color: [SC_COLORS.planNeutral, SC_COLORS.epcActual, SC_COLORS.cons, SC_COLORS.proc, SC_COLORS.eng],
     grid: { left: 56, right: 28, top: 36, bottom: 64 },
     tooltip: { trigger: 'axis' },
-    legend: { bottom: 6, icon: 'roundRect', itemHeight: 10, textStyle: { fontSize: 13 } },
-    xAxis: { type: 'category', data: ymLabels, axisLabel: { fontSize: 12, rotate: 30 } },
-    yAxis: { type: 'value', min: 0, max: 100, axisLabel: { formatter: '{value}%', fontSize: 12 } },
+    legend: { bottom: 6, icon: 'roundRect', itemHeight: 11, textStyle: { fontSize: 14 } },
+    xAxis: { type: 'category', data: ymLabels, axisLabel: { fontSize: 13, rotate: 30 } },
+    yAxis: { type: 'value', min: 0, max: 100, axisLabel: { formatter: '{value}%', fontSize: 13 } },
     series: [
       { name: '종합 계획',  type: 'line', data: planArr,   smooth: true, symbol: 'circle', symbolSize: 5,
         color: SC_COLORS.planNeutral, lineStyle: { color: SC_COLORS.planNeutral, type: 'dashed', width: 2 }, itemStyle: { color: SC_COLORS.planNeutral } },
@@ -3908,19 +3951,19 @@ PANEL_INIT.progress = () => {
   const fAct  = fields2.map(f => +(f.expect_may * 100).toFixed(2));
   const fChart = echarts.init(document.getElementById('pg-fields'));
   fChart.setOption({
-    grid: { left: 60, right: 30, top: 36, bottom: 50 },
+    grid: { left: 64, right: 34, top: 38, bottom: 52 },
     tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
-    legend: { bottom: 4, icon: 'roundRect', itemHeight: 10, textStyle: { fontSize: 12.5 } },
-    xAxis: { type: 'value', max: 100, axisLabel: { formatter: '{value}%', fontSize: 11.5 } },
-    yAxis: { type: 'category', data: fLabels, axisLabel: { fontSize: 13.5, fontWeight: 600 } },
+    legend: { bottom: 4, icon: 'roundRect', itemHeight: 11, textStyle: { fontSize: 14 } },
+    xAxis: { type: 'value', max: 100, axisLabel: { formatter: '{value}%', fontSize: 13 } },
+    yAxis: { type: 'category', data: fLabels, axisLabel: { fontSize: 15, fontWeight: 600 } },
     series: [
       { name: '계획', type: 'bar', data: fPlan, itemStyle: { color: '#cdd5df', borderRadius: [0,3,3,0] }, barGap: '15%',
-        label: { show: true, position: 'right', formatter: '{c}%', fontSize: 11.5, color: '#7a8694' } },
+        label: { show: true, position: 'right', formatter: '{c}%', fontSize: 12.5, color: '#7a8694' } },
       { name: '실적', type: 'bar', data: fAct.map((v, i) => ({
           value: v,
           itemStyle: { color: (fPlan[i] - v >= 3) ? PG_COLORS.bad : PG_COLORS.primary, borderRadius: [0,3,3,0] }
         })),
-        label: { show: true, position: 'right', formatter: '{c}%', fontSize: 12, fontWeight: 700, color: '#28323e' } },
+        label: { show: true, position: 'right', formatter: '{c}%', fontSize: 13.5, fontWeight: 700, color: '#28323e' } },
     ],
   });
 
@@ -3945,12 +3988,12 @@ PANEL_INIT.progress = () => {
   });
   const heat = echarts.init(document.getElementById('pg-heat'));
   heat.setOption({
-    grid: { left: 70, right: 24, top: 16, bottom: 80 },
+    grid: { left: 74, right: 26, top: 18, bottom: 86 },
     tooltip: { position: 'top', formatter: p => `<b>${hYAxis[p.value[1]]}</b> · ${epcSeries[p.value[0]].ym}<br>Gap: <b>${p.value[2] >= 0 ? '+' : ''}${p.value[2].toFixed(2)}%p</b>` },
-    xAxis: { type: 'category', data: ymLabels, axisLabel: { fontSize: 11, rotate: 30 }, splitArea: { show: true } },
-    yAxis: { type: 'category', data: hYAxis, axisLabel: { fontSize: 12.5, fontWeight: 600 }, splitArea: { show: true } },
+    xAxis: { type: 'category', data: ymLabels, axisLabel: { fontSize: 12.5, rotate: 30 }, splitArea: { show: true } },
+    yAxis: { type: 'category', data: hYAxis, axisLabel: { fontSize: 14, fontWeight: 600 }, splitArea: { show: true } },
     visualMap: { min: Math.min(minGap, -5), max: Math.max(maxGap, 5), calculable: true, orient: 'horizontal',
-      left: 'center', bottom: 6, itemHeight: 90, itemWidth: 14, textStyle: { fontSize: 11 },
+      left: 'center', bottom: 6, itemHeight: 90, itemWidth: 14, textStyle: { fontSize: 12.5 },
       inRange: { color: [PG_COLORS.bad, '#f3c9c9', '#eef0f4', '#c5dbc5', PG_COLORS.good] },
     },
     series: [{ type: 'heatmap', data: heatData,
@@ -4000,12 +4043,12 @@ PANEL_INIT.progress = () => {
         return `<b>${s.name} 기여</b><br>계획: ${(s.row.plan_may*100).toFixed(2)}%<br>실적: ${(s.row.expect_may*100).toFixed(2)}%<br>EPC 갭 기여: <b style="color:${s.value < 0 ? PG_COLORS.bad : PG_COLORS.good};">${s.value >= 0 ? '+' : ''}${s.value}%p</b>`;
       } },
     xAxis: { type: 'value',
-      name: 'EPC 갭 누적 (%p)', nameLocation: 'middle', nameGap: 32, nameTextStyle: { fontSize: 12, color: '#7a8694' },
-      axisLabel: { fontSize: 11.5, formatter: v => (v > 0 ? '+' : '') + v },
+      name: 'EPC 갭 누적 (%p)', nameLocation: 'middle', nameGap: 34, nameTextStyle: { fontSize: 13, color: '#7a8694' },
+      axisLabel: { fontSize: 12.5, formatter: v => (v > 0 ? '+' : '') + v },
       splitLine: { lineStyle: { type: 'dashed', color: '#e6eaf1' } },
     },
     yAxis: { type: 'category', data: wfSteps.map(s => s.name),
-      axisLabel: { fontSize: 14, fontWeight: 700, color: (v, i) => wfSteps[i].type === 'total' ? '#1f2c3f' : '#28323e' },
+      axisLabel: { fontSize: 15.5, fontWeight: 700, color: (v, i) => wfSteps[i].type === 'total' ? '#1f2c3f' : '#28323e' },
       axisLine: { show: false }, axisTick: { show: false } },
     series: [
       // 투명 base
@@ -4016,7 +4059,7 @@ PANEL_INIT.progress = () => {
       // 실제 segment 막대
       { name: 'value', type: 'bar', stack: 'w', barWidth: '55%',
         itemStyle: { color: (p) => wfSteps[p.dataIndex].color, borderRadius: 4 },
-        label: { show: true, position: 'right', fontSize: 13.5, fontWeight: 700, color: '#28323e',
+        label: { show: true, position: 'right', fontSize: 14.5, fontWeight: 700, color: '#28323e',
           formatter: p => {
             const s = wfSteps[p.dataIndex];
             const v = s.type === 'total' ? epcGap_c : s.value;
@@ -4041,20 +4084,20 @@ PANEL_INIT.progress = () => {
   }));
   const mpChart = echarts.init(document.getElementById('pg-manpower'));
   mpChart.setOption({
-    grid: { left: 60, right: 24, top: 30, bottom: 60 },
+    grid: { left: 64, right: 26, top: 32, bottom: 62 },
     tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
-    legend: { bottom: 4, icon: 'roundRect', itemHeight: 10, textStyle: { fontSize: 12.5 } },
-    xAxis: { type: 'category', data: mpMonths.map(fmtMonthCompact), axisLabel: { fontSize: 11.5 } },
-    yAxis: { type: 'value', axisLabel: { formatter: '{value}명', fontSize: 11.5 } },
+    legend: { bottom: 4, icon: 'roundRect', itemHeight: 11, textStyle: { fontSize: 14 } },
+    xAxis: { type: 'category', data: mpMonths.map(fmtMonthCompact), axisLabel: { fontSize: 13 } },
+    yAxis: { type: 'value', axisLabel: { formatter: '{value}명', fontSize: 13 } },
     series: mpSeries,
   });
 
   // ===== ⑥ Critical Path Gantt (col-6에 맞춰 축소) =====
   const gantt = echarts.init(document.getElementById('pg-gantt'));
   const ganttSpec = buildCriticalPathGantt(SD, 12);  // 상위 12개만
-  if (ganttSpec.xAxis) ganttSpec.xAxis.axisLabel = { fontSize: 11 };
-  if (ganttSpec.yAxis) ganttSpec.yAxis.axisLabel = { fontSize: 11.5, formatter: v => v.length > 22 ? v.slice(0, 21) + '…' : v };
-  if (ganttSpec.grid) { ganttSpec.grid.left = 190; ganttSpec.grid.top = 16; ganttSpec.grid.bottom = 36; ganttSpec.grid.right = 16; }
+  if (ganttSpec.xAxis) ganttSpec.xAxis.axisLabel = { fontSize: 12.5 };
+  if (ganttSpec.yAxis) ganttSpec.yAxis.axisLabel = { fontSize: 13, formatter: v => v.length > 22 ? v.slice(0, 21) + '…' : v };
+  if (ganttSpec.grid) { ganttSpec.grid.left = 200; ganttSpec.grid.top = 18; ganttSpec.grid.bottom = 38; ganttSpec.grid.right = 18; }
   gantt.setOption(ganttSpec);
 
   // ===== ⑦ 2-1 공정현황: EPC 영역별 + 가중치 × 진척률 트리맵 =====
@@ -4094,7 +4137,7 @@ PANEL_INIT.progress = () => {
     if (psBarHost) {
       psBarChart = echarts.init(psBarHost);
       psBarChart.setOption({
-        grid: { left: 140, right: 70, top: 36, bottom: 50 },
+        grid: { left: 150, right: 76, top: 38, bottom: 52 },
         tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' },
           formatter: ps => {
             const i = ps[0].dataIndex;
@@ -4103,9 +4146,9 @@ PANEL_INIT.progress = () => {
             const gc = gap < 0 ? '#c14a4a' : '#3f8a3f';
             return `<b>${escHtml(it.name.trim())}</b><br>가중치(EPC): ${(it.weight*100).toFixed(2)}%<br>계획: ${(it.plan*100).toFixed(2)}%<br>실적: ${(it.actual*100).toFixed(2)}%<br>갭: <b style="color:${gc};">${gap >= 0 ? '+' : ''}${gap}%p</b><br>달성률: ${it.ratio != null ? (it.ratio*100).toFixed(1) : '–'}%`;
           } },
-        legend: { bottom: 4, icon: 'roundRect', itemHeight: 10, textStyle: { fontSize: 13 } },
-        xAxis: { type: 'value', max: data => Math.max(0.5, Math.ceil(data.max * 1.05 * 10) / 10), axisLabel: { formatter: '{value}', fontSize: 11.5 }, name: '% (EPC 환산)', nameTextStyle: { fontSize: 11 } },
-        yAxis: { type: 'category', data: psLabels, axisLabel: { fontSize: 12, formatter: v => v.length > 28 ? v.slice(0, 27)+'…' : v, color: (v, i) => allItems[i] && allItems[i].isTop ? '#28323e' : '#5a6677' },
+        legend: { bottom: 4, icon: 'roundRect', itemHeight: 11, textStyle: { fontSize: 14 } },
+        xAxis: { type: 'value', max: data => Math.max(0.5, Math.ceil(data.max * 1.05 * 10) / 10), axisLabel: { formatter: '{value}', fontSize: 13 }, name: '% (EPC 환산)', nameTextStyle: { fontSize: 12.5 } },
+        yAxis: { type: 'category', data: psLabels, axisLabel: { fontSize: 13.5, formatter: v => v.length > 28 ? v.slice(0, 27)+'…' : v, color: (v, i) => allItems[i] && allItems[i].isTop ? '#28323e' : '#5a6677' },
           inverse: false },
         series: [
           { name: '계획 (Plan)', type: 'bar', data: psPlan, itemStyle: { color: '#cdd5df' }, barGap: '10%',
@@ -4183,7 +4226,7 @@ PANEL_INIT.progress = () => {
       if (headerBlock) {
         const ratioPct = (topRatio * 100).toFixed(0);
         const weightPct = (t.weight * 100).toFixed(2);
-        headerBlock.innerHTML = `${labelKo} <span style="font-weight:600;font-size:13px;opacity:0.9;margin-left:4px;">·  달성률 <b>${ratioPct}%</b>  ·  가중치 <b>${weightPct}%</b></span>`;
+        headerBlock.innerHTML = `${labelKo} <span style="font-weight:600;font-size:14px;opacity:0.9;margin-left:4px;">·  달성률 <b>${ratioPct}%</b>  ·  가중치 <b>${weightPct}%</b></span>`;
       }
       // 하위 데이터 구성 (root 없이 sub-items가 top-level)
       const subs = ps.rows.filter(r => r.top === t.name && r.kind === 'sub' && r.weight != null && r.weight > 0 && r.name.trim() !== '계');
@@ -4246,8 +4289,8 @@ PANEL_INIT.progress = () => {
               return `{name|▶ ${p.name}}\n{stat|달성률 ${ratio}  ·  가중치 ${weight}%}`;
             },
             rich: {
-              name: { fontSize: 14, color: '#fff', fontWeight: 800, lineHeight: 20, textShadowColor: 'rgba(0,0,0,0.55)', textShadowBlur: 5 },
-              stat: { fontSize: 12, color: 'rgba(255,255,255,0.97)', lineHeight: 16, fontWeight: 600, textShadowColor: 'rgba(0,0,0,0.5)', textShadowBlur: 4 },
+              name: { fontSize: 15.5, color: '#fff', fontWeight: 800, lineHeight: 22, textShadowColor: 'rgba(0,0,0,0.55)', textShadowBlur: 5 },
+              stat: { fontSize: 13.5, color: 'rgba(255,255,255,0.97)', lineHeight: 18, fontWeight: 600, textShadowColor: 'rgba(0,0,0,0.5)', textShadowBlur: 4 },
             },
           },
           upperLabel: { show: false },
@@ -7090,7 +7133,7 @@ PANELS.info = () => `
         <tr><td style="width: 140px; color: #888;">프로젝트명</td><td><b>광양 제2 LNG터미널 증설공사</b></td></tr>
         <tr><td style="color: #888;">담당</td><td>에너지건설 TF 박경태 대리 <a href="mailto:kyungtae@poscointl.com" style="color:var(--primary);">(kyungtae@poscointl.com)</a></td></tr>
         <tr><td style="color: #888;">보고기간</td><td>2023년 2월 ~ 2026년 3월 <span style="color:var(--text-muted);">(누락월: 2023-12, 2024-02, 2024-10·12, 2025-01~05)</span></td></tr>
-        <tr><td style="color: #888;">목적</td><td>에너지건설 TF 주요 지표 Dashboard 구축</td></tr>
+        <tr><td style="color: #888;">목적</td><td>에너지건설 TF 주요 지표 종합현황 구축</td></tr>
       </table>
     </div>
     <div class="card col-6">
@@ -7107,7 +7150,7 @@ PANELS.info = () => `
       </ul>
     </div>
     <div class="card col-12">
-      <h3>📐 대시보드 주요 구성요소</h3>
+      <h3>📐 종합현황 주요 구성요소</h3>
       <ul class="info-list">
         <li>전체 공정률 (Gauge 차트) - 종합/육상/해상/154kV 공정률</li>
         <li>월별 공정 추이 (막대 + S-curve)</li>
@@ -7504,13 +7547,13 @@ openTab('overview');
       <defs>
         <!-- 직접 형제 (Sequential) — 청회색 -->
         <marker id="ms-arr-seq"        viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4.5" markerHeight="4.5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#5a7a9c"/></marker>
-        <marker id="ms-arr-seq-hi"     viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6"   markerHeight="6"   orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#2c569f"/></marker>
+        <marker id="ms-arr-seq-hi"     viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1d3d76"/></marker>
         <!-- Overlap/역방향 (Back) — 보라 -->
         <marker id="ms-arr-back"       viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4"   markerHeight="4"   orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#9a6fb5"/></marker>
-        <marker id="ms-arr-back-hi"    viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#6b3a8f"/></marker>
+        <marker id="ms-arr-back-hi"    viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7"   markerHeight="7"   orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#5a2780"/></marker>
         <!-- Cross-summary 핸드오프 (Handoff) — 청록 -->
         <marker id="ms-arr-handoff"    viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4"   markerHeight="4"   orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#4f8a9f"/></marker>
-        <marker id="ms-arr-handoff-hi" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#2c6478"/></marker>
+        <marker id="ms-arr-handoff-hi" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7"   markerHeight="7"   orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1f5466"/></marker>
         <!-- 호환용 (이전 코드 호출 대응) -->
         <marker id="ms-arr-default"    viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5"   markerHeight="5"   orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#5a7a9c"/></marker>
         <marker id="ms-arr-hover"      viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6"   markerHeight="6"   orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#2c569f"/></marker>
@@ -7647,18 +7690,74 @@ openTab('overview');
       });
     });
 
-    //-- 막대 hover (툴팁 + 의존 화살표 강조) --
+    //-- 막대 hover/click (툴팁 + 의존 화살표 강조) --
+    //  · hover  → 일시 강조 (마우스 떼면 풀림)
+    //  · click  → 잠금 강조 (재클릭 또는 다른 막대 클릭 시 해제)
+    chartSvg._lockedRow = null;
+    chartSvg._lockedBar = null;
+    const _setLockMark = (barEl, on) => {
+      if (!barEl) return;
+      if (on) {
+        barEl.setAttribute('data-locked', '1');
+        barEl.setAttribute('stroke-width', '2.4');
+        barEl.setAttribute('stroke', '#1f2c3f');
+      } else {
+        barEl.removeAttribute('data-locked');
+        barEl.setAttribute('stroke-width', '0.5');
+        barEl.setAttribute('stroke', barEl.getAttribute('data-orig-stroke') || '#1d3d76');
+      }
+    };
     $$('rect.ms-bar', chartSvg).forEach(el => {
       el.style.cursor = 'pointer';
+      // 원본 stroke 저장 (잠금 해제 시 복원)
+      el.setAttribute('data-orig-stroke', el.getAttribute('stroke') || '#1d3d76');
       el.addEventListener('mouseenter', e => {
         showTip(e, el.getAttribute('data-tip'));
-        highlightLinks(chartSvg, Number(el.dataset.row), true);
+        if (chartSvg._lockedRow == null) {
+          highlightLinks(chartSvg, Number(el.dataset.row), true);
+        }
       });
       el.addEventListener('mousemove', moveTip);
       el.addEventListener('mouseleave', () => {
         hideTip();
-        highlightLinks(chartSvg, Number(el.dataset.row), false);
+        if (chartSvg._lockedRow == null) {
+          highlightLinks(chartSvg, Number(el.dataset.row), false);
+        }
       });
+      el.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const rowIdx = Number(el.dataset.row);
+        const cur = chartSvg._lockedRow;
+        if (cur === rowIdx) {
+          // 같은 막대 재클릭 → 잠금 해제
+          chartSvg._lockedRow = null;
+          _setLockMark(chartSvg._lockedBar, false);
+          chartSvg._lockedBar = null;
+          highlightLinks(chartSvg, rowIdx, false);
+        } else {
+          // 다른 막대(또는 첫 클릭) → 이전 잠금 해제 후 새로 잠금
+          if (cur != null) {
+            _setLockMark(chartSvg._lockedBar, false);
+            // 이전 강조 잔상 제거 (전체 normal 로 reset)
+            highlightLinks(chartSvg, cur, false);
+          }
+          chartSvg._lockedRow = rowIdx;
+          chartSvg._lockedBar = el;
+          _setLockMark(el, true);
+          highlightLinks(chartSvg, rowIdx, true);
+        }
+      });
+    });
+    // 빈 영역 클릭 → 잠금 해제
+    chartSvg.addEventListener('click', (e) => {
+      if (e.target && e.target.tagName === 'rect' && e.target.classList.contains('ms-bar')) return;
+      if (chartSvg._lockedRow != null) {
+        const prev = chartSvg._lockedRow;
+        _setLockMark(chartSvg._lockedBar, false);
+        chartSvg._lockedRow = null;
+        chartSvg._lockedBar = null;
+        highlightLinks(chartSvg, prev, false);
+      }
     });
 
     // "오늘" 버튼 핸들러용 메서드 (chartBox 와 timeAxis 동시 동기화)
@@ -7791,12 +7890,13 @@ openTab('overview');
     return parts.join('');
   }
 
-  // 막대 hover 시 관련 화살표만 강조 (유형별 색은 유지)
+  // 막대 hover/click 시 관련 화살표만 강조 (유형별 색은 유지, 강도 ↑)
   function highlightLinks(svg, rowIdx, on) {
+    // 강조 상태 — 채도 ↑ 굵기 ↑ opacity 1.0
     const HI = {
-      seq:     { stroke: '#2c569f', strokeW: 3.0, op: 1.0, marker: 'ms-arr-seq-hi'     },
-      back:    { stroke: '#6b3a8f', strokeW: 2.6, op: 1.0, marker: 'ms-arr-back-hi'    },
-      handoff: { stroke: '#2c6478', strokeW: 2.8, op: 1.0, marker: 'ms-arr-handoff-hi' },
+      seq:     { stroke: '#1d3d76', strokeW: 4.0, op: 1.0, marker: 'ms-arr-seq-hi'     },
+      back:    { stroke: '#5a2780', strokeW: 3.6, op: 1.0, marker: 'ms-arr-back-hi'    },
+      handoff: { stroke: '#1f5466', strokeW: 3.8, op: 1.0, marker: 'ms-arr-handoff-hi' },
     };
     const DF = {
       seq:     { stroke: '#5a7a9c', strokeW: 1.6, op: 0.38, marker: 'ms-arr-seq'     },
@@ -7812,9 +7912,10 @@ openTab('overview');
       p.setAttribute('stroke-width', sty.strokeW);
       p.setAttribute('opacity', sty.op);
       p.setAttribute('marker-end', `url(#${sty.marker})`);
-      // 비관련 화살표는 hover 시 더 옅게 ("관련 외엔 페이드아웃")
+      // 강조 모드에서 비관련 화살표는 더 강하게 페이드 (관련 화살표만 도드라지게)
       if (on && !isRel) {
-        p.setAttribute('opacity', String(Math.max(0.08, DF[type].op * 0.35)));
+        p.setAttribute('opacity', String(Math.max(0.06, DF[type].op * 0.25)));
+        p.setAttribute('stroke-width', Math.max(DF[type].strokeW - 0.3, 1.0));
       }
     });
   }
@@ -7848,19 +7949,23 @@ openTab('overview');
   }
 
   // 선후 의존 화살표 3유형 범례 (Master Schedule / Process / Monthly 공통)
+  //   글자 크기 및 화살표 견본 크기 ↑ — 가독성 강화
+  //   안내문: 막대 클릭 → 잠금 강조 / 재클릭 → 해제
   function arrowLegendHtml() {
     const types = [
       { stroke: '#5a7a9c', dash: '',          label: '순차 (직접 형제)' },
       { stroke: '#9a6fb5', dash: '4,3',       label: '병행/역방향' },
-      { stroke: '#4f8a9f', dash: '6,2,2,2',   label: '핸드오프 (cross-summary)' },
+      { stroke: '#4f8a9f', dash: '6,2,2,2',   label: '핸드오프' },
     ];
-    const sep = '<span style="margin:0 6px;color:#cdd5df;">·</span>';
-    return types.map(t => `<span style="display:inline-flex;align-items:center;gap:5px;font-size:12.5px;color:${t.stroke};font-weight:600;">
-      <svg width="34" height="10" style="display:block;flex-shrink:0;">
-        <line x1="2" y1="5" x2="26" y2="5" stroke="${t.stroke}" stroke-width="${t.dash?'1.4':'1.7'}" ${t.dash?`stroke-dasharray=\"${t.dash}\"`:''}/>
-        <polygon points="26,1.5 32,5 26,8.5" fill="${t.stroke}"/>
+    const sep = '<span style="margin:0 8px;color:#cdd5df;">·</span>';
+    const items = types.map(t => `<span style="display:inline-flex;align-items:center;gap:7px;font-size:14px;color:${t.stroke};font-weight:700;">
+      <svg width="44" height="12" style="display:block;flex-shrink:0;">
+        <line x1="2" y1="6" x2="34" y2="6" stroke="${t.stroke}" stroke-width="${t.dash?'1.8':'2.1'}" ${t.dash?`stroke-dasharray=\"${t.dash}\"`:''}/>
+        <polygon points="34,2 42,6 34,10" fill="${t.stroke}"/>
       </svg>${t.label}
     </span>`).join(sep);
+    const hint = `<span style="margin-left:10px;font-size:13px;color:#5a6677;font-weight:500;background:#f5f8fc;border:1px dashed #cdd5df;padding:3px 9px;border-radius:14px;">💡 막대 클릭 → 화살표 잠금 강조 · 재클릭 → 해제</span>`;
+    return items + hint;
   }
 
   //============================================================
@@ -8141,7 +8246,7 @@ openTab('overview');
   }
   PANELS.process = () => {
     const ps = SD.process_schedule;
-    if (!ps) return '<div style="padding:24px;color:#a14d4d;">Process 공정표 데이터가 없습니다.</div>';
+    if (!ps) return '<div style="padding:24px;color:#a14d4d;">상세공정표 데이터가 없습니다.</div>';
     const cats = getProcessCategories();
     const catBtns = [
       '<button class="ms-cat-btn active" data-cat="all">📋 전체</button>',
@@ -8151,7 +8256,7 @@ openTab('overview');
     return `
       <div class="ms-wrap" style="padding:14px 18px 18px;height:100%;display:flex;flex-direction:column;background:#fafbfc;overflow:hidden;">
         <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:8px;">
-          <strong style="color:#2c569f;font-size:16px;">🔗 ${escHtml(ps.title)}</strong>
+          <strong style="color:#2c569f;font-size:16px;">🔗 ${escHtml((ps.title || '').replace(/^Process\s+(상세\s*)?공정표/, '상세공정표'))}</strong>
           <span style="color:#7a8694;font-size:13px;">'전체' 탭은 카테고리별 독립 셀로 분리 · ▾/▸ 클릭으로 트리 접기/펼치기</span>
           <button id="ps-today-btn" type="button" style="margin-left:auto;padding:9px 16px;border:1px solid #c97070;border-radius:6px;background:#fef2f2;color:#c97070;font-size:14px;font-weight:600;cursor:pointer;">📍 오늘로</button>
         </div>
